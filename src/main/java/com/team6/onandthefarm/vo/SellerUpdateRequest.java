@@ -8,14 +8,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@ApiModel(description = "셀러 상세 정보를 위한 객체")
-public class SellerRequest {
-    private String email;
-    private String password;
+@ApiModel(description = "셀러 정보 변경을 위한 객체")
+public class SellerUpdateRequest {
     private String zipcode;
     private String address;
     private String addressDetail;
+    private String shopName;
+    private String password;
     private String phone;
-    private String name;
 
 }

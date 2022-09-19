@@ -1,14 +1,12 @@
 package com.team6.onandthefarm.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class EmailDto {
     private String email;
     private String authKey;

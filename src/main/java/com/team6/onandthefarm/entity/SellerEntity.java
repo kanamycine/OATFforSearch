@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class SellerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,6 +24,7 @@ public class SellerEntity {
     private String addressDetail;
     private String phone;
     private String name;
+    private String shopName;
     private String businessNumber;
     private String registerDate;
     private boolean isActived;
