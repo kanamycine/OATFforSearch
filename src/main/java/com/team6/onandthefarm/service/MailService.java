@@ -4,6 +4,7 @@ package com.team6.onandthefarm.service;
 import com.team6.onandthefarm.dto.EmailDto;
 import com.team6.onandthefarm.entity.EmailEntity;
 import com.team6.onandthefarm.repository.EmailRepository;
+import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.util.MailUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -25,12 +26,16 @@ public class MailService {
 
     private EmailRepository emailRepository;
 
+    private DateUtils dateUtils;
+
+
     private int size;
 
     @Autowired
-    public MailService(JavaMailSenderImpl mailSender,EmailRepository emailRepository) {
+    public MailService(JavaMailSenderImpl mailSender,EmailRepository emailRepository,DateUtils dateUtils) {
         this.mailSender = mailSender;
         this.emailRepository=emailRepository;
+        this.dateUtils=dateUtils;
     }
 
     /**
@@ -64,14 +69,8 @@ public class MailService {
             return false;
         }
 
-
-        SimpleDateFormat nowFormat = new SimpleDateFormat("yyyy.MM.dd");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-
-        Date now = new Date();
-
-        String nowStr = nowFormat.format(now);
-        String dateStr = format.format(now);
+        String nowStr = dateUtils.transDate("yyyy.MM.dd");
+        String dateStr = recentEmailEntity.getDate();
 
         String[] date = emailEntity.getDate().substring(11).split(":");
         String[] nowDate = dateStr.substring(11).split(":");

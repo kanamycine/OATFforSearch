@@ -1,21 +1,21 @@
 package com.team6.onandthefarm.vo;
 
-import io.swagger.annotations.ApiModel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @Getter
 @Setter
-@ApiModel(description = "셀러 상세 정보를 위한 객체")
-public class SellerRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class SellerInfoResponse {
     private String email;
-    private String password;
     private String zipcode;
     private String address;
     private String addressDetail;
     private String phone;
     private String name;
-
+    private String businessNumber;
+    private String registerDate;
 }
