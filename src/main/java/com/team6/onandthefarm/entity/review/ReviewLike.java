@@ -1,12 +1,10 @@
 package com.team6.onandthefarm.entity.review;
 
+import com.team6.onandthefarm.entity.user.User;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
 @Slf4j
@@ -19,6 +17,12 @@ public class ReviewLike {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long reviewLikeId;
-    private Long reviewId;
-    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewId")
+    private Review review;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 }
