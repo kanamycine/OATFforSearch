@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.vo;
+package com.team6.onandthefarm.vo.seller;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

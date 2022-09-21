@@ -1,15 +1,11 @@
 package com.team6.onandthefarm.controller.seller;
 
-import com.team6.onandthefarm.dto.EmailDto;
+import com.team6.onandthefarm.dto.seller.EmailDto;
 import com.team6.onandthefarm.dto.seller.SellerDto;
-import com.team6.onandthefarm.service.MailService;
+import com.team6.onandthefarm.service.seller.MailService;
 import com.team6.onandthefarm.service.seller.SellerService;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.*;
-import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
-import com.team6.onandthefarm.vo.seller.SellerPasswordRequest;
-import com.team6.onandthefarm.vo.seller.SellerRequest;
-import com.team6.onandthefarm.vo.seller.SellerUpdateRequest;
+import com.team6.onandthefarm.vo.seller.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

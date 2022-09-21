@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.dto;
+package com.team6.onandthefarm.dto.seller;
 
 import lombok.*;
 

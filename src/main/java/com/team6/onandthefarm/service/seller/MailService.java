@@ -1,9 +1,9 @@
-package com.team6.onandthefarm.service;
+package com.team6.onandthefarm.service.seller;
 
 
-import com.team6.onandthefarm.dto.EmailDto;
-import com.team6.onandthefarm.entity.EmailEntity;
-import com.team6.onandthefarm.repository.EmailRepository;
+import com.team6.onandthefarm.dto.seller.EmailDto;
+import com.team6.onandthefarm.entity.seller.EmailConfirmation;
+import com.team6.onandthefarm.repository.seller.EmailRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.util.MailUtils;
 import org.modelmapper.ModelMapper;
@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -49,7 +47,7 @@ public class MailService {
     public void save(EmailDto emailDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        EmailEntity email = modelMapper.map(emailDto, EmailEntity.class);
+        EmailConfirmation email = modelMapper.map(emailDto, EmailConfirmation.class);
         emailRepository.save(email);
     }
 
@@ -63,22 +61,22 @@ public class MailService {
 
         String AuthKey = map.get("authKey");
         String email = map.get("email");
-        EmailEntity emailEntity = emailRepository.findByEmailAndAuthKey(email,AuthKey);
-        if(emailEntity==null){
+        EmailConfirmation emailConfirmation = emailRepository.findByEmailIdAndAuthKey(email,AuthKey);
+        if(emailConfirmation ==null){
             return false;
         }
 
-        EmailEntity recentEmailEntity = emailRepository.findTopByEmailOrderByDateDesc(email);
-        if(!emailEntity.getAuthKey().equals(recentEmailEntity.getAuthKey())){
+        EmailConfirmation recentEmailConfirmation = emailRepository.findTopByEmailIdOrderByConfirmDateDesc(email);
+        if(!emailConfirmation.getAuthKey().equals(recentEmailConfirmation.getAuthKey())){
             return false;
         }
 
         String nowStr = dateUtils.transDate(env.getProperty("dateutils.format"));
-        String dateStr = recentEmailEntity.getDate();
+        String dateStr = recentEmailConfirmation.getConfirmDate();
 
-        String[] date = emailEntity.getDate().substring(11).split(":");
+        String[] date = emailConfirmation.getConfirmDate().substring(11).split(":");
         String[] nowDate = dateStr.substring(11).split(":");
-        if(!nowStr.equals(emailEntity.getDate().substring(0,10))){ // 오늘인지 확인
+        if(!nowStr.equals(emailConfirmation.getConfirmDate().substring(0,10))){ // 오늘인지 확인
             return false;
         }
 
@@ -98,8 +96,8 @@ public class MailService {
         /*
             인증완료 시 email_confirmation에 있는 row들 다 삭제됨
          */
-        List<EmailEntity> emailEntityList = emailRepository.findAllByEmail(email);
-        for(EmailEntity emails : emailEntityList){
+        List<EmailConfirmation> emailConfirmationList = emailRepository.findAllByEmailId(email);
+        for(EmailConfirmation emails : emailConfirmationList){
             emailRepository.delete(emails);
         }
         return true;
@@ -135,11 +133,8 @@ public class MailService {
             sendMail.setSubject("회원가입 이메일 인증");
             sendMail.setText(new StringBuffer().append("<h1>[이메일 인증]</h1>")
                     .append("<p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>")
-                    .append("<a href='http://localhost:8080/api/seller/emailConfirm?email=") // 인증시 redirect될 주소를 의미한다.
-                    .append(email)
                     .append("&authKey=")
                     .append(authKey)
-                    .append("' target='_blenk'>이메일 인증 확인</a>")
                     .toString());
             sendMail.setFrom("ksh9409255@gmail.com", "관리자"); // 관리자 email 작성해주고 관리자 email의 경우 2차비밀번호 인증을 해야함
             sendMail.setTo(email);

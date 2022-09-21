@@ -1,7 +1,7 @@
 package com.team6.onandthefarm.service.seller;
 
 import com.team6.onandthefarm.dto.seller.SellerDto;
-import com.team6.onandthefarm.entity.seller.SellerEntity;
+import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
@@ -31,15 +31,15 @@ public class SellerService {
     }
 
     public boolean updateByUserId(Long userId,SellerDto sellerDto){
-        Optional<SellerEntity> sellerEntity = sellerRepository.findById(userId);
+        Optional<Seller> sellerEntity = sellerRepository.findById(userId);
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        sellerEntity.get().setZipcode(sellerDto.getZipcode());
-        sellerEntity.get().setAddress(sellerDto.getAddress());
-        sellerEntity.get().setAddressDetail(sellerDto.getAddressDetail());
-        sellerEntity.get().setShopName(sellerDto.getShopName());
-        sellerEntity.get().setPassword(sellerDto.getPassword());
-        sellerEntity.get().setPhone(sellerDto.getPhone());
+        sellerEntity.get().setSellerZipcode(sellerDto.getZipcode());
+        sellerEntity.get().setSellerAddress(sellerDto.getAddress());
+        sellerEntity.get().setSellerAddressDetail(sellerDto.getAddressDetail());
+        sellerEntity.get().setSellerShopName(sellerDto.getShopName());
+        sellerEntity.get().setSellerPassword(sellerDto.getPassword());
+        sellerEntity.get().setSellerPhone(sellerDto.getPhone());
         sellerRepository.save(sellerEntity.get());
         return true;
     }
@@ -50,7 +50,7 @@ public class SellerService {
      * @return
      */
     public SellerInfoResponse findByUserId(Long userId){
-        Optional<SellerEntity> sellerEntity = sellerRepository.findById(userId);
+        Optional<Seller> sellerEntity = sellerRepository.findById(userId);
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerInfoResponse response = modelMapper.map(sellerEntity.get(),SellerInfoResponse.class);
@@ -62,8 +62,8 @@ public class SellerService {
      * @param sellerDto
      */
     public void updatePassword(SellerDto sellerDto){
-        SellerEntity seller = sellerRepository.findByEmail(sellerDto.getEmail());
-        seller.setPassword(sellerDto.getPassword());
+        Seller seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
+        seller.setSellerPassword(sellerDto.getPassword());
         sellerRepository.save(seller);
     }
 
@@ -75,10 +75,10 @@ public class SellerService {
     public boolean sellerSignup(SellerDto sellerDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        SellerEntity sellerEntity = modelMapper.map(sellerDto,SellerEntity.class);
+        Seller seller = modelMapper.map(sellerDto, Seller.class);
         String date = dateUtils.transDate(env.getProperty("dateutils.format"));
-        sellerEntity.setRegisterDate(date);
-        sellerRepository.save(sellerEntity);
+        seller.setSellerRegisterDate(date);
+        sellerRepository.save(seller);
         return true;
     }
 
@@ -88,7 +88,7 @@ public class SellerService {
      * @return true: 중복안됨 / false: 중복됨
      */
     public boolean sellerIdCheck(String sellerEmail){
-        SellerEntity email = sellerRepository.findByEmail(sellerEmail);
+        Seller email = sellerRepository.findBySellerEmail(sellerEmail);
         if(email == null){
             return true;
         }

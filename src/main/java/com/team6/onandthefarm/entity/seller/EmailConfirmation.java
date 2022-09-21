@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.entity;
+package com.team6.onandthefarm.entity.seller;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,14 +6,13 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "email_confirmation")
 @Getter
 @Setter
-public class EmailEntity {
+public class EmailConfirmation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-    private String email;
+    private long confirmId;
+    private String emailId;
     private String authKey;
-    private String date;
+    private String confirmDate;
 }
