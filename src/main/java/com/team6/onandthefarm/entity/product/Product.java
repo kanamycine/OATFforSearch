@@ -40,7 +40,7 @@ public class Product {
 
     private String productDetailShort;
 
-    private String productSource;
+    private String productOriginPlace;
 
     private String productDeliveryCompany;
 
