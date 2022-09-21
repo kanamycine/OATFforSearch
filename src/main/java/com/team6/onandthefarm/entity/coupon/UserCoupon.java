@@ -1,12 +1,10 @@
 package com.team6.onandthefarm.entity.coupon;
 
+import com.team6.onandthefarm.entity.user.User;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
 @Slf4j
@@ -19,8 +17,16 @@ public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userCouponId;
-    private Long couponId;
-    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "couponId")
+    private Coupon coupon;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
     private String userCouponPublishedDate;
+
     private Boolean userCouponStatus;
 }

@@ -1,12 +1,12 @@
 package com.team6.onandthefarm.entity.review;
 
+import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.entity.user.User;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
 @Slf4j
@@ -19,12 +19,26 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long reviewId;
-    private Long productId;
-    private Long userId;
-    private Long sellerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productId")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sellerId")
+    private Seller seller;
+
     private String reviewContent;
+
     private String reviewCreatedAt;
+
     private String reviewModifiedAt;
+
     private Integer reviewLikeCount;
+
     private Integer reviewRate;
 }

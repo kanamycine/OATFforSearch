@@ -3,10 +3,7 @@ package com.team6.onandthefarm.entity.order;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Builder
 @Slf4j
@@ -19,7 +16,12 @@ public class Refund {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long refundId;
-    private Long orderId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ordersId")
+    private Orders orders;
+
     private Long refundContent;
+
     private String refundImage;
 }

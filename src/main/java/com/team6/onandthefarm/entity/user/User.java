@@ -19,22 +19,32 @@ public class User {
     private Long userId;
 
     private String userEmail;
+
     private String userPassword;
+
     private Integer userZipcode;
+
     private String userAddress;
+
     private String userAddressDetail;
+
     private String userPhone;
+
     private String userBirthday;
+
     private Integer userSex;
+
     private String userName;
+
     private String userRegisterDate;
+
     private Boolean userIsActivated;
+
     private String userKakaoNumber;
+
     private String userNaverNumber;
+
     private String userAppleNumber;
+
     private String userGoogleNumber;
-
-
-
-
 }

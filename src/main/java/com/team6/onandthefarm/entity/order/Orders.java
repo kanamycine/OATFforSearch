@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.entity.order;
 
+import com.team6.onandthefarm.entity.user.User;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,19 +16,35 @@ import javax.persistence.*;
 public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long orderId;
-    private Long userId;
-    private String orderDate;
-    private String orderStatus;
-    private Integer orderTotalPrice;
-    private String orderRecipientName;
-    private String orderAddress;
-    private String orderPhone;
-    private String orderRequest;
-    private Long orderSellerId;
-    private String orderDeliveryStatus;
-    private String orderDeliveryWaybillNumber;
-    private String orderDeliveryCompany;
-    private String orderDeliveryDate;
-    private String orderSerial;
+    private Long ordersId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User userId;
+
+    private String ordersDate;
+
+    private String ordersStatus;
+
+    private Integer ordersTotalPrice;
+
+    private String ordersRecipientName;
+
+    private String ordersAddress;
+
+    private String ordersPhone;
+
+    private String ordersRequest;
+
+    private Long ordersSellerId;
+
+    private String ordersDeliveryStatus;
+
+    private String ordersDeliveryWaybillNumber;
+
+    private String ordersDeliveryCompany;
+
+    private String ordersDeliveryDate;
+
+    private String ordersSerial;
 }

@@ -17,12 +17,21 @@ public class OrderProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long orderProductId;
-    private Long orderId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ordersId")
+    private Orders orders;
+
     private Integer orderProductQty;
+
     private String orderProductName;
+
     private Long productId;
+
     private Integer orderProductPrice;
+
     private String orderProductMainImg;
+
     private Long sellerId;
 
 }
