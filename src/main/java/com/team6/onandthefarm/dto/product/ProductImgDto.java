@@ -9,30 +9,21 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class ProductImgDto {
-	private Long product_img_id;
-	private Long product_id;
-	private String product_img_src;
+	private Long productImgId;
+	private Long productId;
+	private String productImgSrc;
 
 	@Builder
 	public ProductImgDto(Long product_id, String product_img_src){
-		this.product_id = product_id;
-		this.product_img_src = product_img_src;
+		this.productId = productId;
+		this.productImgSrc = productImgSrc;
 	}
 
 	public ProductImg toEntity(ProductImgDto dto){
 		ProductImg entity = ProductImg.builder()
-				.productImgId(dto.product_img_id)
-				.productImgSrc(dto.product_img_src)
+				.productImgId(dto.productId)
+				.productImgSrc(dto.productImgSrc)
 				.build();
 		return entity;
-	}
-
-	public ProductImgDto of(ProductImg entity){
-		ProductImgDto dto = ProductImgDto.builder()
-				.product_id(entity.getProductImgId())
-				.product_img_src(entity.getProductImgSrc())
-				.build();
-
-		return dto;
 	}
 }
