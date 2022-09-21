@@ -1,24 +1,25 @@
-package com.team6.onandthefarm.controller;
+package com.team6.onandthefarm.controller.seller;
 
 import com.team6.onandthefarm.dto.EmailDto;
-import com.team6.onandthefarm.dto.SellerDto;
+import com.team6.onandthefarm.dto.seller.SellerDto;
 import com.team6.onandthefarm.service.MailService;
-import com.team6.onandthefarm.service.SellerService;
+import com.team6.onandthefarm.service.seller.SellerService;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.*;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
+import com.team6.onandthefarm.vo.seller.SellerPasswordRequest;
+import com.team6.onandthefarm.vo.seller.SellerRequest;
+import com.team6.onandthefarm.vo.seller.SellerUpdateRequest;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -32,12 +33,15 @@ public class SellerController {
 
     private DateUtils dateUtils;
 
+    private Environment env;
+
 
     @Autowired
-    public SellerController(SellerService sellerService, MailService mailService, DateUtils dateUtils) {
+    public SellerController(SellerService sellerService, MailService mailService, DateUtils dateUtils,Environment env) {
         this.sellerService = sellerService;
         this.mailService=mailService;
         this.dateUtils=dateUtils;
+        this.env=env;
     }
 
     @GetMapping("/{user-no}")
@@ -86,7 +90,7 @@ public class SellerController {
             return;
         }
         String authKey = mailService.sendAuthMail(emailRequest.getEmail());
-        String date = dateUtils.transDate("yyyy.MM.dd HH:mm:ss");
+        String date = dateUtils.transDate(env.getProperty("dateutils.format"));
         EmailDto email = EmailDto.builder()
                 .email(emailRequest.getEmail())
                 .authKey(authKey)

@@ -9,6 +9,7 @@ import com.team6.onandthefarm.util.MailUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +29,17 @@ public class MailService {
 
     private DateUtils dateUtils;
 
+    private Environment env;
+
 
     private int size;
 
     @Autowired
-    public MailService(JavaMailSenderImpl mailSender,EmailRepository emailRepository,DateUtils dateUtils) {
+    public MailService(JavaMailSenderImpl mailSender,EmailRepository emailRepository,DateUtils dateUtils,Environment env) {
         this.mailSender = mailSender;
         this.emailRepository=emailRepository;
         this.dateUtils=dateUtils;
+        this.env=env;
     }
 
     /**
@@ -69,7 +73,7 @@ public class MailService {
             return false;
         }
 
-        String nowStr = dateUtils.transDate("yyyy.MM.dd");
+        String nowStr = dateUtils.transDate(env.getProperty("dateutils.format"));
         String dateStr = recentEmailEntity.getDate();
 
         String[] date = emailEntity.getDate().substring(11).split(":");

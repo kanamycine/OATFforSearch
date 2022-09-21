@@ -1,17 +1,16 @@
-package com.team6.onandthefarm.service;
+package com.team6.onandthefarm.service.seller;
 
-import com.team6.onandthefarm.dto.SellerDto;
-import com.team6.onandthefarm.entity.SellerEntity;
-import com.team6.onandthefarm.repository.SellerRepository;
+import com.team6.onandthefarm.dto.seller.SellerDto;
+import com.team6.onandthefarm.entity.seller.SellerEntity;
+import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.SellerInfoResponse;
+import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -21,11 +20,14 @@ public class SellerService {
 
     private DateUtils dateUtils;
 
+    private Environment env;
+
 
     @Autowired
-    public SellerService(SellerRepository sellerRepository,DateUtils dateUtils) {
+    public SellerService(SellerRepository sellerRepository,DateUtils dateUtils,Environment env) {
         this.sellerRepository = sellerRepository;
         this.dateUtils=dateUtils;
+        this.env=env;
     }
 
     public boolean updateByUserId(Long userId,SellerDto sellerDto){
@@ -74,7 +76,7 @@ public class SellerService {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerEntity sellerEntity = modelMapper.map(sellerDto,SellerEntity.class);
-        String date = dateUtils.transDate("yyyy.MM.dd HH:mm:ss");
+        String date = dateUtils.transDate(env.getProperty("dateutils.format"));
         sellerEntity.setRegisterDate(date);
         sellerRepository.save(sellerEntity);
         return true;
