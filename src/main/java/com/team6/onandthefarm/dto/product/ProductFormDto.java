@@ -19,7 +19,7 @@ public class ProductFormDto {
 	private String productName;
 
 	@NotBlank(message = "카테고리는 필수 입력 값입니다.")
-	private String productCategory;
+	private Long productCategory;
 
 	@NotNull(message = "가격은 필수 입력 값입니다.")
 	private Integer productPrice;
