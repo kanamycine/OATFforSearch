@@ -25,11 +25,14 @@ public class ProductFormDto {
 	@NotNull(message = "가격은 필수 입력 값입니다.")
 	private Integer productPrice;
 
-	@NotBlank(message = "상세내용은 필수 입력 값입니다.")
-	private String productDetail;
-
 	@NotNull(message = "재고는 필수 입력 값입니다.")
 	private Integer productTotalStock;
+
+	@NotBlank(message = "상품대표 이미지는 필수 입력입니다.")
+	private String productMainImgSrc;
+
+	@NotBlank(message = "상세내용은 필수 입력 값입니다.")
+	private String productDetail;
 
 	@NotBlank(message = "원산지는 필수 입력 값입니다.")
 	private String productOriginPlace;
@@ -63,8 +66,9 @@ public class ProductFormDto {
 		Product entity = Product.builder()
 				.productName(dto.productName)
 				.productPrice(dto.productPrice)
-				.productDetail(dto.productDetail)
 				.productTotalStock(dto.productTotalStock)
+				.productDetail(dto.productDetail)
+				.productMainImgSrc(dto.productMainImgSrc)
 				.productOriginPlace(dto.productOriginPlace)
 				.productDeliveryCompany(dto.productDeliveryCompany)
 				.productStatus(dto.productStatus)
