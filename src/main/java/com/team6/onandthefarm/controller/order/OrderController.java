@@ -78,7 +78,10 @@ public class OrderController {
         return new ResponseEntity(orderSellerDetailRequest,HttpStatus.OK);
     }
 
-    @GetMapping("/list/{order-no}")
-    @ApiOperation(value = "주문 상세 조회")
-
+    @PostMapping("/payment/{order-no}")
+    @ApiOperation(value = "결제 생성")
+    public ResponseEntity createPayment(@PathVariable(name = "order-no") String orderSerial){
+        orderService.createPayment(orderSerial);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 }

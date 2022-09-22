@@ -3,8 +3,10 @@ package com.team6.onandthefarm.service.order;
 import com.team6.onandthefarm.dto.order.OrderDto;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
+import com.team6.onandthefarm.entity.order.Payment;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
+import com.team6.onandthefarm.repository.order.PaymentRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.order.*;
 import org.modelmapper.ModelMapper;
@@ -12,6 +14,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +22,30 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class OrderService {
 
     private OrderRepository orderRepository;
 
     private OrderProductRepository orderProductRepository;
 
+    private PaymentRepository paymentRepository;
+
     private DateUtils dateUtils;
 
     private Environment env;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository,OrderProductRepository orderProductRepository,DateUtils dateUtils,Environment env) {
+    public OrderService(OrderRepository orderRepository,
+                        OrderProductRepository orderProductRepository,
+                        DateUtils dateUtils,
+                        Environment env,
+                        PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository=orderProductRepository;
         this.dateUtils=dateUtils;
         this.env=env;
+        this.paymentRepository = paymentRepository;
     }
 
     public OrderFindOneResponse findOneByProductId(Long productId){
@@ -120,6 +131,7 @@ public class OrderService {
             orderProduct.get().setOrders(orders);
             orderProductRepository.save(orderProduct.get());
         }
+        createPayment(order.getOrdersSerial()); // 결제 생성
     }
 
     /**
@@ -142,6 +154,11 @@ public class OrderService {
         return responseList;
     }
 
+    /**
+     * 셀러가 주문 상세 조회를 할때 사용되는 메서드
+     * @param orderSerial
+     * @return
+     */
     public OrderSellerDetailRequest findSellerOrderDetail(String orderSerial){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -161,5 +178,19 @@ public class OrderService {
         }
 
         return orderSellerDetailRequest;
+    }
+
+    public void createPayment(String orderSerial){
+        Orders orders = orderRepository.findByOrdersSerial(orderSerial);
+        Payment payment = Payment.builder()
+                .orders(orders)
+                .paymentDate(dateUtils.transDate(env.getProperty("dateutils.format")))
+                .paymentStatus(true)
+                .paymentDepositAmount(orders.getOrdersTotalPrice())
+                .paymentDepositBank("신한은행")
+                .paymentDepositName("김성환")
+                .paymentMethod("card")
+                .build();
+        paymentRepository.save(payment);
     }
 }
