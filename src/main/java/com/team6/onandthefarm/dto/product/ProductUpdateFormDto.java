@@ -3,23 +3,22 @@ package com.team6.onandthefarm.dto.product;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ProductFormDto {
+public class ProductUpdateFormDto {
 	private Long productId;
 
 	@NotBlank(message = "상품명은 필수 입력 값입니다.")
 	private String productName;
 
 	@NotBlank(message = "카테고리는 필수 입력 값입니다.")
-	private String productCategory;
+	private String productCategoryId;
 
 	@NotNull(message = "가격은 필수 입력 값입니다.")
 	private Integer productPrice;

@@ -51,4 +51,24 @@ public class Product {
     private String productStatus;
 
     private Integer productWishCount;
+
+    public Long updateProduct(Category category, String productName, Integer productPrice,
+            Integer productTotalStock, String productMainImgSrc, String productDetail,
+            String productDetailShort, String productOriginPlace, String productDeliveryCompany,
+            String productStatus, Integer productWishCount){
+
+        this.category = category;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productTotalStock = productTotalStock;
+        this.productMainImgSrc = productMainImgSrc;
+        this.productDetail = productDetail;
+        this.productDetailShort = productDetailShort;
+        this.productOriginPlace = productOriginPlace;
+        this.productDeliveryCompany = productDeliveryCompany;
+        this.productStatus = productStatus;
+        this.productWishCount = productWishCount;
+
+        return productId;
+    }
 }
