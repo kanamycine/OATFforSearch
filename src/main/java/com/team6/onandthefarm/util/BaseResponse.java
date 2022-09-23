@@ -3,12 +3,15 @@ package com.team6.onandthefarm.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 
 @Getter
 @AllArgsConstructor
+@Builder
+
 public class BaseResponse<T> {
 
     @ApiModelProperty(value = "HttpStatus Code", example = "OK")
