@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.team6.onandthefarm.dto.product.ProductDeleteDto;
 import com.team6.onandthefarm.dto.product.ProductFormDto;
 import com.team6.onandthefarm.dto.product.ProductUpdateFormDto;
 import com.team6.onandthefarm.service.product.ProductService;
+import com.team6.onandthefarm.vo.product.ProductDeleteRequest;
 import com.team6.onandthefarm.vo.product.ProductFormRequest;
 import com.team6.onandthefarm.vo.product.ProductUpdateFormRequest;
 
@@ -48,6 +50,17 @@ public class ProductController {
 
 		Long productId = productService.updateProduct(productUpdateFormDto);
 
-		return new ResponseEntity(HttpStatus.CREATED);
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+	@PutMapping(value="delete")
+	public ResponseEntity productDelete(@RequestBody ProductDeleteRequest productDeleteRequest) throws Exception{
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ProductDeleteDto productDeleteDto = modelMapper.map(productDeleteRequest, ProductDeleteDto.class);
+
+		Long productId = productService.deleteProduct(productDeleteDto);
+		return new ResponseEntity(HttpStatus.OK);
 	}
 }

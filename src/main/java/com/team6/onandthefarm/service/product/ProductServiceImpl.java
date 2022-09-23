@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.team6.onandthefarm.dto.product.ProductDeleteDto;
 import com.team6.onandthefarm.dto.product.ProductFormDto;
 import com.team6.onandthefarm.dto.product.ProductUpdateFormDto;
 import com.team6.onandthefarm.entity.category.Category;
@@ -76,5 +77,16 @@ public class ProductServiceImpl implements ProductService {
 		productRepository.save(product.get());
 
 		return productId;
+	}
+
+	public Long deleteProduct(ProductDeleteDto productDeleteDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		Optional<Product> product = productRepository.findById(productDeleteDto.getProductId());
+		product.get().setProductStatus("deleted");
+		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
+
+		return product.get().getProductId();
 	}
 }
