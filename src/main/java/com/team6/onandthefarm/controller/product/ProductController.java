@@ -89,19 +89,59 @@ public class ProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value="list/{categoryId}")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductListByCategoryNewest(@PathVariable("categoryId") Long categoryId){
 
-		List<Product> productList = productService.getProductListByCategoryNewest(categoryId);
+	@GetMapping(value="list/orderby/highprice")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(){
+
+		List<Product> productList = productService.getProductsListByHighPrice();
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
-				.message("product register completed")
+				.message("getting products by high price completed")
 				.data(productList)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value="list/orderby/lowprice")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductListByLowPrice(){
 
+		List<Product> productList = productService.getProductsListByLowPrice();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting products by high price completed")
+				.data(productList)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+	@GetMapping(value="list/orderby/soldcount")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductsListBySoldCount() {
+		List<Product> productList = productService.getProductsBySoldCount();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting products by high price completed")
+				.data(productList)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+
+	}
+
+	@GetMapping(value="list/orderby/category/{categoryId}")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductsListByCategoryNewest(@PathVariable("categoryId") Long categoryId){
+
+		List<Product> productList = productService.getProductListByCategoryNewest(categoryId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting Newest products by category  completed")
+				.data(productList)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
 }

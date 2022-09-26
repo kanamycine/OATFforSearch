@@ -93,7 +93,23 @@ public class ProductServiceImpl implements ProductService {
 		return product.get().getProductId();
 	}
 
-	public List<Product> getProductListByCategoryNewest(Long categoryId){
+	public List<Product> getProductsListByHighPrice() {
+		List<Product> products = productRepository.findProductListByHighPrice();
+		return products;
+	}
+	public List<Product> getProductsListByLowPrice() {
+		List<Product> products = productRepository.findProductListByLowPrice();
+		return products;
+	}
+
+	@Override
+	public List<Product> getProductsBySoldCount() {
+		List<Product> products = productRepository.findProductBySoldCount();
+		return products;
+	}
+
+	@Override
+	public List<Product> getProductListByCategoryNewest(Long categoryId) {
 		List<Product> products = productRepository.findProductsByCategoryNewest(categoryId);
 		return products;
 	}
