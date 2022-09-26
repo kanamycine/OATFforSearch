@@ -34,4 +34,6 @@ public class OrderProduct {
 
     private Long sellerId;
 
+    private String orderProductStatus;
+
 }

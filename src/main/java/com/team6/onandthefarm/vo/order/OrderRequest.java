@@ -13,7 +13,8 @@ import java.util.List;
  *  주문 생성을 위해 사용되는 객체
  */
 public class OrderRequest {
-    private List<OrderFindOneResponse> productList;
+    private List<OrderProductRequest> productList;
+    private Long userId;
     private String orderRecipientName;
     private String orderAddress;
     private String orderPhone;

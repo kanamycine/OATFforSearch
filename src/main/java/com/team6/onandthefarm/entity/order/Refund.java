@@ -21,7 +21,9 @@ public class Refund {
     @JoinColumn(name = "ordersId")
     private Orders orders;
 
-    private Long refundContent;
+    private String refundContent;
 
     private String refundImage;
+
+    private Long orderProductId;
 }

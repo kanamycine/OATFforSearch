@@ -4,6 +4,7 @@ import com.team6.onandthefarm.vo.order.OrderFindOneResponse;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -16,5 +17,6 @@ public class OrderDto {
     private String orderAddress;
     private String orderPhone;
     private String orderRequest;
-    private List<OrderFindOneResponse> productList;
+    private List<OrderProductDto> productList;
+    private Map<Long,Long> prodSeller;
 }

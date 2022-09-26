@@ -1,7 +1,9 @@
 package com.team6.onandthefarm.controller.order;
 
-import com.team6.onandthefarm.dto.order.OrderDto;
+import com.team6.onandthefarm.dto.order.*;
 import com.team6.onandthefarm.service.order.OrderService;
+import com.team6.onandthefarm.service.order.OrderServiceImp;
+import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.order.*;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
@@ -11,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -21,8 +21,8 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    public OrderController(OrderServiceImp orderServiceImp) {
+        this.orderService = orderServiceImp;
     }
 
     @GetMapping("/{product-no}")
@@ -46,42 +46,187 @@ public class OrderController {
 
     @PostMapping()
     @ApiOperation(value = "주문 생성")
-    public ResponseEntity createOrder(@RequestBody OrderRequest orderRequest){
-        HashSet<Long> sellerIds = new HashSet<>();
-        for(OrderFindOneResponse order : orderRequest.getProductList()){
-            sellerIds.add(order.getSellerId());
+    public ResponseEntity<BaseResponse> createOrder(@RequestBody OrderRequest orderRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderDto orderDto = OrderDto.builder()
+                .orderRecipientName(orderRequest.getOrderRecipientName())
+                .orderRequest(orderRequest.getOrderRequest())
+                .orderPhone(orderRequest.getOrderPhone())
+                .orderAddress(orderRequest.getOrderAddress())
+                .productList(new ArrayList<>())
+                .build();
+        // productId->sellerId를 찾기
+        /*
+            key : productId
+            value : sellerId
+            prodSeller는 담을 공간
+         */
+        Map<Long,Long> prodSeller = new HashMap<>();
+        int index = 0;
+        for(OrderProductRequest order : orderRequest.getProductList()){
+            if(index!=0){
+                OrderProductDto orderProductDto = OrderProductDto.builder()
+                        .productQty(100)
+                        .productId(order.getProductId())
+                        .productImg("asddsads")
+                        .productName("sdaksaads")
+                        .productPrice(2000)
+                        .sellerId(1l)
+                        .build();
+                orderDto.getProductList().add(orderProductDto);
+                prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
+            }
+            else{
+                /*
+                product서비스에서 productId로 product를 가져오고
+             */
+                OrderProductDto orderProductDto = OrderProductDto.builder()
+                        .productQty(100)
+                        .productId(order.getProductId())
+                        .productImg("asddsads")
+                        .productName("sdaksaads")
+                        .productPrice(2000)
+                        .sellerId(2l)
+                        .build();
+                orderDto.getProductList().add(orderProductDto);
+                prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
+            }
+            index++;
         }
-        for(Long sellerId : sellerIds){
-            OrderDto orderDto = OrderDto.builder()
-                    .sellerId(sellerId)
-                    .orderAddress(orderRequest.getOrderAddress())
-                    .orderPhone(orderRequest.getOrderPhone())
-                    .orderRequest(orderRequest.getOrderRequest())
-                    .orderRecipientName(orderRequest.getOrderRecipientName())
-                    .productList(orderRequest.getProductList())
-                    .build();
-            orderService.createOrder(orderDto);
-        }
-        return new ResponseEntity(HttpStatus.OK);
+        orderDto.setProdSeller(prodSeller);
+        orderService.createOrder(orderDto);
+
+        BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("OK").build();
+
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("/list")
+    /**
+     * 셀러의 경우 주문당 여러 제품을 한번에 보여주어야 함
+     * orderId : ListProduct정보
+     * @param orderSellerRequest
+     * @return
+     */
+    @PostMapping("/seller/list")
     @ApiOperation(value = "주문 내역 조회")
-    public ResponseEntity<List<OrderSellerResponse>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
-        return new ResponseEntity(orderService.findSellerOrders(orderSellerRequest),HttpStatus.OK);
+    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
+        List<OrderSellerResponseList> responses  = orderService.findSellerOrders(orderSellerFindDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responses)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
     @GetMapping("/list/{order-no}")
     @ApiOperation(value = "주문 상세 조회")
-    public ResponseEntity<OrderSellerDetailRequest> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
-        OrderSellerDetailRequest orderSellerDetailRequest = orderService.findSellerOrderDetail(orderSerial);
-        return new ResponseEntity(orderSellerDetailRequest,HttpStatus.OK);
+    public ResponseEntity<BaseResponse<OrderSellerDetailResponse>> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
+        OrderSellerDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSerial);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(detailResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("/payment/{order-no}")
-    @ApiOperation(value = "결제 생성")
-    public ResponseEntity createPayment(@PathVariable(name = "order-no") String orderSerial){
-        orderService.createPayment(orderSerial);
-        return new ResponseEntity(HttpStatus.CREATED);
+    @PostMapping("/claim/cancel")
+    @ApiOperation(value = "취소 생성" )
+    public ResponseEntity<BaseResponse<Boolean>> createCancel(@RequestBody RefundRequest refundRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
+        boolean result = orderService.createCancel(refundDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(Boolean.valueOf(result))
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
+
+    @PostMapping("/claim/refund")
+    @ApiOperation(value = "반품 생성" )
+    public ResponseEntity<BaseResponse<Boolean>> createRefund(@RequestBody RefundRequest refundRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
+        boolean result = orderService.createRefund(refundDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(Boolean.valueOf(result))
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/claim/list")
+    @ApiOperation(value = "취소/반품 내역 조회")
+    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(@RequestBody OrderSellerRequest orderSellerRequest){
+        List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
+        BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responseList)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/claim/list/{orderProduct-no}")
+    @ApiOperation(value = "취소/반품 상세 조회")
+    public ResponseEntity<BaseResponse<RefundDetailResponse>> findSellerClaimDetail(@PathVariable(name = "orderProduct-no") String orderProductId){
+        RefundDetailResponse refundDetailResponse = orderService.findRefundDetail(Long.valueOf(orderProductId));
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(refundDetailResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/claim/list/{orderProduct-no}")
+    @ApiOperation(value = "반품 확정")
+    public ResponseEntity<BaseResponse> claimConform(@PathVariable(name = "orderProduct-no") String orderProductId){
+        Boolean result = orderService.conformRefund(Long.valueOf(orderProductId));
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result.booleanValue())
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery")
+    @ApiOperation(value = "배송 시작 처리")
+    public ResponseEntity<BaseResponse> deliveryStart(@RequestBody OrderDeliveryRequest orderDeliveryRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderDeliveryDto orderDeliveryDto = modelMapper.map(orderDeliveryRequest, OrderDeliveryDto.class);
+        Boolean result = orderService.deliveryStart(orderDeliveryDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result.booleanValue())
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/delivery/{order-no}")
+    @ApiOperation(value = "배송 완료 처리")
+    public ResponseEntity<BaseResponse> deliveryConform(@PathVariable(name = "order-no") String orderSerial){
+        Boolean result = orderService.deliveryConform(orderSerial);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result.booleanValue())
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+
 }

@@ -10,10 +10,12 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class SellerService {
 
     private SellerRepository sellerRepository;
@@ -40,7 +42,6 @@ public class SellerService {
         sellerEntity.get().setSellerShopName(sellerDto.getShopName());
         sellerEntity.get().setSellerPassword(sellerDto.getPassword());
         sellerEntity.get().setSellerPhone(sellerDto.getPhone());
-        sellerRepository.save(sellerEntity.get());
         return true;
     }
 
@@ -64,7 +65,6 @@ public class SellerService {
     public void updatePassword(SellerDto sellerDto){
         Seller seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
         seller.setSellerPassword(sellerDto.getPassword());
-        sellerRepository.save(seller);
     }
 
     /**

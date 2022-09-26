@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends CrudRepository<Orders,Long> {
-    List<Orders> findByOrdersSellerIdAndOrdersDateBetween(Long sellerId,String startDate,String endDate);
+    List<Orders> findByOrdersStatusAndOrdersDateBetween(String orderStatus,String startDate,String endDate);
 
     Orders findByOrdersSerial(String orderSerial);
+
+    List<Orders> findByOrdersSellerIdAndOrdersStatusAndOrdersDateBetween(Long sellerId,String ordersStatus,String startDate,String endDate);
 }
