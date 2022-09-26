@@ -15,4 +15,5 @@ public interface ProductService {
 	Long saveProduct(ProductFormDto productFormDto);
 	Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
 	Long deleteProduct(ProductDeleteDto productDeleteDto);
+	List<Product> getProductListByCategoryNewest(Long CategoryId);
 }

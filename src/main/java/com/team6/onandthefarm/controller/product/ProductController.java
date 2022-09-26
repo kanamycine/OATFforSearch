@@ -92,7 +92,7 @@ public class ProductController {
 	@GetMapping(value="list/{categoryId}")
 	public ResponseEntity<BaseResponse<List<Product>>> getProductListByCategoryNewest(@PathVariable("categoryId") Long categoryId){
 
-		List<Product> productList = productService.getProductListByCategory(categoryId);
+		List<Product> productList = productService.getProductListByCategoryNewest(categoryId);
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

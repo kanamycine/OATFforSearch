@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.product;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -35,7 +36,8 @@ public class ProductServiceImpl implements ProductService {
 		this.env = env;
 	}
 
-	public Long saveProduct(ProductFormDto productFormDto){
+	public Long
+	saveProduct(ProductFormDto productFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -88,5 +90,10 @@ public class ProductServiceImpl implements ProductService {
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return product.get().getProductId();
+	}
+
+	public List<Product> getProductListByCategoryNewest(Long categoryId){
+		List<Product> products = productRepository.findProductsByCategoryNewest(categoryId);
+		return products;
 	}
 }

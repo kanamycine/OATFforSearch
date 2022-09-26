@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Product {
+public class Product{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
