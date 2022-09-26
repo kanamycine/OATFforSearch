@@ -24,4 +24,14 @@ public class ProductImg {
     private Product product;
 
     private String productImgSrc;
+
+    @Builder
+    public ProductImg(String productImgSrc, Product product){
+        this.productImgSrc = productImgSrc;
+        this.product = product;
+    }
+
+    public void updateProductImg(String productImgSrc) {
+        this.productImgSrc = productImgSrc;
+    }
 }
