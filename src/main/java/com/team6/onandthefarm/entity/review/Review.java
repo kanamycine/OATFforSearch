@@ -42,6 +42,8 @@ public class Review {
 
     private Integer reviewRate;
 
+    private String reviewStatus;
+
 
     public Long updateReview(String reviewContent, Integer reviewRate){
         this.reviewContent = reviewContent;

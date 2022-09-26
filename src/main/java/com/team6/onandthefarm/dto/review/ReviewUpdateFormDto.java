@@ -16,4 +16,5 @@ public class ReviewUpdateFormDto {
 	private String reviewModifiedAt;
 	private Integer reviewLikeCount;
 	private Integer reviewRate;
+	private String reviewStatus;
 }

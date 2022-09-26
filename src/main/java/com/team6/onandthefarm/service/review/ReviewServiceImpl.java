@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.review;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -9,18 +10,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.team6.onandthefarm.dto.review.ReviewDeleteDto;
 import com.team6.onandthefarm.dto.review.ReviewFormDto;
 import com.team6.onandthefarm.dto.review.ReviewUpdateFormDto;
-import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.review.Review;
-import com.team6.onandthefarm.entity.review.ReviewLike;
-import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.review.ReviewFormRequest;
 
 @Service
 @Transactional
@@ -54,6 +52,7 @@ public class ReviewServiceImpl implements ReviewService{
 		review.setSeller(product.get().getSeller());
 		review.setProduct(product.get());
 		review.setReviewCreatedAt((dateUtils.transDate(env.getProperty("dateutils.format"))));
+		review.setReviewStatus("created");
 
 		return reviewRepository.save(review).getReviewId();
 	}
@@ -68,5 +67,22 @@ public class ReviewServiceImpl implements ReviewService{
 		review.get().setReviewModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return reviewId;
+	}
+
+	public Long deleteReview(ReviewDeleteDto reviewDeleteDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		Optional<Review> review = reviewRepository.findById(reviewDeleteDto.getReviewId());
+		//product.get().setProductStatus("deleted");
+		review.get().setReviewStatus("deleted");
+		review.get().setReviewModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+
+		return review.get().getReviewId();
+	}
+
+	public List<Review> getReviewListByLikeCount(Long productId){
+		List<Review> reviews = reviewRepository.findReviewListByLikeCount(productId);
+		return reviews;
 	}
 }
