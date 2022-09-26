@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 @Builder
-
 public class BaseResponse<T> {
 
     @ApiModelProperty(value = "HttpStatus Code", example = "OK")
