@@ -74,7 +74,8 @@ public class ProductServiceImpl implements ProductService {
 				productUpdateFormDto.getProductDetailShort(),
 				productUpdateFormDto.getProductDeliveryCompany(),
 				productUpdateFormDto.getProductStatus(),
-				productUpdateFormDto.getProductWishCount());
+				productUpdateFormDto.getProductWishCount(),
+				productUpdateFormDto.getProductSoldCount());
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 		productRepository.save(product.get());
 

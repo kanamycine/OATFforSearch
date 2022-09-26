@@ -49,5 +49,7 @@ public class ProductFormDto {
 
 	private Integer productWishCount;
 
+	private Integer productSoldCount;
+
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
 }

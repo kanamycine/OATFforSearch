@@ -29,5 +29,6 @@ public class ProductUpdateFormRequest {
 	private String productStatus;
 	private String productDetailShort;
 	private Integer productWishCount;
+	private Integer productSoldCount;
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
 }
