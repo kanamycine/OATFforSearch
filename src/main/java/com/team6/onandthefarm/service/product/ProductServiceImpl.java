@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -121,25 +122,35 @@ public class ProductServiceImpl implements ProductService {
 		return product.get().getProductId();
 	}
 
+	public List<Product> getAllProductListOrderByNewest(Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+		return productPagingRepository.findAllProductOrderByNewest(pageRequest);
+	}
+
 	public List<Product> getProductsListByHighPrice(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 		return productPagingRepository.findProductListByHighPrice(pageRequest);
 	}
 
-	public List<Product> getProductsListByLowPrice() {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productPrice").ascending());
+	public List<Product> getProductsListByLowPrice(Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 		return productPagingRepository.findProductListByLowPrice(pageRequest);
 	}
 
 	@Override
-	public List<Product> getProductsBySoldCount() {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productSoldCount").descending());
+	public List<Product> getProductsBySoldCount(Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 		return productPagingRepository.findProductBySoldCount(pageRequest);
 	}
 
+	public List<Product> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
+	}
+
 	@Override
-	public List<Product> getProductListByCategoryNewest(Long categoryId) {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productRegisterDate").descending());
+	public List<Product> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
 		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
 	}
 
