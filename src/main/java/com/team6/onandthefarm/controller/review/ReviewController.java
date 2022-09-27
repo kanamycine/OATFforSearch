@@ -2,6 +2,7 @@ package com.team6.onandthefarm.controller.review;
 
 import java.util.List;
 
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
@@ -91,7 +92,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping("list/orderbylikecount/{productId}")
+	@GetMapping("list/orderby/likecount/{productId}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId){
 
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId);
@@ -99,7 +100,21 @@ public class ReviewController {
 		//필요 부분만 보내기 위해 (셀러, 프로덕트 짜르기)
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
-				.message("finding reviews completed")
+				.message("get reviews order by likecount completed")
+				.data(reviews)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping("list/orderby/newest")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(){
+
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("get reviews order by registerdate completed")
 				.data(reviews)
 				.build();
 

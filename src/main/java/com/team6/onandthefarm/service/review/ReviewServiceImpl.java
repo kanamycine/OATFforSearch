@@ -106,4 +106,22 @@ public class ReviewServiceImpl implements ReviewService{
 		}
 		return reviewResponses;
 	}
+
+	public List<ReviewSelectionResponse> getReviewListOrderByNewest() {
+		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
+		List<Review> reviews = reviewRepository.findReviewListByNewest();
+		for (Review review : reviews) {
+			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse
+					.builder()
+					.reviewId(review.getReviewId())
+					.reviewContent(review.getReviewContent())
+					.reviewCreatedAt(review.getReviewCreatedAt())
+					.reviewModifiedAt(review.getReviewModifiedAt())
+					.reviewLikeCount(review.getReviewLikeCount())
+					.reviewRate(review.getReviewRate())
+					.build();
+			reviewResponse.add(reviewSelectionResponse);
+		}
+		return reviewResponse;
+	}
 }
