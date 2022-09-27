@@ -2,10 +2,15 @@ package com.team6.onandthefarm.controller.seller;
 
 import com.team6.onandthefarm.dto.seller.EmailDto;
 import com.team6.onandthefarm.dto.seller.SellerDto;
+import com.team6.onandthefarm.dto.seller.SellerQnaDto;
+import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.service.seller.MailService;
 import com.team6.onandthefarm.service.seller.SellerService;
+import com.team6.onandthefarm.service.seller.SellerServiceImp;
+import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.seller.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -16,11 +21,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/seller")
+@Api(value = "셀러",description = "QNA status\n" +
+        "     * qna0 : 답변 대기\n" +
+        "     * qna1 : 답변 완료\n" +
+        "     * qna2 : qna 삭제")
 public class SellerController {
 
     private MailService mailService;
@@ -33,7 +43,7 @@ public class SellerController {
 
 
     @Autowired
-    public SellerController(SellerService sellerService, MailService mailService, DateUtils dateUtils,Environment env) {
+    public SellerController(SellerService sellerService, MailService mailService, DateUtils dateUtils, Environment env) {
         this.sellerService = sellerService;
         this.mailService=mailService;
         this.dateUtils=dateUtils;
@@ -100,6 +110,33 @@ public class SellerController {
     public void signUpConfirm(@RequestParam Map<String, String> map){
         boolean result = mailService.checkAuthKey(map);
         log.info("checkout result : "+result);
+    }
+
+    @GetMapping("/QnA/{seller-no}")
+    @ApiOperation(value = "셀러의 전체 질의 조회")
+    public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (@RequestParam(value = "seller-no") String sellerId){
+        List<SellerProductQnaResponse> productQnas = sellerService.findSellerQnA(Long.valueOf(sellerId));
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(productQnas)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/QnA")
+    @ApiOperation(value = "셀러의 질의 처리")
+    public ResponseEntity<BaseResponse> createSellerQnaAnswer (@RequestBody SellerProductQnaAnswerRequest request){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        SellerQnaDto sellerQnaDto = modelMapper.map(request, SellerQnaDto.class);
+        Boolean result = sellerService.createQnaAnswer(sellerQnaDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
 }

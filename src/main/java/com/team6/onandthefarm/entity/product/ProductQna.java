@@ -38,7 +38,6 @@ public class ProductQna {
 
     private String productQnaModifiedAt;
 
-    private Boolean productQnaStatus;
+    private String productQnaStatus;
 
-    private String productQnaCategory;
 }

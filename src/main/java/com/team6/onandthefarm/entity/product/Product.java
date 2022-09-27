@@ -14,6 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Product{
 
     @Id
