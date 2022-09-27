@@ -5,10 +5,12 @@ import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.order.Payment;
 import com.team6.onandthefarm.entity.order.Refund;
+import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
 import com.team6.onandthefarm.repository.order.PaymentRepository;
 import com.team6.onandthefarm.repository.order.RefundRepository;
+import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.order.*;
 import org.modelmapper.ModelMapper;
@@ -44,6 +46,8 @@ public class OrderServiceImp implements OrderService{
 
     private RefundRepository refundRepository;
 
+    private ProductRepository productRepository;
+
     private DateUtils dateUtils;
 
     private Environment env;
@@ -54,29 +58,39 @@ public class OrderServiceImp implements OrderService{
                            DateUtils dateUtils,
                            Environment env,
                            PaymentRepository paymentRepository,
-                           RefundRepository refundRepository) {
+                           RefundRepository refundRepository,
+                           ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository=orderProductRepository;
         this.dateUtils=dateUtils;
         this.env=env;
         this.paymentRepository = paymentRepository;
         this.refundRepository = refundRepository;
+        this.productRepository=productRepository;
     }
 
+    /**
+     * 단건 주문서 조회시 사용되는 메서드
+     * @param productId
+     * @return
+     */
     public OrderFindOneResponse findOneByProductId(Long productId){
-        /**
-         * productrepository로 상품 정보 가져오기
-         */
+        Optional<Product> product = productRepository.findById(productId);
         OrderFindOneResponse response = OrderFindOneResponse.builder()
-                .productId(Long.valueOf(productId))
-                .productImg("sdasdaads")
-                .productName("sadsadsads")
-                .productPrice(10000)
-                .sellerId(Long.valueOf(1))
-                .productQty(10)
+                .productId(productId)
+                .productImg(product.get().getProductMainImgSrc())
+                .productName(product.get().getProductName())
+                .productPrice(product.get().getProductPrice())
+                .sellerId(1l) // product가 sellerId를 매핑하지 못함(아직 구현 덜됨)
                 .build();
         return response;
     }
+
+    /**
+     * 다건 주문서 조회 시 사용되는 메서드
+     * @param userId
+     * @return
+     */
 
     public List<OrderFindOneResponse> findCartByUserId(Long userId){
         /**
@@ -105,10 +119,26 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
+     * 재고 수량 확인하는 메서드
+     * @param orderDto
+     * @return true : 주문 가능 / false : 주문 불가능
+     */
+    public boolean checkStock(OrderDto orderDto){
+        List<OrderProductDto> orderProducts = orderDto.getProductList();
+        for(OrderProductDto orderProduct : orderProducts){
+            Optional<Product> product = productRepository.findById(orderProduct.getProductId());
+            if(product.get().getProductTotalStock()>=orderProduct.getProductQty()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 주문 생성 메서드
      * @param orderDto
      */
-    public void createOrder(OrderDto orderDto){
+    public Boolean createOrder(OrderDto orderDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Orders orders = Orders.builder()
@@ -120,12 +150,20 @@ public class OrderServiceImp implements OrderService{
                 .ordersDate(dateUtils.transDate(env.getProperty("dateutils.format")))
                 .ordersStatus("os0")
                 .build(); // 주문 엔티티 생성
+        for(OrderProductDto orderProductDto : orderDto.getProductList()){
+            Optional<Product> product = productRepository.findById(orderProductDto.getProductId());
+            orderProductDto.setProductName(product.get().getProductName());
+            orderProductDto.setProductPrice(product.get().getProductPrice());
+            orderProductDto.setSellerId(1l);  // product가 sellerId를 매핑하지 못함(아직 구현 덜됨)
+            orderProductDto.setProductImg(product.get().getProductMainImgSrc());
+        }
         Orders ordersEntity = orderRepository.save(orders); // 주문 생성
+        boolean stockCheck = checkStock(orderDto);
+        if(!stockCheck){
+            return Boolean.FALSE;
+        }
         int totalPrice = 0;
         for(OrderProductDto order : orderDto.getProductList()){
-            /**
-             * 주문 시 재고 확인 해주는 코드 작성
-             */
             totalPrice+=order.getProductPrice()* order.getProductQty();
             OrderProduct orderProduct = OrderProduct.builder()
                     .orderProductMainImg(order.getProductImg())
@@ -134,16 +172,16 @@ public class OrderServiceImp implements OrderService{
                     .orderProductName(order.getProductName())
                     .orders(ordersEntity)
                     .productId(order.getProductId())
-                    .sellerId(orderDto.getProdSeller().get(order.getProductId()))
+                    .sellerId(order.getSellerId())
                     .orderProductStatus(orders.getOrdersStatus())
                     .build();
             orderProductRepository.save(orderProduct); // 각각의 주문 상품 생성
-            /**
-             * 주문 시 재고 줄이는 코드 작성
-             */
+            Optional<Product> product = productRepository.findById(order.getProductId());
+            product.get().setProductTotalStock(product.get().getProductTotalStock()-order.getProductQty());
         }
         orderRepository.findById(ordersEntity.getOrdersId()).get().setOrdersTotalPrice(totalPrice); // 총 주문액 set
         createPayment(ordersEntity.getOrdersSerial()); // 결제 생성
+        return Boolean.TRUE;
     }
 
     /**
@@ -373,6 +411,11 @@ public class OrderServiceImp implements OrderService{
         return response;
     }
 
+    /**
+     * 반품 처리해주는 메서드
+     * @param orderProductId
+     * @return
+     */
     public Boolean conformRefund(Long orderProductId){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
         orderProduct.get().setOrderProductStatus("os3"); // 반품 확정
@@ -382,6 +425,11 @@ public class OrderServiceImp implements OrderService{
         return Boolean.FALSE;
     }
 
+    /**
+     * 배송 시작을 해주는 메서드
+     * @param orderDeliveryDto
+     * @return
+     */
     public Boolean deliveryStart(OrderDeliveryDto orderDeliveryDto){
         Orders orders = orderRepository.findByOrdersSerial(orderDeliveryDto.getOrderSerial());
         orders.setOrdersDeliveryCompany(orderDeliveryDto.getOrderDeliveryCompany());
@@ -396,6 +444,11 @@ public class OrderServiceImp implements OrderService{
         return Boolean.TRUE;
     }
 
+    /**
+     * 배송을 완료처리해주는 메서드
+     * @param orderSerial
+     * @return
+     */
     public Boolean deliveryConform(String orderSerial){
         Orders orders = orderRepository.findByOrdersSerial(orderSerial);
         orders.setOrdersDate(dateUtils.transDate(env.getProperty("dateutils.format")));

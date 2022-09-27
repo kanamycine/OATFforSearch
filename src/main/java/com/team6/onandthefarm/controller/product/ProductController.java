@@ -1,7 +1,11 @@
 package com.team6.onandthefarm.controller.product;
 
 import java.util.List;
+import java.util.Map;
 
+import com.team6.onandthefarm.entity.product.ProductQna;
+import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
@@ -140,6 +144,21 @@ public class ProductController {
 				.httpStatus(HttpStatus.OK)
 				.message("getting Newest products by category  completed")
 				.data(productList)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping("/QnA/{product-no}")
+	@ApiOperation(value = "상품에 대한 질의 조회")
+	public ResponseEntity<BaseResponse<Map<ProductQna, ProductQnaAnswer>>> findProductQnAList(@PathVariable("product-no") Long productId){
+
+		Map<ProductQna, ProductQnaAnswer> result = productService.findProductQnAList(productId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("OK")
+				.data(result)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);

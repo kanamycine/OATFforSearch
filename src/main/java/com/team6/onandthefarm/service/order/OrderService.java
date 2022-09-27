@@ -11,7 +11,7 @@ import java.util.List;
 public interface OrderService {
     public OrderFindOneResponse findOneByProductId(Long productId);
     public List<OrderFindOneResponse> findCartByUserId(Long userId);
-    public void createOrder(OrderDto orderDto);
+    public Boolean createOrder(OrderDto orderDto);
     public List<OrderSellerResponseList> findSellerOrders(OrderSellerFindDto orderSellerFindDto);
     public OrderSellerDetailResponse findSellerOrderDetail(String orderSerial);
     public void createPayment(String orderSerial);

@@ -5,6 +5,7 @@ import com.team6.onandthefarm.service.order.OrderService;
 import com.team6.onandthefarm.service.order.OrderServiceImp;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.order.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -17,6 +18,13 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/orders")
+@Api(value = "주문",description = "주문 상태\n" +
+        " * os0 : 주문완료\n" +
+        " * os1 : 주문취소\n" +
+        " * os2 : 반품신청\n" +
+        " * os3 : 반품확정\n" +
+        " * os4 : 배송 중\n" +
+        " * os5 : 배송 완료")
 public class OrderController {
     private OrderService orderService;
 
@@ -27,13 +35,13 @@ public class OrderController {
 
     @GetMapping("/{product-no}")
     @ApiOperation(value = "단건 주문서 조회")
-    public ResponseEntity<OrderFindOneResponse> findOneOrder(@PathVariable(name = "product-no") String productId){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        /* Product product = orderService.findOneByProductId(Long.valueOf(productId));
-        OrderFindOneResponse response = modelMapper.map(product,OrderFindOneResponse.class);
-        */
-        OrderFindOneResponse response = orderService.findOneByProductId(Long.valueOf(productId));
+    public ResponseEntity<BaseResponse<OrderFindOneResponse>> findOneOrder(@PathVariable(name = "product-no") String productId){
+        OrderFindOneResponse result = orderService.findOneByProductId(Long.valueOf(productId));
+        BaseResponse<OrderFindOneResponse> response = BaseResponse.<OrderFindOneResponse>builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result)
+                .build();
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -63,36 +71,13 @@ public class OrderController {
             prodSeller는 담을 공간
          */
         Map<Long,Long> prodSeller = new HashMap<>();
-        int index = 0;
         for(OrderProductRequest order : orderRequest.getProductList()){
-            if(index!=0){
-                OrderProductDto orderProductDto = OrderProductDto.builder()
-                        .productQty(100)
-                        .productId(order.getProductId())
-                        .productImg("asddsads")
-                        .productName("sdaksaads")
-                        .productPrice(2000)
-                        .sellerId(1l)
-                        .build();
-                orderDto.getProductList().add(orderProductDto);
-                prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
-            }
-            else{
-                /*
-                product서비스에서 productId로 product를 가져오고
-             */
-                OrderProductDto orderProductDto = OrderProductDto.builder()
-                        .productQty(100)
-                        .productId(order.getProductId())
-                        .productImg("asddsads")
-                        .productName("sdaksaads")
-                        .productPrice(2000)
-                        .sellerId(2l)
-                        .build();
-                orderDto.getProductList().add(orderProductDto);
-                prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
-            }
-            index++;
+            OrderProductDto orderProductDto = OrderProductDto.builder()
+                    .productQty(order.getProductQty())
+                    .productId(order.getProductId())
+                    .build();
+            orderDto.getProductList().add(orderProductDto);
+            prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
         }
         orderDto.setProdSeller(prodSeller);
         orderService.createOrder(orderDto);

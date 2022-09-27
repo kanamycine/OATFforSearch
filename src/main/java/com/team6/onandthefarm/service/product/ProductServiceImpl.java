@@ -1,8 +1,14 @@
 package com.team6.onandthefarm.service.product;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.team6.onandthefarm.entity.product.ProductQna;
+import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
+import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +31,24 @@ public class ProductServiceImpl implements ProductService {
 
 	private ProductRepository productRepository;
 	private CategoryRepository categoryRepository;
+	private ProductQnaRepository productQnaRepository;
+	private ProductQnaAnswerRepository productQnaAnswerRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
 	@Autowired
-	public ProductServiceImpl(ProductRepository productRepository,CategoryRepository categoryRepository, DateUtils dateUtils, Environment env) {
+	public ProductServiceImpl(ProductRepository productRepository,
+							  CategoryRepository categoryRepository,
+							  DateUtils dateUtils,
+							  Environment env,
+							  ProductQnaRepository productQnaRepository,
+							  ProductQnaAnswerRepository productQnaAnswerRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
+		this.productQnaRepository=productQnaRepository;
+		this.productQnaAnswerRepository=productQnaAnswerRepository;
 	}
 
 	public Long
@@ -112,5 +127,20 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getProductListByCategoryNewest(Long categoryId) {
 		List<Product> products = productRepository.findProductsByCategoryNewest(categoryId);
 		return products;
+	}
+
+	public Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId){
+		Optional<Product> product = productRepository.findById(productId);
+		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
+		// QNA : QNA답변
+		Map<ProductQna, ProductQnaAnswer> matching = new HashMap<>();
+		for(ProductQna productQna : productQnas){
+			if(productQna.getProductQnaStatus()=="qna0"||productQna.getProductQnaStatus()=="qna2"){
+				matching.put(productQna,null);
+			}
+			matching.put(productQna,productQnaAnswerRepository.findByProductQna(productQna));
+		}
+
+		return matching;
 	}
 }
