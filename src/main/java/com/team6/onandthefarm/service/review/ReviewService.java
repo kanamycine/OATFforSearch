@@ -13,5 +13,5 @@ public interface ReviewService {
 	Long updateReview(ReviewUpdateFormDto reviewUpdateFormDto);
 	Long deleteReview(ReviewDeleteDto reviewDeleteDto);
 	List<ReviewSelectionResponse> getReviewListByLikeCount(Long productId, Integer pageNumber);
-	List<ReviewSelectionResponse> getReviewListOrderByNewest();
+	List<ReviewSelectionResponse> getReviewListOrderByNewest(Long productId, Integer pageNumber);
 }

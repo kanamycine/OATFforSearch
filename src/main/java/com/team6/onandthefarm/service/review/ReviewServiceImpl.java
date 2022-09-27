@@ -96,7 +96,7 @@ public class ReviewServiceImpl implements ReviewService{
 		// Product product = productRepository.findById(productId).get();
 		// List<Review> reviews = reviewRepository.findReviewsByProductOrderByReviewLikeCountDesc(product);
 		List<ReviewSelectionResponse> reviewResponses = new ArrayList<>();
-		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewCreatedAt").descending());
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewLikeCount").descending());
 		List<Review> reviews = reviewPagingRepository.findReviewListByLikeCount(pageRequest, productId);
 		for (Review review : reviews) {
 			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse
@@ -113,9 +113,10 @@ public class ReviewServiceImpl implements ReviewService{
 		return reviewResponses;
 	}
 
-	public List<ReviewSelectionResponse> getReviewListOrderByNewest() {
+	public List<ReviewSelectionResponse> getReviewListOrderByNewest(Long productId, Integer pageNumber) {
 		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
-		List<Review> reviews = reviewRepository.findReviewListByNewest();
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewCreatedAt").descending());
+		List<Review> reviews = reviewPagingRepository.findReviewListByNewest(pageRequest, productId);
 		for (Review review : reviews) {
 			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse
 					.builder()

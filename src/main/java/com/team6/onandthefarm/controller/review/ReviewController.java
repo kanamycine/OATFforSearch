@@ -108,10 +108,10 @@ public class ReviewController {
 	}
 
 
-	@GetMapping("list/orderby/newest")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(){
+	@GetMapping("list/orderby/newest/{productId}/{page-no}")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 
-		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest();
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest(productId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
