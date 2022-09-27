@@ -7,12 +7,15 @@ import java.util.Optional;
 
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.repository.product.ProductPagingRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
 	private CategoryRepository categoryRepository;
 	private ProductQnaRepository productQnaRepository;
 	private ProductQnaAnswerRepository productQnaAnswerRepository;
+	private ProductPagingRepository productPagingRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -42,9 +46,11 @@ public class ProductServiceImpl implements ProductService {
 							  DateUtils dateUtils,
 							  Environment env,
 							  ProductQnaRepository productQnaRepository,
-							  ProductQnaAnswerRepository productQnaAnswerRepository) {
+							  ProductQnaAnswerRepository productQnaAnswerRepository,
+							  ProductPagingRepository productPagingRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
+		this.productPagingRepository = productPagingRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
 		this.productQnaRepository=productQnaRepository;
@@ -108,9 +114,10 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	public List<Product> getProductsListByHighPrice() {
-		List<Product> products = productRepository.findProductListByHighPrice();
-		return products;
+		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productPrice").descending());
+		return productPagingRepository.findAll(pageRequest).getContent();
 	}
+
 	public List<Product> getProductsListByLowPrice() {
 		List<Product> products = productRepository.findProductListByLowPrice();
 		return products;
