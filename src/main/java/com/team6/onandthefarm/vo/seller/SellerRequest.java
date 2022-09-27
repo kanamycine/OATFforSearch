@@ -17,5 +17,6 @@ public class SellerRequest {
     private String addressDetail;
     private String phone;
     private String name;
-
+    private String businessNumber;
+    private String shopName;
 }

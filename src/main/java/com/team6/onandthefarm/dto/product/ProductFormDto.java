@@ -52,4 +52,6 @@ public class ProductFormDto {
 	private Integer productSoldCount;
 
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
+
+	private Long sellerId;
 }

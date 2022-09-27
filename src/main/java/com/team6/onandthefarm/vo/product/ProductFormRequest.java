@@ -21,16 +21,30 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductFormRequest {
 	private String productName;
+
 	private String productCategory;
+
 	private Integer productPrice;
+
 	private Integer productTotalStock;
+
 	private String productMainImgSrc;
+
 	private String productDetail;
+
 	private String productOriginPlace;
+
 	private String productDeliveryCompany;
+
 	private String productStatus;
+
 	private String productDetailShort;
+
 	private Integer productWishCount;
+
 	private Integer productSoldCount;
+
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
+
+	private Long sellerId;
 }

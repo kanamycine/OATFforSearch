@@ -11,7 +11,7 @@ import java.util.List;
 public interface SellerService {
     boolean updateByUserId(Long userId, SellerDto sellerDto);
     SellerInfoResponse findByUserId(Long userId);
-    void updatePassword(SellerDto sellerDto);
+    Boolean updatePassword(SellerDto sellerDto);
     boolean sellerSignup(SellerDto sellerDto);
     boolean sellerIdCheck(String sellerEmail);
     List<SellerProductQnaResponse> findSellerQnA(Long sellerId);

@@ -80,9 +80,13 @@ public class SellerServiceImp implements SellerService{
      * 회원의 비밀번호값을 변경해주는 메서드
      * @param sellerDto
      */
-    public void updatePassword(SellerDto sellerDto){
+    public Boolean updatePassword(SellerDto sellerDto){
         Seller seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
         seller.setSellerPassword(sellerDto.getPassword());
+        if(seller.getSellerPassword().equals(sellerDto.getPassword())){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     /**
@@ -91,10 +95,21 @@ public class SellerServiceImp implements SellerService{
      * @return true: 회원가입 됨  false: 회원가입 실패
      */
     public boolean sellerSignup(SellerDto sellerDto){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        Seller seller = modelMapper.map(sellerDto, Seller.class);
         String date = dateUtils.transDate(env.getProperty("dateutils.format"));
+        Seller seller = Seller.builder()
+                .sellerEmail(sellerDto.getEmail())
+                .sellerAddress(sellerDto.getAddress())
+                .sellerAddressDetail(sellerDto.getAddressDetail())
+                .sellerBusinessNumber(sellerDto.getBusinessNumber())
+                .sellerName(sellerDto.getName())
+                .sellerPassword(sellerDto.getPassword())
+                .sellerPhone(sellerDto.getPhone())
+                .sellerZipcode(sellerDto.getZipcode())
+                .sellerRegisterDate(date)
+                .sellerShopName(sellerDto.getShopName())
+                .sellerIsActived(Boolean.TRUE)
+                .build();
+
         seller.setSellerRegisterDate(date);
         sellerRepository.save(seller);
         return true;

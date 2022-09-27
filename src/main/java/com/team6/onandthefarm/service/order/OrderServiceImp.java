@@ -6,13 +6,16 @@ import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.order.Payment;
 import com.team6.onandthefarm.entity.order.Refund;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
 import com.team6.onandthefarm.repository.order.PaymentRepository;
 import com.team6.onandthefarm.repository.order.RefundRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.order.*;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 /**
  * 주문 상태
  * os0 : 주문완료
@@ -48,6 +52,8 @@ public class OrderServiceImp implements OrderService{
 
     private ProductRepository productRepository;
 
+    private UserRepository userRepository;
+
     private DateUtils dateUtils;
 
     private Environment env;
@@ -59,7 +65,8 @@ public class OrderServiceImp implements OrderService{
                            Environment env,
                            PaymentRepository paymentRepository,
                            RefundRepository refundRepository,
-                           ProductRepository productRepository) {
+                           ProductRepository productRepository,
+                           UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository=orderProductRepository;
         this.dateUtils=dateUtils;
@@ -67,6 +74,7 @@ public class OrderServiceImp implements OrderService{
         this.paymentRepository = paymentRepository;
         this.refundRepository = refundRepository;
         this.productRepository=productRepository;
+        this.userRepository=userRepository;
     }
 
     /**
@@ -76,12 +84,13 @@ public class OrderServiceImp implements OrderService{
      */
     public OrderFindOneResponse findOneByProductId(Long productId){
         Optional<Product> product = productRepository.findById(productId);
+        log.info("제품 정보  =>  "+ product.get().toString());
         OrderFindOneResponse response = OrderFindOneResponse.builder()
                 .productId(productId)
                 .productImg(product.get().getProductMainImgSrc())
                 .productName(product.get().getProductName())
                 .productPrice(product.get().getProductPrice())
-                .sellerId(1l) // product가 sellerId를 매핑하지 못함(아직 구현 덜됨)
+                .sellerId(product.get().getSeller().getSellerId())
                 .build();
         return response;
     }
@@ -136,6 +145,7 @@ public class OrderServiceImp implements OrderService{
 
     /**
      * 주문 생성 메서드
+     * 주문 생성 시 product 판매 수 늘리기 코드 짜기
      * @param orderDto
      */
     public Boolean createOrder(OrderDto orderDto){
@@ -154,8 +164,8 @@ public class OrderServiceImp implements OrderService{
             Optional<Product> product = productRepository.findById(orderProductDto.getProductId());
             orderProductDto.setProductName(product.get().getProductName());
             orderProductDto.setProductPrice(product.get().getProductPrice());
-            orderProductDto.setSellerId(1l);  // product가 sellerId를 매핑하지 못함(아직 구현 덜됨)
-            orderProductDto.setProductImg(product.get().getProductMainImgSrc());
+            orderProductDto.setSellerId(product.get().getSeller().getSellerId());
+            orderProductDto.setProductImg(product.get().getProductMainImgSrc()); // 이미지는 나중에
         }
         Orders ordersEntity = orderRepository.save(orders); // 주문 생성
         boolean stockCheck = checkStock(orderDto);
@@ -178,6 +188,7 @@ public class OrderServiceImp implements OrderService{
             orderProductRepository.save(orderProduct); // 각각의 주문 상품 생성
             Optional<Product> product = productRepository.findById(order.getProductId());
             product.get().setProductTotalStock(product.get().getProductTotalStock()-order.getProductQty());
+            product.get().setProductSoldCount(product.get().getProductSoldCount()+1);
         }
         orderRepository.findById(ordersEntity.getOrdersId()).get().setOrdersTotalPrice(totalPrice); // 총 주문액 set
         createPayment(ordersEntity.getOrdersSerial()); // 결제 생성
@@ -192,6 +203,7 @@ public class OrderServiceImp implements OrderService{
     public List<OrderSellerResponseList> findSellerOrders(OrderSellerFindDto orderSellerFindDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
         List<Orders> ordersListOs0 = orderRepository.findByOrdersStatusAndOrdersDateBetween(
                 "os0",
                 orderSellerFindDto.getStartDate(),
@@ -224,6 +236,8 @@ public class OrderServiceImp implements OrderService{
             List<OrderProduct> orderProductListSo5 = orderProductRepository.findByOrdersAndSellerIdAndOrderProductStatus(order,Long.valueOf(orderSellerFindDto.getSellerId()),"os5");
             List<OrderProduct> orderProductList = new ArrayList<>();
 
+            Optional<User> user = userRepository.findById(order.getUserId().getUserId());
+
             for(OrderProduct orderProduct : orderProductListSo0){
                 orderProductList.add(orderProduct);
             }
@@ -238,7 +252,7 @@ public class OrderServiceImp implements OrderService{
             List<OrderSellerResponse> orderResponse = new ArrayList<>();
             for(OrderProduct orderProduct : orderProductList){
                 OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
-                        .userName("김성환") // userId를 이용해서 userName 가져오기
+                        .userName(user.get().getUserName())
                         .orderProductName(orderProduct.getOrderProductName())
                         .orderProductMainImg(orderProduct.getOrderProductMainImg())
                         .orderProductPrice(orderProduct.getOrderProductPrice())
@@ -268,10 +282,12 @@ public class OrderServiceImp implements OrderService{
 
         Orders orders = orderRepository.findByOrdersSerial(orderSerial);
 
+        Optional<User> user = userRepository.findById(orders.getUserId().getUserId());
+
         List<OrderProduct> orderProducts = orderProductRepository.findByOrders(orders); // 주문에 대한 모든 제품가져옴
         OrderSellerDetailResponse orderSellerDetailResponse =
                 OrderSellerDetailResponse.builder()
-                        .orderName("김성환") // userId로 userName 찾기
+                        .orderName(user.get().getUserName())
                         .orderAddress(orders.getOrdersAddress())
                         .orderDate(orders.getOrdersDate())
                         .orderPhone(orders.getOrdersPhone())
@@ -383,9 +399,11 @@ public class OrderServiceImp implements OrderService{
         for(OrderProduct orderProduct : orderProducts){
             OrderSellerResponse orderSellerResponse = modelMapper.map(orderProduct,OrderSellerResponse.class);
             Optional<Orders> orders = orderRepository.findById(orderProduct.getOrders().getOrdersId());
+            Optional<User> user = userRepository.findById(orders.get().getUserId().getUserId());
+
             orderSellerResponse.setOrdersDate(orders.get().getOrdersDate());
             orderSellerResponse.setOrdersSerial(orders.get().getOrdersSerial());
-            orderSellerResponse.setUserName("김성환"); // userName은 가져온 OrderProduct 엔티티의 userId로 가져온다.
+            orderSellerResponse.setUserName(user.get().getUserName());
             orderSellerResponse.setOrderProductId(orderProduct.getOrderProductId());
             responseList.add(orderSellerResponse);
         }

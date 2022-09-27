@@ -4,8 +4,10 @@ import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.seller.Seller;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Builder
 @Slf4j
