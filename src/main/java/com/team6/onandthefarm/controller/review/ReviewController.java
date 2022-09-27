@@ -92,10 +92,10 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping("list/orderby/likecount/{productId}")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId){
+	@GetMapping("list/orderby/likecount/{productId}/{page-no}")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 
-		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId);
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId, Integer.valueOf(pageNumber));
 
 		//필요 부분만 보내기 위해 (셀러, 프로덕트 짜르기)
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -106,6 +106,7 @@ public class ReviewController {
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
+
 
 	@GetMapping("list/orderby/newest")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(){

@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import com.team6.onandthefarm.entity.review.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-	@Query("select r from Review r join fetch r.product p join fetch p.category join fetch p.seller where r.product.productId =:productId order by r.reviewLikeCount DESC")
-	List<Review> findReviewListByLikeCount(@Param("productId") Long productId);
+	// @Query("select r from Review r join fetch r.product p join fetch p.category join fetch p.seller where r.product.productId =:productId order by r.reviewLikeCount DESC")
+	// List<Review> findReviewListByLikeCount(@Param("productId") Long productId);
 
 	@Query("select r from Review r join fetch r.product p join fetch p.category join fetch p.seller order by r.reviewCreatedAt DESC")
 	List<Review> findReviewListByNewest();
