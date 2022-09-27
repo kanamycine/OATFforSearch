@@ -94,10 +94,10 @@ public class ProductController {
 	}
 
 
-	@GetMapping(value="list/orderby/highprice")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(){
+	@GetMapping(value="list/orderby/highprice/{page-no}")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(@PathVariable("page-no")String pageNumber){
 
-		List<Product> productList = productService.getProductsListByHighPrice();
+		List<Product> productList = productService.getProductsListByHighPrice(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

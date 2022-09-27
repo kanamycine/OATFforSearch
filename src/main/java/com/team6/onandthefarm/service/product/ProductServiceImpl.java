@@ -121,26 +121,26 @@ public class ProductServiceImpl implements ProductService {
 		return product.get().getProductId();
 	}
 
-	public List<Product> getProductsListByHighPrice() {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productPrice").descending());
-		return productPagingRepository.findAll(pageRequest).getContent();
+	public List<Product> getProductsListByHighPrice(Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
+		return productPagingRepository.findProductListByHighPrice(pageRequest);
 	}
 
 	public List<Product> getProductsListByLowPrice() {
-		List<Product> products = productRepository.findProductListByLowPrice();
-		return products;
+		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productPrice").ascending());
+		return productPagingRepository.findProductListByLowPrice(pageRequest);
 	}
 
 	@Override
 	public List<Product> getProductsBySoldCount() {
-		List<Product> products = productRepository.findProductBySoldCount();
-		return products;
+		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productSoldCount").descending());
+		return productPagingRepository.findProductBySoldCount(pageRequest);
 	}
 
 	@Override
 	public List<Product> getProductListByCategoryNewest(Long categoryId) {
-		List<Product> products = productRepository.findProductsByCategoryNewest(categoryId);
-		return products;
+		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productRegisterDate").descending());
+		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
 	}
 
 	public Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId){
