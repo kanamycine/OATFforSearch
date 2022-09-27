@@ -41,4 +41,14 @@ public class Review {
     private Integer reviewLikeCount;
 
     private Integer reviewRate;
+
+    private String reviewStatus;
+
+
+    public Long updateReview(String reviewContent, Integer reviewRate){
+        this.reviewContent = reviewContent;
+        this.reviewRate = reviewRate;
+
+        return reviewId;
+    }
 }
