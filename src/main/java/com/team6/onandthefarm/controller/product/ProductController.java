@@ -93,16 +93,29 @@ public class ProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value="list/all/newest/{page-no}")
+	public ResponseEntity<BaseResponse<List<Product>>> getAllProductListOrderByNewest(@PathVariable("page-no") String pageNumber){
+		List<Product> products = productService.getAllProductListOrderByNewest(Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting All products by Newest")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+
+	}
 
 	@GetMapping(value="list/orderby/highprice/{page-no}")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(@PathVariable("page-no")String pageNumber){
+	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(@PathVariable("page-no") String pageNumber){
 
-		List<Product> productList = productService.getProductsListByHighPrice(Integer.valueOf(pageNumber));
+		List<Product> products = productService.getProductsListByHighPrice(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting products by high price completed")
-				.data(productList)
+				.data(products)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);

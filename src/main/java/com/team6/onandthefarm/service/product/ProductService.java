@@ -15,6 +15,7 @@ public interface ProductService {
 	Long saveProduct(ProductFormDto productFormDto);
 	Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
 	Long deleteProduct(ProductDeleteDto productDeleteDto);
+	List<Product> getAllProductListOrderByNewest(Integer pageNumber);
 	List<Product> getProductsListByHighPrice(Integer pageNumber);
 	List<Product> getProductsListByLowPrice(Integer pageNumber);
 	List<Product> getProductsBySoldCount(Integer pageNumber);

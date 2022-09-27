@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,11 @@ public class ProductServiceImpl implements ProductService {
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return product.get().getProductId();
+	}
+
+	public List<Product> getAllProductListOrderByNewest(Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+		return productPagingRepository.findAllProductOrderByNewest(pageRequest);
 	}
 
 	public List<Product> getProductsListByHighPrice(Integer pageNumber) {

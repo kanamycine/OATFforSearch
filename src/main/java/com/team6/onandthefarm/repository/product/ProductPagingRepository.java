@@ -11,6 +11,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductPagingRepository extends PagingAndSortingRepository<Product, Long> {
+
+    @Query("select p from Product p join fetch p.category join fetch p.seller")
+    List<Product> findAllProductOrderByNewest(PageRequest pageRequest);
+
     @Query("select p from Product p join fetch p.category join fetch p.seller")
     List<Product> findProductListByHighPrice(PageRequest pageRequest);
 
