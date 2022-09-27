@@ -6,12 +6,14 @@ import com.team6.onandthefarm.entity.seller.EmailConfirmation;
 import com.team6.onandthefarm.repository.seller.EmailRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.util.MailUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
+@Transactional
+@Slf4j
 public class MailService {
     private JavaMailSenderImpl mailSender;
 
@@ -47,7 +51,11 @@ public class MailService {
     public void save(EmailDto emailDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        EmailConfirmation email = modelMapper.map(emailDto, EmailConfirmation.class);
+        EmailConfirmation email = EmailConfirmation.builder()
+                .emailId(emailDto.getEmail())
+                .authKey(emailDto.getAuthKey())
+                .confirmDate(emailDto.getDate())
+                .build();
         emailRepository.save(email);
     }
 
@@ -62,7 +70,7 @@ public class MailService {
         String AuthKey = map.get("authKey");
         String email = map.get("email");
         EmailConfirmation emailConfirmation = emailRepository.findByEmailIdAndAuthKey(email,AuthKey);
-        if(emailConfirmation ==null){
+        if(emailConfirmation == null){
             return false;
         }
 
@@ -76,9 +84,10 @@ public class MailService {
 
         String[] date = emailConfirmation.getConfirmDate().substring(11).split(":");
         String[] nowDate = dateStr.substring(11).split(":");
-        if(!nowStr.equals(emailConfirmation.getConfirmDate().substring(0,10))){ // 오늘인지 확인
+        if(!nowStr.substring(0,10).equals(dateStr.substring(0,10))){ // 오늘인지 확인
             return false;
         }
+
 
         int HD = Integer.valueOf(date[0]);
         int mD = Integer.valueOf(date[1]);

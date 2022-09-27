@@ -1,13 +1,15 @@
 package com.team6.onandthefarm.entity.seller;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmailConfirmation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

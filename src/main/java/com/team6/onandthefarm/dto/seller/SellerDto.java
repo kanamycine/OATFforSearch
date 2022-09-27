@@ -18,4 +18,5 @@ public class SellerDto {
     private String phone;
     private String name;
     private String shopName;
+    private String businessNumber;
 }

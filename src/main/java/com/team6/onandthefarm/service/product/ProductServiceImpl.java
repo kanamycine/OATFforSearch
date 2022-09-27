@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
+import com.team6.onandthefarm.repository.seller.SellerRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 	private CategoryRepository categoryRepository;
 	private ProductQnaRepository productQnaRepository;
 	private ProductQnaAnswerRepository productQnaAnswerRepository;
+	private SellerRepository sellerRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -42,13 +45,15 @@ public class ProductServiceImpl implements ProductService {
 							  DateUtils dateUtils,
 							  Environment env,
 							  ProductQnaRepository productQnaRepository,
-							  ProductQnaAnswerRepository productQnaAnswerRepository) {
+							  ProductQnaAnswerRepository productQnaAnswerRepository,
+							  SellerRepository sellerRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
 		this.productQnaRepository=productQnaRepository;
 		this.productQnaAnswerRepository=productQnaAnswerRepository;
+		this.sellerRepository=sellerRepository;
 	}
 
 	public Long saveProduct(ProductFormDto productFormDto){
@@ -57,12 +62,15 @@ public class ProductServiceImpl implements ProductService {
 
 		Product product = modelMapper.map(productFormDto, Product.class);
 
+		Optional<Seller> seller = sellerRepository.findById(productFormDto.getSellerId());
+
 		Long categoryId = productFormDto.getProductCategory();
 		Optional<Category> category = categoryRepository.findById(categoryId);
 
 		product.setCategory(category.get());
 		product.setProductRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));
-
+		product.setSeller(seller.get());
+		product.setProductSoldCount(0);
 		return productRepository.save(product).getProductId();
 	}
 

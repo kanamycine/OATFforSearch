@@ -69,31 +69,47 @@ public class SellerController {
 
     @PostMapping("/signup")
     @ApiOperation(value = "셀러 회원가입")
-    public ResponseEntity signup(@RequestBody SellerRequest sellerRequest){
+    public ResponseEntity<BaseResponse> signup(@RequestBody SellerRequest sellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerRequest,SellerDto.class);
+        BaseResponse responseOk = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .build();
+        BaseResponse responseBadrequest = BaseResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message("Bad request")
+                .build();
         if(!sellerService.sellerSignup(sellerDto)){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(responseBadrequest,HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity(responseOk,HttpStatus.OK);
     }
 
     @PostMapping("/passwd")
     @ApiOperation(value = "셀러 비밀번호 변경")
-    public ResponseEntity changePassword(@RequestBody SellerPasswordRequest sellerPasswordRequest){
+    public ResponseEntity<BaseResponse> changePassword(@RequestBody SellerPasswordRequest sellerPasswordRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerPasswordRequest,SellerDto.class);
         sellerService.updatePassword(sellerDto);
-        return new ResponseEntity(HttpStatus.OK);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
     @PostMapping("/email") // 인증버튼 누름
     @ApiOperation(value = "이메일 인증")
-    public void emailAuth(@RequestBody EmailRequest emailRequest){
+    public ResponseEntity<BaseResponse> emailAuth(@RequestBody EmailRequest emailRequest){
         if(!sellerService.sellerIdCheck(emailRequest.getEmail())){ // email 중복확인
-            return;
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("이메일 중복됨!")
+                    .build();
+            return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
         }
         String authKey = mailService.sendAuthMail(emailRequest.getEmail());
         String date = dateUtils.transDate(env.getProperty("dateutils.format"));
@@ -103,13 +119,29 @@ public class SellerController {
                 .date(date)
                 .build();
         mailService.save(email);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
     @GetMapping("/emailConfirm") // 인증번호 확인
     @ApiOperation(value = "이메일 인증확인")
-    public void signUpConfirm(@RequestParam Map<String, String> map){
+    public ResponseEntity<BaseResponse> signUpConfirm(@RequestParam Map<String, String> map){
         boolean result = mailService.checkAuthKey(map);
-        log.info("checkout result : "+result);
+        if(result){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.OK)
+                    .message("이메일 인증 성공")
+                    .build();
+            return new ResponseEntity(response,HttpStatus.OK);
+        }
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message("이메일 인증 실패")
+                .build();
+        return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/QnA/{seller-no}")
