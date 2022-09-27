@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.review;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,12 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.team6.onandthefarm.dto.review.ReviewDeleteDto;
 import com.team6.onandthefarm.dto.review.ReviewFormDto;
 import com.team6.onandthefarm.dto.review.ReviewUpdateFormDto;
+import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.review.Review;
+import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 
 @Service
 @Transactional
@@ -26,6 +30,7 @@ public class ReviewServiceImpl implements ReviewService{
 
 	private ReviewRepository reviewRepository;
 	private SellerRepository sellerRepository;
+	private CategoryRepository categoryRepository;
 	private ProductRepository productRepository;
 	private DateUtils dateUtils;
 	private Environment env;
@@ -81,8 +86,24 @@ public class ReviewServiceImpl implements ReviewService{
 		return review.get().getReviewId();
 	}
 
-	public List<Review> getReviewListByLikeCount(Long productId){
+	public List<ReviewSelectionResponse> getReviewListByLikeCount(Long productId){
+		// Product product = productRepository.findById(productId).get();
+		// msa 고려하여 다시 설계할 것
+		// List<Review> reviews = reviewRepository.findReviewsByProductOrderByReviewLikeCountDesc(product);
+		List<ReviewSelectionResponse> reviewResponses = new ArrayList<>();
 		List<Review> reviews = reviewRepository.findReviewListByLikeCount(productId);
-		return reviews;
+		for (Review review : reviews) {
+			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse
+					.builder()
+					.reviewId(review.getReviewId())
+					.reviewContent(review.getReviewContent())
+					.reviewCreatedAt(review.getReviewCreatedAt())
+					.reviewModifiedAt(review.getReviewModifiedAt())
+					.reviewLikeCount(review.getReviewLikeCount())
+					.reviewRate(review.getReviewRate())
+					.build();
+			reviewResponses.add(reviewSelectionResponse);
+		}
+		return reviewResponses;
 	}
 }

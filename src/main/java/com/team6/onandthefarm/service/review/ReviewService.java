@@ -6,10 +6,11 @@ import com.team6.onandthefarm.dto.review.ReviewDeleteDto;
 import com.team6.onandthefarm.dto.review.ReviewFormDto;
 import com.team6.onandthefarm.dto.review.ReviewUpdateFormDto;
 import com.team6.onandthefarm.entity.review.Review;
+import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 
 public interface ReviewService {
 	Long saveReview(ReviewFormDto reviewFormDto);
 	Long updateReview(ReviewUpdateFormDto reviewUpdateFormDto);
 	Long deleteReview(ReviewDeleteDto reviewDeleteDto);
-	List<Review> getReviewListByLikeCount(Long productId);
+	List<ReviewSelectionResponse> getReviewListByLikeCount(Long productId);
 }

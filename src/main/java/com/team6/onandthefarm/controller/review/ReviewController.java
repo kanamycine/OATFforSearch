@@ -22,6 +22,7 @@ import com.team6.onandthefarm.service.review.ReviewService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.review.ReviewDeleteRequest;
 import com.team6.onandthefarm.vo.review.ReviewFormRequest;
+import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 import com.team6.onandthefarm.vo.review.ReviewUpdateFormRequest;
 
 import io.swagger.annotations.ApiOperation;
@@ -91,10 +92,17 @@ public class ReviewController {
 	}
 
 	@GetMapping("list/orderbylikecount/{productId}")
-	public List<Review> getReviewListByLikeCount(@PathVariable("productId") Long productId){
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId){
 
-		List<Review> reviews = reviewService.getReviewListByLikeCount(productId);
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId);
 
-		return reviews;
+		//필요 부분만 보내기 위해 (셀러, 프로덕트 짜르기)
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("finding reviews completed")
+				.data(reviews)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 }
