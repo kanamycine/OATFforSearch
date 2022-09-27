@@ -51,8 +51,7 @@ public class ProductServiceImpl implements ProductService {
 		this.productQnaAnswerRepository=productQnaAnswerRepository;
 	}
 
-	public Long
-	saveProduct(ProductFormDto productFormDto){
+	public Long saveProduct(ProductFormDto productFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
