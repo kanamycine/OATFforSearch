@@ -20,5 +20,6 @@ public interface ProductService {
 	List<Product> getProductsListByLowPrice(Integer pageNumber);
 	List<Product> getProductsBySoldCount(Integer pageNumber);
 	List<Product> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
+	List<Product> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
 	Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId);
 }

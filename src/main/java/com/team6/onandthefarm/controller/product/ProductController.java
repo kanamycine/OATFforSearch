@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+
+import co.elastic.clients.elasticsearch.xpack.usage.Base;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -38,6 +40,7 @@ public class ProductController {
 	private final ProductService productService;
 
 	@PostMapping(value = "new")
+	@ApiOperation(value = "상품 등록")
 	//@RequestPart("productImg") List<MultipartFile> productImgs
 	public ResponseEntity<BaseResponse<Product>> productForm(@RequestBody ProductFormRequest productFormRequest) throws Exception{
 
@@ -58,6 +61,7 @@ public class ProductController {
 	}
 
 	@PutMapping(value="update")
+	@ApiOperation(value = "상품 수정")
 	public ResponseEntity<BaseResponse<Product>> productUpdateForm(@RequestBody ProductUpdateFormRequest productUpdateFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -76,6 +80,7 @@ public class ProductController {
 	}
 
 	@PutMapping(value="delete")
+	@ApiOperation(value = "상품 삭제")
 	public ResponseEntity<BaseResponse<Product>> productDelete(@RequestBody ProductDeleteRequest productDeleteRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -94,6 +99,7 @@ public class ProductController {
 	}
 
 	@GetMapping(value="list/all/newest/{page-no}")
+	@ApiOperation(value = "모든 상품 최신순 조회")
 	public ResponseEntity<BaseResponse<List<Product>>> getAllProductListOrderByNewest(@PathVariable("page-no") String pageNumber){
 		List<Product> products = productService.getAllProductListOrderByNewest(Integer.valueOf(pageNumber));
 
@@ -104,10 +110,10 @@ public class ProductController {
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
-
 	}
 
 	@GetMapping(value="list/orderby/highprice/{page-no}")
+	@ApiOperation(value = "상품 높은 가격 순 조회")
 	public ResponseEntity<BaseResponse<List<Product>>> getProductListByHighPrice(@PathVariable("page-no") String pageNumber){
 
 		List<Product> products = productService.getProductsListByHighPrice(Integer.valueOf(pageNumber));
@@ -122,41 +128,58 @@ public class ProductController {
 	}
 
 	@GetMapping(value="list/orderby/lowprice/{page-no}")
+	@ApiOperation(value = "상품 낮은 가격 순 조회")
 	public ResponseEntity<BaseResponse<List<Product>>> getProductListByLowPrice(@PathVariable("page-no")String pageNumber){
 
-		List<Product> productList = productService.getProductsListByLowPrice(Integer.valueOf(pageNumber));
+		List<Product> products = productService.getProductsListByLowPrice(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting products by high price completed")
-				.data(productList)
+				.data(products)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 	@GetMapping(value="list/orderby/soldcount/{page-no}")
+	@ApiOperation(value = "상품 높은 판매순 조회")
 	public ResponseEntity<BaseResponse<List<Product>>> getProductsListBySoldCount(@PathVariable("page-no") String pageNumber) {
-		List<Product> productList = productService.getProductsBySoldCount(Integer.valueOf(pageNumber));
+		List<Product> products = productService.getProductsBySoldCount(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting products by high price completed")
-				.data(productList)
+				.data(products)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
 
+	@GetMapping(value="list/orderby/seller/{sellerId}/{page-no}")
+	@ApiOperation(value = "상품 농부별 최신순 조회")
+	public ResponseEntity<BaseResponse <List<Product>>> getProductsListBySellerNewest(@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber){
+
+		List<Product> products = productService.getProductListBySellerNewest(sellerId, Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting Newest products by farmer completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
 	@GetMapping(value="list/orderby/category/{categoryId}/{page-no}")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductsListByCategoryNewest(@PathVariable("page-no") Long categoryId, String pageNumber){
+	@ApiOperation(value = "상품 카테고리별 최신순 조회")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductsListByCategoryNewest(@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber){
 
-		List<Product> productList = productService.getProductListByCategoryNewest(categoryId, Integer.valueOf(pageNumber));
+		List<Product> products = productService.getProductListByCategoryNewest(categoryId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting Newest products by category  completed")
-				.data(productList)
+				.data(products)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
@@ -166,12 +189,12 @@ public class ProductController {
 	@ApiOperation(value = "상품에 대한 질의 조회")
 	public ResponseEntity<BaseResponse<Map<ProductQna, ProductQnaAnswer>>> findProductQnAList(@PathVariable("product-no") Long productId){
 
-		Map<ProductQna, ProductQnaAnswer> result = productService.findProductQnAList(productId);
+		Map<ProductQna, ProductQnaAnswer> products = productService.findProductQnAList(productId);
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("OK")
-				.data(result)
+				.data(products)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);

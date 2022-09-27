@@ -143,6 +143,11 @@ public class ProductServiceImpl implements ProductService {
 		return productPagingRepository.findProductBySoldCount(pageRequest);
 	}
 
+	public List<Product> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
+	}
+
 	@Override
 	public List<Product> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());

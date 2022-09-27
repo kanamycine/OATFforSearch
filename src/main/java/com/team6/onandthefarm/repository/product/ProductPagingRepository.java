@@ -24,6 +24,9 @@ public interface ProductPagingRepository extends PagingAndSortingRepository<Prod
     @Query("select p from Product p join fetch p.category join fetch p.seller")
     List<Product> findProductBySoldCount(PageRequest pageRequest);
 
+    @Query("select p from Product p join fetch p.category join fetch p.seller where p.seller.sellerId =:sellerId")
+    List<Product> findProductBySellerNewest(PageRequest pageRequest, @Param("sellerId") Long sellerId);
+
     @Query("select p from Product p join fetch p.category join fetch p.seller where p.category.categoryId =:categoryId")
     List<Product> findProductsByCategoryNewest(PageRequest pageRequest,@Param("categoryId") Long categoryId);
 }
