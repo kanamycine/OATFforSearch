@@ -108,10 +108,10 @@ public class ProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value="list/orderby/lowprice")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductListByLowPrice(){
+	@GetMapping(value="list/orderby/lowprice/{page-no}")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductListByLowPrice(@PathVariable("page-no")String pageNumber){
 
-		List<Product> productList = productService.getProductsListByLowPrice();
+		List<Product> productList = productService.getProductsListByLowPrice(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -121,9 +121,9 @@ public class ProductController {
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
-	@GetMapping(value="list/orderby/soldcount")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductsListBySoldCount() {
-		List<Product> productList = productService.getProductsBySoldCount();
+	@GetMapping(value="list/orderby/soldcount/{page-no}")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductsListBySoldCount(@PathVariable("page-no") String pageNumber) {
+		List<Product> productList = productService.getProductsBySoldCount(Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -135,10 +135,10 @@ public class ProductController {
 
 	}
 
-	@GetMapping(value="list/orderby/category/{categoryId}")
-	public ResponseEntity<BaseResponse<List<Product>>> getProductsListByCategoryNewest(@PathVariable("categoryId") Long categoryId){
+	@GetMapping(value="list/orderby/category/{categoryId}/{page-no}")
+	public ResponseEntity<BaseResponse<List<Product>>> getProductsListByCategoryNewest(@PathVariable("page-no") Long categoryId, String pageNumber){
 
-		List<Product> productList = productService.getProductListByCategoryNewest(categoryId);
+		List<Product> productList = productService.getProductListByCategoryNewest(categoryId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

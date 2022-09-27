@@ -126,20 +126,20 @@ public class ProductServiceImpl implements ProductService {
 		return productPagingRepository.findProductListByHighPrice(pageRequest);
 	}
 
-	public List<Product> getProductsListByLowPrice() {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productPrice").ascending());
+	public List<Product> getProductsListByLowPrice(Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 		return productPagingRepository.findProductListByLowPrice(pageRequest);
 	}
 
 	@Override
-	public List<Product> getProductsBySoldCount() {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productSoldCount").descending());
+	public List<Product> getProductsBySoldCount(Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 		return productPagingRepository.findProductBySoldCount(pageRequest);
 	}
 
 	@Override
-	public List<Product> getProductListByCategoryNewest(Long categoryId) {
-		PageRequest pageRequest = PageRequest.of(0,8, Sort.by("productRegisterDate").descending());
+	public List<Product> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
 		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
 	}
 

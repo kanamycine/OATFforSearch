@@ -16,8 +16,8 @@ public interface ProductService {
 	Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
 	Long deleteProduct(ProductDeleteDto productDeleteDto);
 	List<Product> getProductsListByHighPrice(Integer pageNumber);
-	List<Product> getProductsListByLowPrice();
-	List<Product> getProductsBySoldCount();
-	List<Product> getProductListByCategoryNewest(Long CategoryId);
+	List<Product> getProductsListByLowPrice(Integer pageNumber);
+	List<Product> getProductsBySoldCount(Integer pageNumber);
+	List<Product> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
 	Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId);
 }
