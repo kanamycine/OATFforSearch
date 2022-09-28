@@ -1,10 +1,12 @@
 package com.team6.onandthefarm.controller.cart;
 
+import com.team6.onandthefarm.dto.cart.CartDeleteDto;
 import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.dto.product.ProductFormDto;
 import com.team6.onandthefarm.service.cart.CartService;
 import com.team6.onandthefarm.util.BaseResponse;
+import com.team6.onandthefarm.vo.cart.CartDeleteRequest;
 import com.team6.onandthefarm.vo.cart.CartIsActivatedRequest;
 import com.team6.onandthefarm.vo.cart.CartRequest;
 import io.swagger.annotations.ApiOperation;
@@ -68,6 +70,24 @@ public class CartController {
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
                 .message("cartIsActivated update completed")
+                .data(cartId)
+                .build();
+
+        return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/delete")
+    @ApiOperation(value = "장바구니 삭제")
+    public ResponseEntity<BaseResponse> deleteCart(@RequestBody CartDeleteRequest cartDeleteRequest){
+
+        CartDeleteDto cartDeleteDto = CartDeleteDto.builder()
+                .cartId(cartDeleteRequest.getCartId()).build();
+
+        Long cartId = cartService.deleteCart(cartDeleteDto);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.CREATED)
+                .message("cart delete completed")
                 .data(cartId)
                 .build();
 

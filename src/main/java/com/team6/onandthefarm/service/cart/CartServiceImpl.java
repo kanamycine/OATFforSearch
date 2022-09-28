@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.cart;
 
+import com.team6.onandthefarm.dto.cart.CartDeleteDto;
 import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.entity.cart.Cart;
@@ -68,6 +69,19 @@ public class CartServiceImpl implements CartService{
 
         Optional<Cart> cart = cartRepository.findById(cartIsActivatedDto.getCartId());
         cart.get().setCartIsActivated(cartIsActivatedDto.getCartIsActivated());
+
+        return cart.get().getCartId();
+    }
+
+    /**
+     * 장바구니를 삭제하는 메소드
+     * @param cartDeleteDto
+     * @return cartId
+     */
+    @Override
+    public Long deleteCart(CartDeleteDto cartDeleteDto) {
+        Optional<Cart> cart = cartRepository.findById(cartDeleteDto.getCartId());
+        cart.get().setCartStatus(false);
 
         return cart.get().getCartId();
     }
