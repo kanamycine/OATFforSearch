@@ -85,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setCategory(category.get());
 		product.setProductRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 		product.setSeller(seller.get());
+		product.setProductWishCount(0);
 		product.setProductSoldCount(0);
 		return productRepository.save(product).getProductId();
 	}
