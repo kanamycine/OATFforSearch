@@ -15,12 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.team6.onandthefarm.dto.review.ReviewDeleteDto;
 import com.team6.onandthefarm.dto.review.ReviewFormDto;
+import com.team6.onandthefarm.dto.review.ReviewLikeCancelFormDto;
+import com.team6.onandthefarm.dto.review.ReviewLikeFormDto;
 import com.team6.onandthefarm.dto.review.ReviewUpdateFormDto;
-import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.review.Review;
-import com.team6.onandthefarm.repository.category.CategoryRepository;
+import com.team6.onandthefarm.entity.review.ReviewLike;
 import com.team6.onandthefarm.repository.product.ProductRepository;
+import com.team6.onandthefarm.repository.review.ReviewLikeRepository;
 import com.team6.onandthefarm.repository.review.ReviewPagingRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
@@ -33,16 +35,19 @@ public class ReviewServiceImpl implements ReviewService{
 
 	private ReviewRepository reviewRepository;
 	private ReviewPagingRepository reviewPagingRepository;
+	private ReviewLikeRepository reviewLikeRepository;
 	private SellerRepository sellerRepository;
-	private CategoryRepository categoryRepository;
 	private ProductRepository productRepository;
+
 	private DateUtils dateUtils;
 	private Environment env;
 
 	@Autowired ReviewServiceImpl(ReviewRepository reviewRepository, ReviewPagingRepository reviewPagingRepository,
-			SellerRepository sellerRepository, ProductRepository productRepository, DateUtils dateUtils, Environment env){
+			ReviewLikeRepository reviewLikeRepository, SellerRepository sellerRepository, ProductRepository productRepository,
+			DateUtils dateUtils, Environment env){
 		this.reviewRepository = reviewRepository;
 		this.reviewPagingRepository = reviewPagingRepository;
+		this.reviewLikeRepository = reviewLikeRepository;
 		this.sellerRepository = sellerRepository;
 		this.productRepository = productRepository;
 		this.dateUtils = dateUtils;
@@ -90,6 +95,31 @@ public class ReviewServiceImpl implements ReviewService{
 
 		return review.get().getReviewId();
 	}
+
+
+	public Long upLikeCountReview(ReviewLikeFormDto reviewLikeFormDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ReviewLike reviewLike = modelMapper.map(reviewLikeFormDto, ReviewLike.class);
+
+		Optional<Review> review = reviewRepository.findById(reviewLikeFormDto.getReviewId());
+		reviewLike.setReview(review.get());
+		Long reviewLikeId = reviewLikeRepository.save(reviewLike).getReviewLikeId();
+
+		return reviewLikeId;
+	}
+
+	public Long cancelReviewLikeCount(ReviewLikeCancelFormDto reviewLikeCancelFormDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		Long reviewLikeId = reviewLikeCancelFormDto.getReviewId();
+		ReviewLike reviewLike = reviewLikeRepository.findById(reviewLikeId).get();
+
+		reviewLikeRepository.delete(reviewLike);
+		return reviewLikeId;
+	}
+
 
 	public List<ReviewSelectionResponse> getReviewListByLikeCount(Long productId, Integer pageNumber){
 		// msa 고려하여 다시 설계할 것
