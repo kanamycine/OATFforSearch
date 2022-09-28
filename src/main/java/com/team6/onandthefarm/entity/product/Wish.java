@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.entity.wish;
+package com.team6.onandthefarm.entity.product;
 
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.user.User;
