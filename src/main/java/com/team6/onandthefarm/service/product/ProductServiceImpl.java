@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
 import com.team6.onandthefarm.dto.product.ProductWishFormDto;
@@ -11,7 +12,6 @@ import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.product.Wish;
 import com.team6.onandthefarm.entity.seller.Seller;
-import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.product.ProductPagingRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
@@ -35,6 +35,7 @@ import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.product.ProductSelectionResponse;
 
 @Service
 @Transactional
@@ -95,29 +96,21 @@ public class ProductServiceImpl implements ProductService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
-
+		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
 		// 나중에 productUpdateFormDto의 ID로 findbyId 해서 가져온 카테고리로 대치!!!!!!
-
-		//test 로직
-		Category tmpCategory = new Category(1l, "strawberry");
-		product.get().setProductName("dskjdsfjj");
-
-		long productId = product.get().updateProduct(tmpCategory,
-				productUpdateFormDto.getProductName(),
-				productUpdateFormDto.getProductPrice(),
-				productUpdateFormDto.getProductTotalStock(),
-				productUpdateFormDto.getProductMainImgSrc(),
-				productUpdateFormDto.getProductDetail(),
-				productUpdateFormDto.getProductOriginPlace(),
-				productUpdateFormDto.getProductDetailShort(),
-				productUpdateFormDto.getProductDeliveryCompany(),
-				productUpdateFormDto.getProductStatus(),
-				productUpdateFormDto.getProductWishCount(),
-				productUpdateFormDto.getProductSoldCount());
+		product.get().setProductName(productUpdateFormDto.getProductName());
+		product.get().setCategory(category.get());
+		product.get().setProductPrice(productUpdateFormDto.getProductPrice());
+		product.get().setProductTotalStock(productUpdateFormDto.getProductTotalStock());
+		//product.get().~~~~ 이미지 추가 해야함
+		product.get().setProductDetail(productUpdateFormDto.getProductDetail());
+		product.get().setProductOriginPlace(productUpdateFormDto.getProductOriginPlace());
+		product.get().setProductDeliveryCompany(productUpdateFormDto.getProductDeliveryCompany());
+		product.get().setProductStatus(productUpdateFormDto.getProductStatus());
+		product.get().setProductDetailShort(productUpdateFormDto.getProductDetailShort());
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
-		productRepository.save(product.get());
 
-		return productId;
+		return product.get().getProductId();
 	}
 
 	public Long deleteProduct(ProductDeleteDto productDeleteDto){
@@ -159,36 +152,54 @@ public class ProductServiceImpl implements ProductService {
 		return wishId;
 	}
 
-	public List<Product> getAllProductListOrderByNewest(Integer pageNumber){
+	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findAllProductOrderByNewest(pageRequest);
+		return productPagingRepository.findAllProductOrderByNewest(pageRequest)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
-	public List<Product> getProductsListByHighPrice(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsListByHighPrice(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
-		return productPagingRepository.findProductListByHighPrice(pageRequest);
+		return productPagingRepository.findProductListByHighPrice(pageRequest)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
-	public List<Product> getProductsListByLowPrice(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsListByLowPrice(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
-		return productPagingRepository.findProductListByLowPrice(pageRequest);
+		return productPagingRepository.findProductListByLowPrice(pageRequest)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Product> getProductsBySoldCount(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsBySoldCount(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
-		return productPagingRepository.findProductBySoldCount(pageRequest);
+		return productPagingRepository.findProductBySoldCount(pageRequest)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
-	public List<Product> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
+	public List<ProductSelectionResponse> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
+		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Product> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
+		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId)
+				.stream()
+				.map(ProductSelectionResponse::new)
+				.collect(Collectors.toList());
 	}
 
 	public Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId){
