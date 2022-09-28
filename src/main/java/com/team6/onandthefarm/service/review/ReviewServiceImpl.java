@@ -67,6 +67,7 @@ public class ReviewServiceImpl implements ReviewService{
 		review.setSeller(product.get().getSeller());
 		review.setProduct(product.get());
 		review.setReviewCreatedAt((dateUtils.transDate(env.getProperty("dateutils.format"))));
+		review.setReviewLikeCount(0);
 		review.setReviewStatus("created");
 
 		return reviewRepository.save(review).getReviewId();
