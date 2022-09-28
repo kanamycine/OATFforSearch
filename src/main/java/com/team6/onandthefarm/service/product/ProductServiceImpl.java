@@ -5,18 +5,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
+import com.team6.onandthefarm.dto.product.ProductWishFormDto;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.entity.product.Wish;
 import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.product.ProductPagingRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
+import com.team6.onandthefarm.repository.product.ProductWishRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
 
 @Service
@@ -41,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
 	private ProductQnaAnswerRepository productQnaAnswerRepository;
 	private SellerRepository sellerRepository;
 	private ProductPagingRepository productPagingRepository;
+	private ProductWishRepository productWishRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -52,15 +58,17 @@ public class ProductServiceImpl implements ProductService {
 							  ProductQnaRepository productQnaRepository,
 							  ProductQnaAnswerRepository productQnaAnswerRepository,
 							  SellerRepository sellerRepository,
+							  ProductWishRepository productWishRepository,
 							  ProductPagingRepository productPagingRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.productPagingRepository = productPagingRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
-		this.productQnaRepository=productQnaRepository;
-		this.productQnaAnswerRepository=productQnaAnswerRepository;
-		this.sellerRepository=sellerRepository;
+		this.productQnaRepository = productQnaRepository;
+		this.productQnaAnswerRepository = productQnaAnswerRepository;
+		this.sellerRepository = sellerRepository;
+		this.productWishRepository = productWishRepository;
 	}
 
 	public Long saveProduct(ProductFormDto productFormDto){
@@ -120,6 +128,34 @@ public class ProductServiceImpl implements ProductService {
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return product.get().getProductId();
+	}
+
+	public Long addProductToWishList(ProductWishFormDto productWishFormDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
+
+		/*
+		추후 유저 추가 되면 추가
+		Optional<User> user = userRepository.findById(productWishFormDto.getUserId());
+		wish.setUser(user.get());
+		* */
+
+		Optional<Product> product = productRepository.findById(productWishFormDto.getProductId());
+		wish.setProduct(product.get());
+		product.get().setProductWishCount(product.get().getProductWishCount() + 1);
+		Long wishId = productWishRepository.save(wish).getWishId();
+
+		return wishId;
+	}
+
+	public Long cancelProductFromWishList(ProductWishCancelDto productWishCancelDto){
+		Long wishId = productWishCancelDto.getWishId();
+		Wish wish = productWishRepository.findById(wishId).get();
+		productWishRepository.delete(wish);
+		Product product = productRepository.findById(productWishCancelDto.getProductId()).get();
+		product.setProductWishCount(product.getProductWishCount() - 1);
+		return wishId;
 	}
 
 	public List<Product> getAllProductListOrderByNewest(Integer pageNumber){
