@@ -1,6 +1,7 @@
 package com.team6.onandthefarm.service.cart;
 
 import com.team6.onandthefarm.dto.cart.CartDto;
+import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.cart.CartRepository;
@@ -11,10 +12,12 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
@@ -38,10 +41,10 @@ public class CartServiceImpl implements CartService{
     @Override
     public Long addCart(CartDto cartDto) {
 
-        Optional<Product> product = productRepository.findById(cartDto.getProductId());
-
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        Optional<Product> product = productRepository.findById(cartDto.getProductId());
 
         //현재 로그인한 사용자 추가해야함!
         Cart cart = modelMapper.map(cartDto, Cart.class);
@@ -53,5 +56,19 @@ public class CartServiceImpl implements CartService{
         Cart savedCart = cartRepository.save(cart);
 
         return savedCart.getCartId();
+    }
+
+    /**
+     * 장바구니의 유지 여부를 변경하는 메소드
+     * @param cartIsActivatedDto
+     * @return cartId
+     */
+    @Override
+    public Long updateCartIsActivated(CartIsActivatedDto cartIsActivatedDto){
+
+        Optional<Cart> cart = cartRepository.findById(cartIsActivatedDto.getCartId());
+        cart.get().setCartIsActivated(cartIsActivatedDto.getCartIsActivated());
+
+        return cart.get().getCartId();
     }
 }

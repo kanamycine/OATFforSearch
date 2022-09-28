@@ -7,9 +7,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartRequest {
+public class CartIsActivatedRequest {
 
-    private Long productId;
-    private Integer cartQty;
-
+    private Long cartId;
+    private Boolean cartIsActivated;
 }
