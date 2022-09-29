@@ -8,6 +8,8 @@ import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.cart.CartRequest;
+import com.team6.onandthefarm.vo.cart.CartResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -84,5 +88,28 @@ public class CartServiceImpl implements CartService{
         cart.get().setCartStatus(false);
 
         return cart.get().getCartId();
+    }
+
+    @Override
+    public List<CartResponse> selectCart(Long userId) {
+        List<Cart> carts = cartRepository.findNotDeletedCartByUserId(userId);
+
+        List<CartResponse> cartResponses = new ArrayList<>();
+        for(Cart c : carts){
+            CartResponse cartResponse = CartResponse.builder()
+                    .cartId(c.getCartId())
+                    .cartIsActivated(c.getCartIsActivated())
+                    .cartQty(c.getCartQty())
+                    .productId(c.getProduct().getProductId())
+                    .productName(c.getProduct().getProductName())
+                    .productDeliveryCompany(c.getProduct().getProductDeliveryCompany())
+                    .productMainImgSrc(c.getProduct().getProductMainImgSrc())
+                    .productOriginPlace(c.getProduct().getProductOriginPlace())
+                    .productPrice(c.getProduct().getProductPrice())
+                    .productStatus(c.getProduct().getProductStatus())
+                    .build();
+            cartResponses.add(cartResponse);
+        }
+        return cartResponses;
     }
 }

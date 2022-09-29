@@ -9,6 +9,7 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.cart.CartDeleteRequest;
 import com.team6.onandthefarm.vo.cart.CartIsActivatedRequest;
 import com.team6.onandthefarm.vo.cart.CartRequest;
+import com.team6.onandthefarm.vo.cart.CartResponse;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user/cart")
@@ -89,6 +92,22 @@ public class CartController {
                 .httpStatus(HttpStatus.CREATED)
                 .message("cart delete completed")
                 .data(cartId)
+                .build();
+
+        return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @ApiOperation(value = "장바구니 조회")
+    public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(){
+
+        Long userId = 1L;
+        List<CartResponse> cartResponses = cartService.selectCart(userId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.CREATED)
+                .message("cart select completed")
+                .data(cartResponses)
                 .build();
 
         return new ResponseEntity(baseResponse, HttpStatus.CREATED);
