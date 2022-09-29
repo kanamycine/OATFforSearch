@@ -20,7 +20,7 @@ public class User {
 
     private String userEmail;
 
-    private String userPassword;
+    //private String userPassword;
 
     private Integer userZipcode;
 
@@ -40,11 +40,16 @@ public class User {
 
     private Boolean userIsActivated;
 
-    private String userKakaoNumber;
+    private String role;
+
+    private String provider;
+
+    private Long userKakaoNumber;
 
     private String userNaverNumber;
 
     private String userAppleNumber;
 
     private String userGoogleNumber;
+
 }
