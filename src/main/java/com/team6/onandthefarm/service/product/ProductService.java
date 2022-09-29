@@ -7,6 +7,8 @@ import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
 import com.team6.onandthefarm.dto.product.ProductWishFormDto;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.product.ProductQnaAnswerResponse;
 import org.springframework.web.multipart.MultipartFile;
 import com.team6.onandthefarm.dto.product.ProductDeleteDto;
 import com.team6.onandthefarm.dto.product.ProductFormDto;
@@ -26,5 +28,5 @@ public interface ProductService {
 	List<ProductSelectionResponse> getProductsBySoldCount(Integer pageNumber);
 	List<ProductSelectionResponse> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
 	List<ProductSelectionResponse> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
-	Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId);
+	Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId);
 }
