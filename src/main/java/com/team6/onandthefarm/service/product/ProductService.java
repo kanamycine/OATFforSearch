@@ -12,6 +12,7 @@ import com.team6.onandthefarm.dto.product.ProductDeleteDto;
 import com.team6.onandthefarm.dto.product.ProductFormDto;
 import com.team6.onandthefarm.dto.product.ProductUpdateFormDto;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.vo.product.ProductSelectionResponse;
 
 public interface ProductService {
 	Long saveProduct(ProductFormDto productFormDto);
@@ -19,11 +20,11 @@ public interface ProductService {
 	Long deleteProduct(ProductDeleteDto productDeleteDto);
 	Long addProductToWishList(ProductWishFormDto productWishFormDto);
 	Long cancelProductFromWishList(ProductWishCancelDto productWishCancelDto);
-	List<Product> getAllProductListOrderByNewest(Integer pageNumber);
-	List<Product> getProductsListByHighPrice(Integer pageNumber);
-	List<Product> getProductsListByLowPrice(Integer pageNumber);
-	List<Product> getProductsBySoldCount(Integer pageNumber);
-	List<Product> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
-	List<Product> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
+	List<ProductSelectionResponse> getAllProductListOrderByNewest(Integer pageNumber);
+	List<ProductSelectionResponse> getProductsListByHighPrice(Integer pageNumber);
+	List<ProductSelectionResponse> getProductsListByLowPrice(Integer pageNumber);
+	List<ProductSelectionResponse> getProductsBySoldCount(Integer pageNumber);
+	List<ProductSelectionResponse> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
+	List<ProductSelectionResponse> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
 	Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId);
 }
