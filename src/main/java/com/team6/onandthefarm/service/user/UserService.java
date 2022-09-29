@@ -5,9 +5,11 @@ import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserRegisterDto;
 import com.team6.onandthefarm.dto.user.UserUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
+import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 public interface UserService {
     Boolean createProductQnA(UserQnaDto userQnaDto);
@@ -19,4 +21,6 @@ public interface UserService {
     Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
 
     Long updateUserInfo(UserUpdateDto userUpdateDto);
+
+    List<ProductQnAResponse> findUserQna(Long userId);
 }

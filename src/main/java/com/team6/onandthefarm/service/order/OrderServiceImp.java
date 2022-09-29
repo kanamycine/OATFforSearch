@@ -1,12 +1,14 @@
 package com.team6.onandthefarm.service.order;
 
 import com.team6.onandthefarm.dto.order.*;
+import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.order.Payment;
 import com.team6.onandthefarm.entity.order.Refund;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.order.*;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
@@ -51,6 +53,8 @@ public class OrderServiceImp implements OrderService{
 
     private UserRepository userRepository;
 
+    private CartRepository cartRepository;
+
     private DateUtils dateUtils;
 
     private Environment env;
@@ -63,7 +67,8 @@ public class OrderServiceImp implements OrderService{
                            PaymentRepository paymentRepository,
                            RefundRepository refundRepository,
                            ProductRepository productRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           CartRepository cartRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository=orderProductRepository;
         this.dateUtils=dateUtils;
@@ -72,6 +77,7 @@ public class OrderServiceImp implements OrderService{
         this.refundRepository = refundRepository;
         this.productRepository=productRepository;
         this.userRepository=userRepository;
+        this.cartRepository=cartRepository;
     }
 
     /**
@@ -108,25 +114,25 @@ public class OrderServiceImp implements OrderService{
         /**
          * 유저id로 카트 정보 + 상품 정보 가져오기
          */
+
+        Optional<User> user = userRepository.findById(userId);
+
+        List<Cart> carts = cartRepository.findByUser(user.get());
+
         List<OrderFindOneResponse> list = new ArrayList<>();
-        OrderFindOneResponse response1 = OrderFindOneResponse.builder()
-                .productId(Long.valueOf(12))
-                .productImg("sdasdaads")
-                .productName("sadsadsads")
-                .productPrice(10000)
-                .sellerId(Long.valueOf(1))
-                .productQty(10)
-                .build();
-        OrderFindOneResponse response2 = OrderFindOneResponse.builder()
-                .productId(Long.valueOf(12))
-                .productImg("sdasdaads")
-                .productName("sadsadsads")
-                .productPrice(10000)
-                .sellerId(Long.valueOf(1))
-                .productQty(10)
-                .build();
-        list.add(response1);
-        list.add(response2);
+
+        for(Cart cart :carts){
+            Product product = cart.getProduct();
+            OrderFindOneResponse.builder()
+                    .productQty(cart.getCartQty())
+                    .productName(product.getProductName())
+                    .productImg(product.getProductMainImgSrc())
+                    .productPrice(product.getProductPrice())
+                    .productId(product.getProductId())
+                    .sellerId(product.getSeller().getSellerId())
+                    .build();
+        }
+
         return list;
     }
 

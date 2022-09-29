@@ -17,7 +17,10 @@ import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -157,5 +162,21 @@ public class UserServiceImp implements UserService{
         user.get().setUserSex(userUpdateDto.getUserSex());
 
         return user.get().getUserId();
+    }
+
+    public List<ProductQnAResponse> findUserQna(Long userId){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        List<ProductQna> productQnas = productQnaRepository.findByUser_UserId(userId);
+
+        List<ProductQnAResponse> responses = new ArrayList<>();
+
+        for(ProductQna productQna : productQnas){
+            ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
+            responses.add(response);
+        }
+
+        return responses;
     }
 }
