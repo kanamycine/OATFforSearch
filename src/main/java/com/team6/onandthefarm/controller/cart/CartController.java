@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -34,14 +36,14 @@ public class CartController {
 
     @PostMapping
     @ApiOperation(value = "장바구니 추가")
-    public ResponseEntity<BaseResponse> addCart(@RequestBody CartRequest cartRequest){
+    public ResponseEntity<BaseResponse> addCart(@ApiIgnore Principal principal, @RequestBody CartRequest cartRequest){
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
-        Long cartId = cartService.addCart(cartDto);
+        Long cartId = cartService.addCart(cartDto, Long.parseLong(principal.getName()));
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)

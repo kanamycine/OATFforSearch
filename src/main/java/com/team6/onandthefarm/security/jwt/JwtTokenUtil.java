@@ -38,7 +38,7 @@ public class JwtTokenUtil {
     }
 
     public Token generateToken(Long userId) {
-        long tokenPeriod = 1000L * 60L * 20L; //5분
+        long tokenPeriod = 1000L * 60L * 1440L; //5분
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
 
         Date now = new Date();

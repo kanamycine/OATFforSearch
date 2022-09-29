@@ -5,8 +5,10 @@ import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.cart.CartRequest;
 import com.team6.onandthefarm.vo.cart.CartResponse;
@@ -27,13 +29,15 @@ public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final DateUtils dateUtils;
     private final Environment env;
 
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, DateUtils dateUtils, Environment env){
+    public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository, ProductRepository productRepository, DateUtils dateUtils, Environment env){
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
         this.dateUtils = dateUtils;
         this.env = env;
     }
@@ -44,15 +48,16 @@ public class CartServiceImpl implements CartService{
      * @return cartId
      */
     @Override
-    public Long addCart(CartDto cartDto) {
+    public Long addCart(CartDto cartDto, Long userId) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         Optional<Product> product = productRepository.findById(cartDto.getProductId());
+        Optional<User> user = userRepository.findById(userId);
 
-        //현재 로그인한 사용자 추가해야함!
         Cart cart = modelMapper.map(cartDto, Cart.class);
+        cart.setUser(user.get());
         cart.setProduct(product.get());
         cart.setCartStatus(true);
         cart.setCartIsActivated(false);
