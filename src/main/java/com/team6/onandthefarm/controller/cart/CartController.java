@@ -43,7 +43,8 @@ public class CartController {
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
-        Long cartId = cartService.addCart(cartDto, Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        Long cartId = cartService.addCart(cartDto, userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
@@ -101,9 +102,9 @@ public class CartController {
 
     @GetMapping
     @ApiOperation(value = "장바구니 조회")
-    public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(){
+    public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(@ApiIgnore Principal principal){
 
-        Long userId = 1L;
+        Long userId = Long.parseLong(principal.getName());
         List<CartResponse> cartResponses = cartService.selectCart(userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
