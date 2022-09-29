@@ -108,10 +108,12 @@ public class UserController {
 
     @PostMapping("/QnA")
     @ApiOperation(value = "유저 질의 생성")
-    public ResponseEntity<BaseResponse> createQnA(@RequestBody UserQnaRequest userQnaRequest){
+    public ResponseEntity<BaseResponse> createQnA(
+            @ApiIgnore Principal principal, @RequestBody UserQnaRequest userQnaRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserQnaDto userQnaDto = modelMapper.map(userQnaRequest, UserQnaDto.class);
+        userQnaDto.setUserId(Long.valueOf(principal.getName()));
         Boolean result = userService.createProductQnA(userQnaDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)

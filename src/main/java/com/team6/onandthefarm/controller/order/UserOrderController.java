@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +38,12 @@ public class UserOrderController {
 
     @PostMapping("/sheet")
     @ApiOperation(value = "단건 주문서 조회")
-    public ResponseEntity<BaseResponse<OrderSheetResponse>> findOneOrder(@RequestBody OrderSheetRequest orderSheetRequest){
+    public ResponseEntity<BaseResponse<OrderSheetResponse>> findOneOrder(
+            @ApiIgnore Principal principal, @RequestBody OrderSheetRequest orderSheetRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderSheetDto orderSheetDto = modelMapper.map(orderSheetRequest,OrderSheetDto.class);
+        orderSheetDto.setUserId(Long.valueOf(principal.getName()));
         OrderSheetResponse result = orderService.findOneByProductId(orderSheetDto);
         BaseResponse<OrderSheetResponse> response = BaseResponse.<OrderSheetResponse>builder()
                 .httpStatus(HttpStatus.OK)
@@ -49,10 +53,11 @@ public class UserOrderController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
-    @GetMapping("/carts/{user-no}")
+    @GetMapping("/carts")
     @ApiOperation(value = "다건 주문서 조회")
-    public ResponseEntity<List<OrderFindOneResponse>> findOrders(@PathVariable(name = "user-no") String userId){
-        List<OrderFindOneResponse> responseList = orderService.findCartByUserId(Long.valueOf(userId));
+    public ResponseEntity<List<OrderFindOneResponse>> findOrders(@ApiIgnore Principal principal){
+        List<OrderFindOneResponse> responseList
+                = orderService.findCartByUserId(Long.valueOf(principal.getName()));
         return new ResponseEntity(responseList,HttpStatus.OK);
     }
 
@@ -63,7 +68,8 @@ public class UserOrderController {
      */
     @PostMapping()
     @ApiOperation(value = "주문 생성")
-    public ResponseEntity<BaseResponse> createOrder(@RequestBody OrderRequest orderRequest){
+    public ResponseEntity<BaseResponse> createOrder(
+            @ApiIgnore Principal principal,@RequestBody OrderRequest orderRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderDto orderDto = OrderDto.builder()
@@ -71,7 +77,7 @@ public class UserOrderController {
                 .orderRequest(orderRequest.getOrderRequest())
                 .orderPhone(orderRequest.getOrderPhone())
                 .orderAddress(orderRequest.getOrderAddress())
-                .userId(orderRequest.getUserId())
+                .userId(Long.valueOf(principal.getName()))
                 .productList(new ArrayList<>())
                 .build();
 
@@ -93,10 +99,12 @@ public class UserOrderController {
 
     @PostMapping("/list")
     @ApiOperation(value = "유저 주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findUserAllOrders(@RequestBody OrderUserRequest orderUserRequest){
+    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findUserAllOrders(
+            @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest, OrderUserFindDto.class);
+        orderUserFindDto.setUserId(principal.getName());
         List<OrderUserResponseList> responses  = orderService.findUserOrders(orderUserFindDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -106,9 +114,10 @@ public class UserOrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @GetMapping("/user/list/{order-no}")
+    @GetMapping("/list/{order-no}")
     @ApiOperation(value = "유저 주문 상세 조회")
-    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
+    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(
+            @PathVariable(name = "order-no") String orderSerial){
         OrderUserDetailResponse detailResponse = orderService.findUserOrderDetail(orderSerial);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -121,10 +130,12 @@ public class UserOrderController {
 
     @PostMapping("/claim/cancel")
     @ApiOperation(value = "취소 생성" )
-    public ResponseEntity<BaseResponse<Boolean>> createCancel(@RequestBody RefundRequest refundRequest){
+    public ResponseEntity<BaseResponse<Boolean>> createCancel(
+            @ApiIgnore Principal principal, @RequestBody RefundRequest refundRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
+        refundDto.setUserId(Long.valueOf(principal.getName()));
         Boolean result = orderService.createCancel(refundDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -136,10 +147,12 @@ public class UserOrderController {
 
     @PostMapping("/claim/refund")
     @ApiOperation(value = "반품 생성" )
-    public ResponseEntity<BaseResponse<Boolean>> createRefund(@RequestBody RefundRequest refundRequest){
+    public ResponseEntity<BaseResponse<Boolean>> createRefund(
+            @ApiIgnore Principal principal, @RequestBody RefundRequest refundRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
+        refundDto.setUserId(Long.valueOf(principal.getName()));
         boolean result = orderService.createRefund(refundDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -151,10 +164,12 @@ public class UserOrderController {
 
     @PostMapping("/claim/list")
     @ApiOperation(value = "유저 취소/반품 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findUserClaims(@RequestBody OrderUserRequest orderUserRequest){
+    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findUserClaims(
+            @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest,OrderUserFindDto.class);
+        orderUserFindDto.setUserId(principal.getName());
         List<OrderSellerResponse> responseList = orderService.findUserClaims(orderUserFindDto);
         BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
                 .httpStatus(HttpStatus.OK)
