@@ -30,4 +30,6 @@ public class Cart {
 
     private Integer cartQty;
     private Boolean cartIsActivated;
+    private Boolean cartStatus;
+    private String cartCreatedAt;
 }
