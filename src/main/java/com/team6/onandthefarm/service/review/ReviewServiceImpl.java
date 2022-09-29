@@ -62,10 +62,15 @@ public class ReviewServiceImpl implements ReviewService{
 
 		Long productId = reviewFormDto.getProductId();
 		Optional<Product> product = productRepository.findById(productId);
-
+		Long userId = reviewFormDto.getUserId();
 		// 유저 해야함
+		// Optional<User> user = userRepository.findById(userId);
+
+
+
 		review.setSeller(product.get().getSeller());
 		review.setProduct(product.get());
+		// review.setUser(user.get());
 		review.setReviewCreatedAt((dateUtils.transDate(env.getProperty("dateutils.format"))));
 		review.setReviewLikeCount(0);
 		review.setReviewStatus("created");

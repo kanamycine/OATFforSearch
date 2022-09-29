@@ -20,6 +20,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductFormRequest {
+	private Long sellerId;
+
 	private String productName;
 
 	private String productCategory;
@@ -46,5 +48,4 @@ public class ProductFormRequest {
 
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
 
-	private Long sellerId;
 }
