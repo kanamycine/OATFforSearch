@@ -10,9 +10,18 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderSellerDetailResponse {
     List<OrderFindOneResponse> orderProducts;
+
     private String orderName;
+
     private String orderPhone;
+
     private String orderAddress;
+
     private String orderRequest;
+
     private String orderDate;
+
+    private String orderStatus;
+
+    private Integer orderTotalPrice;
 }

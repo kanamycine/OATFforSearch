@@ -7,10 +7,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefundDto {
-    private Long orderProductId;
+public class OrderSheetDto {
+    private Long productId;
 
-    private String refundDetail;
+    private Long userId;
 
-    private String refundImage;
+    private Integer productQty;
 }

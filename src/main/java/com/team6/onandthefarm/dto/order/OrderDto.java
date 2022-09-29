@@ -13,6 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class OrderDto {
     private Long sellerId;
+    private Long userId;
     private String orderRecipientName;
     private String orderAddress;
     private String orderPhone;

@@ -10,4 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderSellerResponseList {
     List<OrderSellerResponse> orderSellerResponses;
+
+    private Integer orderTotalPrice;
+
+    private String orderDate;
 }
