@@ -97,7 +97,6 @@ public class ProductServiceImpl implements ProductService {
 
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
 		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
-		// 나중에 productUpdateFormDto의 ID로 findbyId 해서 가져온 카테고리로 대치!!!!!!
 		product.get().setProductName(productUpdateFormDto.getProductName());
 		product.get().setCategory(category.get());
 		product.get().setProductPrice(productUpdateFormDto.getProductPrice());

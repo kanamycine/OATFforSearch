@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class ReviewFormDto {
 	private Long reviewId;
 	private Long productId;
+	private Long userId;
+	private Long sellerId;
 	@NotBlank(message = "리뷰 작성 글은 필수 입력 값입니다.")
 	private String reviewContent;
 	private String reviewCreatedAt;
