@@ -26,4 +26,6 @@ public class Refund {
     private String refundImage;
 
     private Long orderProductId;
+
+    private Long userId;
 }
