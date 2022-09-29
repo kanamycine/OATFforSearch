@@ -9,12 +9,15 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +31,11 @@ public class UserProductController {
 
 	@PostMapping(value = "/wish/add")
 	@ApiOperation("위시리스트 추가")
-	public ResponseEntity<BaseResponse<Product>> addProductToWishList(@RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
+	public ResponseEntity<BaseResponse<Product>> addProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishFormDto productWishFormDto = modelMapper.map(productWishFormRequest, ProductWishFormDto.class);
+		productWishFormDto.setUserId(Long.parseLong(principal.getName()));
 		Long wishId = productService.addProductToWishList(productWishFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -45,10 +49,11 @@ public class UserProductController {
 
 	@DeleteMapping(value = "/wish/delete")
 	@ApiOperation("위시리스트 삭제")
-	public ResponseEntity<BaseResponse<Product>> deleteProductToWishList(@RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
+	public ResponseEntity<BaseResponse<Product>> deleteProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest, ProductWishCancelDto.class);
+		productWishCancelDto.setUserId(Long.parseLong(principal.getName()));
 		Long wishId = productService.cancelProductFromWishList(productWishCancelDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()

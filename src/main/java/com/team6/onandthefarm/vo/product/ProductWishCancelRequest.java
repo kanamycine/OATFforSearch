@@ -14,5 +14,4 @@ import lombok.Setter;
 public class ProductWishCancelRequest {
 	private Long wishId;
 	private Long productId;
-	private Long userId;
 }

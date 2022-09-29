@@ -13,5 +13,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewLikeFormRequest {
 	private Long reviewId;
-	private Long userId;
 }

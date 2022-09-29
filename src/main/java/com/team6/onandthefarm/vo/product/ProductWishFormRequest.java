@@ -13,5 +13,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductWishFormRequest {
 	private Long productId;
-	private Long userId;
 }
