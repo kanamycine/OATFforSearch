@@ -8,6 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefundRequest {
+    private Long userId;
+
     private Long orderProductId;
 
     private String refundDetail;

@@ -55,6 +55,11 @@ public class OrderController {
         return new ResponseEntity(responseList,HttpStatus.OK);
     }
 
+    /**
+     * 주문 생성할때 product엔티티에서 product상태가 p0 인경우만 판매되게 하는 코드 넣어야 함
+     * @param orderRequest
+     * @return
+     */
     @PostMapping()
     @ApiOperation(value = "주문 생성")
     public ResponseEntity<BaseResponse> createOrder(@RequestBody OrderRequest orderRequest){
@@ -68,22 +73,15 @@ public class OrderController {
                 .userId(orderRequest.getUserId())
                 .productList(new ArrayList<>())
                 .build();
-        // productId->sellerId를 찾기
-        /*
-            key : productId
-            value : sellerId
-            prodSeller는 담을 공간
-         */
-        Map<Long,Long> prodSeller = new HashMap<>();
+
         for(OrderProductRequest order : orderRequest.getProductList()){
             OrderProductDto orderProductDto = OrderProductDto.builder()
                     .productQty(order.getProductQty())
                     .productId(order.getProductId())
                     .build();
             orderDto.getProductList().add(orderProductDto);
-            prodSeller.put(order.getProductId(), orderProductDto.getSellerId());
         }
-        orderDto.setProdSeller(prodSeller);
+
         orderService.createOrder(orderDto);
 
         BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("OK").build();
@@ -98,7 +96,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/seller/list")
-    @ApiOperation(value = "주문 내역 조회")
+    @ApiOperation(value = "셀러 주문 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -112,10 +110,40 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @GetMapping("/list/{order-no}")
-    @ApiOperation(value = "주문 상세 조회")
-    public ResponseEntity<BaseResponse<OrderSellerDetailResponse>> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
-        OrderSellerDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSerial);
+    @PostMapping("/user/list")
+    @ApiOperation(value = "유저 주문 내역 조회")
+    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findUserAllOrders(@RequestBody OrderUserRequest orderUserRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest, OrderUserFindDto.class);
+        List<OrderUserResponseList> responses  = orderService.findUserOrders(orderUserFindDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responses)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @GetMapping("user/list/{order-no}")
+    @ApiOperation(value = "유저 주문 상세 조회")
+    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
+        OrderUserDetailResponse detailResponse = orderService.findUserOrderDetail(orderSerial);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(detailResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @PostMapping("seller/list/detail")
+    @ApiOperation(value = "셀러 주문 상세 조회")
+    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
+        OrderUserDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSellerDetailDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -130,11 +158,11 @@ public class OrderController {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
-        boolean result = orderService.createCancel(refundDto);
+        Boolean result = orderService.createCancel(refundDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
-                .data(Boolean.valueOf(result))
+                .data(result)
                 .build();
         return new ResponseEntity(response,HttpStatus.OK);
     }
@@ -154,8 +182,8 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("/claim/list")
-    @ApiOperation(value = "취소/반품 내역 조회")
+    @PostMapping("seller/claim/list")
+    @ApiOperation(value = "셀러 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(@RequestBody OrderSellerRequest orderSellerRequest){
         List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
@@ -166,7 +194,22 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @GetMapping("/claim/list/{orderProduct-no}")
+    @PostMapping("user/claim/list")
+    @ApiOperation(value = "유저 취소/반품 내역 조회")
+    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findUserClaims(@RequestBody OrderUserRequest orderUserRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest,OrderUserFindDto.class);
+        List<OrderSellerResponse> responseList = orderService.findUserClaims(orderUserFindDto);
+        BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responseList)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @GetMapping("seller/claim/list/{orderProduct-no}")
     @ApiOperation(value = "취소/반품 상세 조회")
     public ResponseEntity<BaseResponse<RefundDetailResponse>> findSellerClaimDetail(@PathVariable(name = "orderProduct-no") String orderProductId){
         RefundDetailResponse refundDetailResponse = orderService.findRefundDetail(Long.valueOf(orderProductId));

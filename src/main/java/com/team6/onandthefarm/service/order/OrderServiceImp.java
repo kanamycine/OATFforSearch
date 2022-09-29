@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 @Service
@@ -153,6 +154,18 @@ public class OrderServiceImp implements OrderService{
     public Boolean createOrder(OrderDto orderDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        boolean stockCheck = checkStock(orderDto);
+        if(!stockCheck){ // 재고 체크
+            return Boolean.FALSE;
+        }
+
+        // productId->sellerId를 찾기
+        /*
+            key : productId
+            value : sellerId
+            prodSeller는 담을 공간
+         */
+
         Optional<User> user = userRepository.findById(orderDto.getUserId());
         Orders orders = Orders.builder()
                 .ordersPhone(orderDto.getOrderPhone())
@@ -162,7 +175,6 @@ public class OrderServiceImp implements OrderService{
                 .ordersSerial(UUID.randomUUID().toString())
                 .ordersDate(dateUtils.transDate(env.getProperty("dateutils.format")))
                 .ordersStatus("os0")
-                .ordersSellerId(orderDto.getSellerId())
                 .userId(user.get())
                 .build(); // 주문 엔티티 생성
         for(OrderProductDto orderProductDto : orderDto.getProductList()){
@@ -170,13 +182,12 @@ public class OrderServiceImp implements OrderService{
             orderProductDto.setProductName(product.get().getProductName());
             orderProductDto.setProductPrice(product.get().getProductPrice());
             orderProductDto.setSellerId(product.get().getSeller().getSellerId());
+            orders.setOrdersSellerId(product.get().getSeller().getSellerId());
             orderProductDto.setProductImg(product.get().getProductMainImgSrc()); // 이미지는 나중에
         }
+
         Orders ordersEntity = orderRepository.save(orders); // 주문 생성
-        boolean stockCheck = checkStock(orderDto);
-        if(!stockCheck){
-            return Boolean.FALSE;
-        }
+
         int totalPrice = 0;
         for(OrderProductDto order : orderDto.getProductList()){
             totalPrice+=order.getProductPrice()* order.getProductQty();
@@ -209,68 +220,44 @@ public class OrderServiceImp implements OrderService{
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        List<Orders> ordersListOs0 = orderRepository.findByOrdersStatusAndOrdersDateBetween(
-                "os0",
-                orderSellerFindDto.getStartDate(),
-                orderSellerFindDto.getEndDate()); // 모든 so0인 order가져오기
-        List<Orders> ordersListOs4 = orderRepository.findByOrdersStatusAndOrdersDateBetween(
-                "os4",
-                orderSellerFindDto.getStartDate(),
-                orderSellerFindDto.getEndDate()); // 모든 so4인 order가져오기
-        List<Orders> ordersListOs5 = orderRepository.findByOrdersStatusAndOrdersDateBetween(
-                "os5",
-                orderSellerFindDto.getStartDate(),
-                orderSellerFindDto.getEndDate()); // 모든 so5인 order가져오기
-
-        List<Orders> ordersList = new ArrayList<>();
-        for(Orders orders : ordersListOs0){
-            ordersList.add(orders);
-        }
-        for(Orders orders : ordersListOs4){
-            ordersList.add(orders);
-        }
-        for(Orders orders : ordersListOs5){
-            ordersList.add(orders);
-        }
-
         List<OrderSellerResponseList> responseList = new ArrayList<>();
-        for(Orders order : ordersList){
-            int totalPrice = 0;
-            // 주문 한 묶음 가져오기
-            List<OrderProduct> orderProductListSo0 = orderProductRepository.findByOrdersAndSellerIdAndOrderProductStatus(order,Long.valueOf(orderSellerFindDto.getSellerId()),"os0");
-            List<OrderProduct> orderProductListSo4 = orderProductRepository.findByOrdersAndSellerIdAndOrderProductStatus(order,Long.valueOf(orderSellerFindDto.getSellerId()),"os4");
-            List<OrderProduct> orderProductListSo5 = orderProductRepository.findByOrdersAndSellerIdAndOrderProductStatus(order,Long.valueOf(orderSellerFindDto.getSellerId()),"os5");
-            List<OrderProduct> orderProductList = new ArrayList<>();
 
-            Optional<User> user = userRepository.findById(order.getUserId().getUserId());
+        List<OrderProduct> orderProductList = orderProductRepository.findBySellerId(Long.valueOf(orderSellerFindDto.getSellerId()));
 
-            for(OrderProduct orderProduct : orderProductListSo0){
-                orderProductList.add(orderProduct);
+        /*
+                sellerId : orderId
+         */
+        Map<Long,Set<Long>> matching = new HashMap<>();
+        for(OrderProduct orderProduct : orderProductList){
+            if(Long.valueOf(orderSellerFindDto.getSellerId())==orderProduct.getSellerId()){
+                if(!matching.containsKey(orderProduct.getSellerId())){
+                    matching.put(orderProduct.getSellerId(),new HashSet<>());
+                }
+                matching.get(orderProduct.getSellerId()).add(orderProduct.getOrders().getOrdersId());
             }
-            for(OrderProduct orderProduct : orderProductListSo4){
-                orderProductList.add(orderProduct);
-            }
-            for(OrderProduct orderProduct : orderProductListSo5){
-                orderProductList.add(orderProduct);
-            }
-
+        }
+        for(Long orderId : matching.get(Long.valueOf(orderSellerFindDto.getSellerId()))){
             List<OrderSellerResponse> orderResponse = new ArrayList<>();
+            int totalPrice = 0;
+            Optional<Orders> order = orderRepository.findById(orderId);
+            Optional<User> user = userRepository.findById(order.get().getUserId().getUserId());
             for(OrderProduct orderProduct : orderProductList){
+                if(orderProduct.getOrders().getOrdersId()!=orderId) continue;
                 OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
                         .userName(user.get().getUserName())
                         .orderProductName(orderProduct.getOrderProductName())
                         .orderProductMainImg(orderProduct.getOrderProductMainImg())
                         .orderProductPrice(orderProduct.getOrderProductPrice())
                         .orderProductQty(orderProduct.getOrderProductQty())
-                        .ordersDate(order.getOrdersDate())
-                        .ordersSerial(order.getOrdersSerial())
-                        .orderProductStatus(order.getOrdersStatus())
+                        .ordersDate(order.get().getOrdersDate())
+                        .ordersSerial(order.get().getOrdersSerial())
+                        .orderProductStatus(orderProduct.getOrderProductStatus())
                         .build();
                 if(orderProduct.getOrderProductStatus().equals("os4")||
                         orderProduct.getOrderProductStatus().equals("os5")){
-                    orderSellerResponse.setOrderProductDeliveryWaybillNumber(order.getOrdersDeliveryWaybillNumber());
-                    orderSellerResponse.setOrderProductDeliveryCompany(order.getOrdersDeliveryCompany());
-                    orderSellerResponse.setOrderProductDeliveryDate(order.getOrdersDeliveryDate());
+                    orderSellerResponse.setOrderProductDeliveryWaybillNumber(order.get().getOrdersDeliveryWaybillNumber());
+                    orderSellerResponse.setOrderProductDeliveryCompany(order.get().getOrdersDeliveryCompany());
+                    orderSellerResponse.setOrderProductDeliveryDate(order.get().getOrdersDeliveryDate());
                 }
                 totalPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
                 orderResponse.add(orderSellerResponse);
@@ -278,11 +265,14 @@ public class OrderServiceImp implements OrderService{
             OrderSellerResponseList orderSellerResponseList = new OrderSellerResponseList();
             orderSellerResponseList.setOrderSellerResponses(orderResponse);
             orderSellerResponseList.setOrderTotalPrice(totalPrice);
-            orderSellerResponseList.setOrderDate(order.getOrdersDate());
+            orderSellerResponseList.setOrderDate(order.get().getOrdersDate());
             if(orderSellerResponseList.getOrderSellerResponses().size()!=0){
                 responseList.add(orderSellerResponseList);
             }
         }
+
+
+
         /**
          * 아래가 정렬 및 페이징처리 코드
          */
@@ -304,11 +294,106 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
-     * 셀러가 주문 상세 조회를 할때 사용되는 메서드
+     * 유저가 주문 내역을 조회 할때 사용되는 메서드
+     * userId로 자신의 주문 다 가져오고 -> orderProduct테이블에서 orderId로 묶은 뒤 보내기
+     * @param orderUserFindDto
+     * @return
+     */
+    public List<OrderUserResponseList> findUserOrders(OrderUserFindDto orderUserFindDto){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        List<OrderUserResponseList> response = new ArrayList<>();
+
+        Optional<User> user = userRepository.findById(Long.valueOf(orderUserFindDto.getUserId()));
+
+        List<Orders> myOrders = orderRepository.findByUserId(user.get());
+
+        for(Orders order : myOrders){
+            int totalPrice = 0;
+
+            OrderUserResponseList orderUserResponseList = new OrderUserResponseList();
+            List<OrderProduct> userOrders = orderProductRepository.findByOrders(order);
+            List<OrderSellerResponse> orderSellerResponses = new ArrayList<>();
+
+            for(OrderProduct orderProduct : userOrders){
+                OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
+                        .orderProductStatus(orderProduct.getOrderProductStatus())
+                        .ordersSerial(order.getOrdersSerial())
+                        .orderProductPrice(orderProduct.getOrderProductPrice())
+                        .orderProductQty(orderProduct.getOrderProductQty())
+                        .orderProductName(orderProduct.getOrderProductName())
+                        .orderProductMainImg(orderProduct.getOrderProductMainImg())
+                        .build();
+                totalPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
+                orderSellerResponses.add(orderSellerResponse);
+            }
+
+            orderUserResponseList.setOrderSellerResponses(orderSellerResponses);
+            orderUserResponseList.setOrderTotalPrice(totalPrice);
+            orderUserResponseList.setOrderDate(order.getOrdersDate());
+            response.add(orderUserResponseList);
+        }
+
+        response.sort((o1, o2) -> {
+            int result = o2.getOrderDate().compareTo(o1.getOrderDate());
+            return result;
+        });
+
+        int startIndex = orderUserFindDto.getPageNumber()*pageContentNumber;
+
+        int size = response.size();
+
+
+        if(size<startIndex+pageContentNumber){
+            return response.subList(startIndex,size);
+        }
+
+        return response.subList(startIndex,startIndex+pageContentNumber);
+    }
+
+    public OrderUserDetailResponse findSellerOrderDetail(OrderSellerDetailDto orderSellerDetailDto){
+        Orders order = orderRepository.findByOrdersSerial(orderSellerDetailDto.getOrderSerial());
+
+        int totalPrice = 0;
+
+        OrderUserDetailResponse orderUserDetailResponse = OrderUserDetailResponse.builder()
+                .orderAddress(order.getOrdersAddress())
+                .orderDate(order.getOrdersDate())
+                .orderName(order.getOrdersRecipientName())
+                .orderPhone(order.getOrdersPhone())
+                .orderRequest(order.getOrdersRequest())
+                .orderStatus(order.getOrdersStatus())
+                .orderProducts(new ArrayList<>())
+                .build();
+
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrders(order);
+
+        for(OrderProduct orderProduct : orderProducts){
+            if(orderProduct.getSellerId()!=Long.valueOf(orderSellerDetailDto.getSellerId())) continue;
+            OrderFindOneDetailResponse orderFindOneDetailResponse = OrderFindOneDetailResponse.builder()
+                    .orderProductId(orderProduct.getOrderProductId())
+                    .productImg(orderProduct.getOrderProductMainImg())
+                    .productName(orderProduct.getOrderProductName())
+                    .productPrice(orderProduct.getOrderProductPrice())
+                    .productQty(orderProduct.getOrderProductQty())
+                    .build();
+            totalPrice+=orderFindOneDetailResponse.getProductPrice()
+                    *orderFindOneDetailResponse.getProductQty();
+            orderUserDetailResponse.getOrderProducts().add(orderFindOneDetailResponse);
+        }
+
+        orderUserDetailResponse.setOrderTotalPrice(totalPrice);
+
+        return orderUserDetailResponse;
+    }
+
+    /**
+     * 유저가 주문 상세 조회를 할때 사용되는 메서드
      * @param orderSerial
      * @return
      */
-    public OrderSellerDetailResponse findSellerOrderDetail(String orderSerial){
+    public OrderUserDetailResponse findUserOrderDetail(String orderSerial){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -320,8 +405,8 @@ public class OrderServiceImp implements OrderService{
 
         int totalPrice = 0;
 
-        OrderSellerDetailResponse orderSellerDetailResponse =
-                OrderSellerDetailResponse.builder()
+        OrderUserDetailResponse orderUserDetailResponse =
+                OrderUserDetailResponse.builder()
                         .orderName(user.get().getUserName())
                         .orderAddress(orders.getOrdersAddress())
                         .orderDate(orders.getOrdersDate())
@@ -338,19 +423,20 @@ public class OrderServiceImp implements OrderService{
             if(orderProduct.getOrderProductStatus().equals("os2")){
                 continue;
             }
-            OrderFindOneResponse orderFindOneResponse = OrderFindOneResponse.builder()
+            OrderFindOneDetailResponse orderFindOneResponse = OrderFindOneDetailResponse.builder()
                     .productPrice(orderProduct.getOrderProductPrice())
                     .productName(orderProduct.getOrderProductName())
                     .productImg(orderProduct.getOrderProductMainImg())
                     .productQty(orderProduct.getOrderProductQty())
+                    .orderProductId(orderProduct.getOrderProductId())
                     .build();
             totalPrice+=orderFindOneResponse.getProductPrice()*orderFindOneResponse.getProductQty();
-            orderSellerDetailResponse.getOrderProducts().add(orderFindOneResponse);
+            orderUserDetailResponse.getOrderProducts().add(orderFindOneResponse);
         }
 
-        orderSellerDetailResponse.setOrderTotalPrice(totalPrice);
+        orderUserDetailResponse.setOrderTotalPrice(totalPrice);
 
-        return orderSellerDetailResponse;
+        return orderUserDetailResponse;
     }
 
     public void createPayment(String orderSerial){
@@ -372,12 +458,14 @@ public class OrderServiceImp implements OrderService{
      * @param refundDto
      * @return
      */
-    public boolean createCancel(RefundDto refundDto){
+    public Boolean createCancel(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
         orderProduct.get().setOrderProductStatus("os1"); // 취소상태
         Refund refund = Refund.builder()
                 .refundContent(refundDto.getRefundDetail())
                 .orderProductId(refundDto.getOrderProductId())
+                .refundImage(refundDto.getRefundImage())
+                .userId(refundDto.getUserId())
                 .build();
         refundRepository.save(refund);
 
@@ -410,6 +498,7 @@ public class OrderServiceImp implements OrderService{
 
     /**
      * 반품/취소 내역 조회해주는 메서드
+     * 날짜 조정하는 코드 넣기
      * @param orderSellerRequest
      * @return
      */
@@ -464,6 +553,42 @@ public class OrderServiceImp implements OrderService{
         }
 
         return responseList.subList(startIndex,startIndex+pageContentNumber);
+    }
+
+    public List<OrderSellerResponse> findUserClaims(OrderUserFindDto orderUserFindDto){
+        List<OrderSellerResponse> responses = new ArrayList<>();
+
+        List<Refund> refunds = refundRepository.findByUserId(Long.valueOf(orderUserFindDto.getUserId()));
+
+        for(Refund refund : refunds){
+            Optional<OrderProduct> orderProduct
+                    = orderProductRepository.findById(refund.getOrderProductId());
+            OrderSellerResponse response = OrderSellerResponse.builder()
+                    .orderProductMainImg(orderProduct.get().getOrderProductMainImg())
+                    .orderProductName(orderProduct.get().getOrderProductName())
+                    .orderProductQty(orderProduct.get().getOrderProductQty())
+                    .orderTotalPrice(orderProduct.get().getOrderProductPrice()
+                            *orderProduct.get().getOrderProductQty())
+                    .ordersDate(orderProduct.get().getOrders().getOrdersDate())
+                    .orderProductStatus(orderProduct.get().getOrderProductStatus())
+                    .build();
+            responses.add(response);
+        }
+
+        responses.sort((o1, o2) -> {
+            int result = o2.getOrdersDate().compareTo(o1.getOrdersDate());
+            return result;
+        });
+
+        int startIndex = orderUserFindDto.getPageNumber()*pageContentNumber;
+
+        int size = responses.size();
+
+        if(size<startIndex+pageContentNumber){
+            return responses.subList(startIndex,size);
+        }
+
+        return responses.subList(startIndex,startIndex+pageContentNumber);
     }
 
     /**

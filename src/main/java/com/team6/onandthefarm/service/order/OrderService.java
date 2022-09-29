@@ -6,17 +6,20 @@ import com.team6.onandthefarm.vo.order.*;
 import java.util.List;
 
 public interface OrderService {
-    public OrderSheetResponse findOneByProductId(OrderSheetDto orderSheetDto);
-    public List<OrderFindOneResponse> findCartByUserId(Long userId);
-    public Boolean createOrder(OrderDto orderDto);
-    public List<OrderSellerResponseList> findSellerOrders(OrderSellerFindDto orderSellerFindDto);
-    public OrderSellerDetailResponse findSellerOrderDetail(String orderSerial);
-    public void createPayment(String orderSerial);
-    public List<OrderSellerResponse> findSellerClaims(OrderSellerRequest orderSellerRequest);
-    public boolean createCancel(RefundDto refundDto);
-    public Boolean createRefund(RefundDto refundDto);
-    public RefundDetailResponse findRefundDetail(Long orderProductId);
-    public Boolean conformRefund(Long orderProductId);
-    public Boolean deliveryStart(OrderDeliveryDto orderDeliveryDto);
-    public Boolean deliveryConform(String orderSerial);
+    OrderSheetResponse findOneByProductId(OrderSheetDto orderSheetDto);
+    List<OrderFindOneResponse> findCartByUserId(Long userId);
+    Boolean createOrder(OrderDto orderDto);
+    List<OrderSellerResponseList> findSellerOrders(OrderSellerFindDto orderSellerFindDto);
+    List<OrderUserResponseList> findUserOrders(OrderUserFindDto orderUserFindDto);
+    OrderUserDetailResponse findUserOrderDetail(String orderSerial);
+    OrderUserDetailResponse findSellerOrderDetail(OrderSellerDetailDto orderSellerDetailDto);
+    void createPayment(String orderSerial);
+    List<OrderSellerResponse> findSellerClaims(OrderSellerRequest orderSellerRequest);
+    List<OrderSellerResponse> findUserClaims(OrderUserFindDto orderUserFindDto);
+    Boolean createCancel(RefundDto refundDto);
+    Boolean createRefund(RefundDto refundDto);
+    RefundDetailResponse findRefundDetail(Long orderProductId);
+    Boolean conformRefund(Long orderProductId);
+    Boolean deliveryStart(OrderDeliveryDto orderDeliveryDto);
+    Boolean deliveryConform(String orderSerial);
 }
