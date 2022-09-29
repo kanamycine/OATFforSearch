@@ -12,6 +12,10 @@ import lombok.*;
  */
 public class OrderSellerRequest {
     private String sellerId;
+
     private String startDate;
+
     private String endDate;
+
+    private Integer pageNumber;
 }

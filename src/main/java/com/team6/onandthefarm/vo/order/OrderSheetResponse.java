@@ -7,10 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-/**
- * 주문서 조회를 위한 객체
- */
-public class OrderFindOneResponse {
+public class OrderSheetResponse {
     private Long productId;
 
     private Long sellerId;
@@ -21,5 +18,14 @@ public class OrderFindOneResponse {
 
     private Integer productPrice;
 
+    private Integer productTotalPrice;
+
     private Integer productQty;
+
+    private String userName;
+
+    private String userAddress;
+
+    private String userPhone;
+
 }

@@ -33,11 +33,14 @@ public class OrderController {
         this.orderService = orderServiceImp;
     }
 
-    @GetMapping("/{product-no}")
+    @PostMapping("/sheet")
     @ApiOperation(value = "단건 주문서 조회")
-    public ResponseEntity<BaseResponse<OrderFindOneResponse>> findOneOrder(@PathVariable(name = "product-no") String productId){
-        OrderFindOneResponse result = orderService.findOneByProductId(Long.valueOf(productId));
-        BaseResponse<OrderFindOneResponse> response = BaseResponse.<OrderFindOneResponse>builder()
+    public ResponseEntity<BaseResponse<OrderSheetResponse>> findOneOrder(@RequestBody OrderSheetRequest orderSheetRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        OrderSheetDto orderSheetDto = modelMapper.map(orderSheetRequest,OrderSheetDto.class);
+        OrderSheetResponse result = orderService.findOneByProductId(orderSheetDto);
+        BaseResponse<OrderSheetResponse> response = BaseResponse.<OrderSheetResponse>builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(result)
@@ -62,6 +65,7 @@ public class OrderController {
                 .orderRequest(orderRequest.getOrderRequest())
                 .orderPhone(orderRequest.getOrderPhone())
                 .orderAddress(orderRequest.getOrderAddress())
+                .userId(orderRequest.getUserId())
                 .productList(new ArrayList<>())
                 .build();
         // productId->sellerId를 찾기
@@ -95,7 +99,7 @@ public class OrderController {
      */
     @PostMapping("/seller/list")
     @ApiOperation(value = "주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
+    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);

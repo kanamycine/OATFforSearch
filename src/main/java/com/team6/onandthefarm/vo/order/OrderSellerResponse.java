@@ -31,4 +31,12 @@ public class OrderSellerResponse {
     private String orderProductMainImg;
 
     private String orderProductStatus;
+
+    private String orderProductDeliveryWaybillNumber;
+
+    private String orderProductDeliveryCompany;
+
+    private String orderProductDeliveryDate;
+
+    private Integer orderTotalPrice;
 }
