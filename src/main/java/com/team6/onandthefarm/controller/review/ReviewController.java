@@ -35,12 +35,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/review/")
+@RequestMapping("/api/user/review")
 @RequiredArgsConstructor
 public class ReviewController {
 	private final ReviewService reviewService;
 
-	@PostMapping("new")
+	@PostMapping("/new")
 	@ApiOperation("리뷰 신규 등록")
 	public ResponseEntity<BaseResponse<Review>> reviewForm(@RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
 
@@ -60,7 +60,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.CREATED);
 	}
 
-	@PutMapping(value="update")
+	@PutMapping(value="/update")
 	@ApiOperation("리뷰 수정")
 	public ResponseEntity<BaseResponse<Review>> reviewUpdateForm(@RequestBody ReviewUpdateFormRequest reviewUpdateFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
@@ -79,7 +79,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@PutMapping(value="delete")
+	@PutMapping(value="/delete")
 	public ResponseEntity<BaseResponse<Review>> productDelete(@RequestBody ReviewDeleteRequest reviewDeleteRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -97,7 +97,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 	// review like
-	@PostMapping(value="like/up")
+	@PostMapping(value="/like/up")
 	@ApiOperation("리뷰 좋아요 +1")
 	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
@@ -115,7 +115,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value="like/cancel")
+	@DeleteMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
 	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
@@ -133,7 +133,7 @@ public class ReviewController {
 	}
 
 	//review like cancle
-	@GetMapping("list/orderby/likecount/{productId}/{page-no}")
+	@GetMapping("/list/orderby/likecount/{productId}/{page-no}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId, Integer.valueOf(pageNumber));
@@ -149,7 +149,7 @@ public class ReviewController {
 	}
 
 
-	@GetMapping("list/orderby/newest/{productId}/{page-no}")
+	@GetMapping("/list/orderby/newest/{productId}/{page-no}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest(productId, Integer.valueOf(pageNumber));

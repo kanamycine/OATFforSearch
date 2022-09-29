@@ -14,10 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/user/orders")
 @Api(value = "주문",description = "주문 상태\n" +
         " * os0 : 주문완료\n" +
         " * os1 : 주문취소\n" +
@@ -25,11 +26,11 @@ import java.util.*;
         " * os3 : 반품확정\n" +
         " * os4 : 배송 중\n" +
         " * os5 : 배송 완료")
-public class OrderController {
+public class UserOrderController {
     private OrderService orderService;
 
     @Autowired
-    public OrderController(OrderServiceImp orderServiceImp) {
+    public UserOrderController(OrderServiceImp orderServiceImp) {
         this.orderService = orderServiceImp;
     }
 
@@ -89,28 +90,8 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    /**
-     * 셀러의 경우 주문당 여러 제품을 한번에 보여주어야 함
-     * orderId : ListProduct정보
-     * @param orderSellerRequest
-     * @return
-     */
-    @PostMapping("/seller/list")
-    @ApiOperation(value = "셀러 주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
-        List<OrderSellerResponseList> responses  = orderService.findSellerOrders(orderSellerFindDto);
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(responses)
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
 
-    @PostMapping("/user/list")
+    @PostMapping("/list")
     @ApiOperation(value = "유저 주문 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findUserAllOrders(@RequestBody OrderUserRequest orderUserRequest){
         ModelMapper modelMapper = new ModelMapper();
@@ -125,7 +106,7 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @GetMapping("user/list/{order-no}")
+    @GetMapping("/user/list/{order-no}")
     @ApiOperation(value = "유저 주문 상세 조회")
     public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@PathVariable(name = "order-no") String orderSerial){
         OrderUserDetailResponse detailResponse = orderService.findUserOrderDetail(orderSerial);
@@ -137,20 +118,6 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("seller/list/detail")
-    @ApiOperation(value = "셀러 주문 상세 조회")
-    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
-        OrderUserDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSellerDetailDto);
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(detailResponse)
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
 
     @PostMapping("/claim/cancel")
     @ApiOperation(value = "취소 생성" )
@@ -182,19 +149,7 @@ public class OrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("seller/claim/list")
-    @ApiOperation(value = "셀러 취소/반품 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(@RequestBody OrderSellerRequest orderSellerRequest){
-        List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
-        BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(responseList)
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
-
-    @PostMapping("user/claim/list")
+    @PostMapping("/claim/list")
     @ApiOperation(value = "유저 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findUserClaims(@RequestBody OrderUserRequest orderUserRequest){
         ModelMapper modelMapper = new ModelMapper();
@@ -208,57 +163,5 @@ public class OrderController {
                 .build();
         return new ResponseEntity(response,HttpStatus.OK);
     }
-
-    @GetMapping("seller/claim/list/{orderProduct-no}")
-    @ApiOperation(value = "취소/반품 상세 조회")
-    public ResponseEntity<BaseResponse<RefundDetailResponse>> findSellerClaimDetail(@PathVariable(name = "orderProduct-no") String orderProductId){
-        RefundDetailResponse refundDetailResponse = orderService.findRefundDetail(Long.valueOf(orderProductId));
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(refundDetailResponse)
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
-
-    @PostMapping("/claim/list/{orderProduct-no}")
-    @ApiOperation(value = "반품 확정")
-    public ResponseEntity<BaseResponse> claimConform(@PathVariable(name = "orderProduct-no") String orderProductId){
-        Boolean result = orderService.conformRefund(Long.valueOf(orderProductId));
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(result.booleanValue())
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
-
-    @PostMapping("/delivery")
-    @ApiOperation(value = "배송 시작 처리")
-    public ResponseEntity<BaseResponse> deliveryStart(@RequestBody OrderDeliveryRequest orderDeliveryRequest){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        OrderDeliveryDto orderDeliveryDto = modelMapper.map(orderDeliveryRequest, OrderDeliveryDto.class);
-        Boolean result = orderService.deliveryStart(orderDeliveryDto);
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(result.booleanValue())
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
-
-    @PostMapping("/delivery/{order-no}")
-    @ApiOperation(value = "배송 완료 처리")
-    public ResponseEntity<BaseResponse> deliveryConform(@PathVariable(name = "order-no") String orderSerial){
-        Boolean result = orderService.deliveryConform(orderSerial);
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(result.booleanValue())
-                .build();
-        return new ResponseEntity(response,HttpStatus.OK);
-    }
-
 
 }
