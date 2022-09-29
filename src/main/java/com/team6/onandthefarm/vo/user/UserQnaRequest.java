@@ -11,8 +11,6 @@ import lombok.*;
 public class UserQnaRequest {
     private Long productId;
 
-    private Long userId;
-
     private String productQnaContent;
 
 }
