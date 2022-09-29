@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.controller.review;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -33,6 +34,7 @@ import com.team6.onandthefarm.vo.review.ReviewUpdateFormRequest;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/user/review")
@@ -42,12 +44,13 @@ public class ReviewController {
 
 	@PostMapping("/new")
 	@ApiOperation("리뷰 신규 등록")
-	public ResponseEntity<BaseResponse<Review>> reviewForm(@RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<Review>> reviewForm(@ApiIgnore Principal principal, @RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewFormDto reviewFormDto = modelMapper.map(reviewFormRequest, ReviewFormDto.class);
+		reviewFormDto.setUserId(Long.parseLong(principal.getName()));
 
 		Long reviewId = reviewService.saveReview(reviewFormDto);
 
@@ -67,7 +70,6 @@ public class ReviewController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewUpdateFormDto reviewUpdateFormDto = modelMapper.map(reviewUpdateFormRequest, ReviewUpdateFormDto.class);
-
 		Long reviewId = reviewService.updateReview(reviewUpdateFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -85,7 +87,6 @@ public class ReviewController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewDeleteDto reviewDeleteDto = modelMapper.map(reviewDeleteRequest, ReviewDeleteDto.class);
-
 		Long reviewId = reviewService.deleteReview(reviewDeleteDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -99,11 +100,12 @@ public class ReviewController {
 	// review like
 	@PostMapping(value="/like/up")
 	@ApiOperation("리뷰 좋아요 +1")
-	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewLikeFormDto reviewLikeFormDto = modelMapper.map(reviewLikeFormRequest, ReviewLikeFormDto.class);
+		reviewLikeFormDto.setUserId(Long.parseLong(principal.getName()));
 		Long reviewLikeId = reviewService.upLikeCountReview(reviewLikeFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -117,11 +119,12 @@ public class ReviewController {
 
 	@DeleteMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
-	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewLikeCancelFormDto reviewLikeCancelFormDto = modelMapper.map(reviewLikeCancelFormRequest, ReviewLikeCancelFormDto.class);
+		reviewLikeCancelFormDto.setUserId(Long.parseLong(principal.getName()));
 		Long reviewLikeId = reviewService.cancelReviewLikeCount(reviewLikeCancelFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()

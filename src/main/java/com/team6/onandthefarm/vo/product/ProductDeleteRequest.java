@@ -12,6 +12,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDeleteRequest {
-
 	private Long productId;
 }
