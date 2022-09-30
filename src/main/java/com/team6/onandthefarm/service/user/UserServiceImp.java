@@ -14,6 +14,7 @@ import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import lombok.extern.slf4j.Slf4j;

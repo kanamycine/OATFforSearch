@@ -3,7 +3,6 @@ package com.team6.onandthefarm.controller.user;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
-import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
@@ -57,19 +56,19 @@ public class UserController {
 
     // 처음 소셜로그인 시 추가 정보 저장
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal, @RequestBody UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
 
         UserInfoDto userInfoDto = UserInfoDto.builder()
                 .userId(Long.parseLong(principal.getName()))
-                .userZipcode(userRegisterRequest.getUserZipcode())
-                .userAddress(userRegisterRequest.getUserAddress())
-                .userAddressDetail(userRegisterRequest.getUserAddressDetail())
-                .userName(userRegisterRequest.getUserName())
-                .userBirthday(userRegisterRequest.getUserBirthday())
-                .userPhone(userRegisterRequest.getUserPhone())
-                .userSex(userRegisterRequest.getUserSex())
+                .userZipcode(userInfoRequest.getUserZipcode())
+                .userAddress(userInfoRequest.getUserAddress())
+                .userAddressDetail(userInfoRequest.getUserAddressDetail())
+                .userName(userInfoRequest.getUserName())
+                .userBirthday(userInfoRequest.getUserBirthday())
+                .userPhone(userInfoRequest.getUserPhone())
+                .userSex(userInfoRequest.getUserSex())
                 .build();
 
         Long userId = userService.registerUserInfo(userInfoDto);
@@ -82,19 +81,19 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal, @RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
 
         UserInfoDto userInfoDto = UserInfoDto.builder()
                 .userId(Long.parseLong(principal.getName()))
-                .userZipcode(userUpdateRequest.getUserZipcode())
-                .userAddress(userUpdateRequest.getUserAddress())
-                .userAddressDetail(userUpdateRequest.getUserAddressDetail())
-                .userPhone(userUpdateRequest.getUserPhone())
-                .userBirthday(userUpdateRequest.getUserBirthday())
-                .userName(userUpdateRequest.getUserName())
-                .userSex(userUpdateRequest.getUserSex())
+                .userZipcode(userInfoRequest.getUserZipcode())
+                .userAddress(userInfoRequest.getUserAddress())
+                .userAddressDetail(userInfoRequest.getUserAddressDetail())
+                .userPhone(userInfoRequest.getUserPhone())
+                .userBirthday(userInfoRequest.getUserBirthday())
+                .userName(userInfoRequest.getUserName())
+                .userSex(userInfoRequest.getUserSex())
                 .build();
 
         Long userId = userService.updateUserInfo(userInfoDto);

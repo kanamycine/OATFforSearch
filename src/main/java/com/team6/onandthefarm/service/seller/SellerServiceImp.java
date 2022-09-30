@@ -72,16 +72,15 @@ public class SellerServiceImp implements SellerService{
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    public boolean updateByUserId(Long userId,SellerDto sellerDto){
+    public boolean updateByUserId(Long userId, SellerDto sellerDto){
         Optional<Seller> sellerEntity = sellerRepository.findById(userId);
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
         sellerEntity.get().setSellerZipcode(sellerDto.getZipcode());
         sellerEntity.get().setSellerAddress(sellerDto.getAddress());
         sellerEntity.get().setSellerAddressDetail(sellerDto.getAddressDetail());
         sellerEntity.get().setSellerShopName(sellerDto.getShopName());
-        sellerEntity.get().setSellerPassword(sellerDto.getPassword());
         sellerEntity.get().setSellerPhone(sellerDto.getPhone());
+
         return true;
     }
 
@@ -214,8 +213,14 @@ public class SellerServiceImp implements SellerService{
                     .build();
         }
 
-        return
+        return null;
     }
+
+    /**
+     * 셀러의 로그인 메소드
+     * @param sellerDto
+     * @return token
+     */
     @Override
     public Token login(SellerDto sellerDto) {
 
