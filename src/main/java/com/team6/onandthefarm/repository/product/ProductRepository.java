@@ -2,6 +2,7 @@ package com.team6.onandthefarm.repository.product;
 
 import java.util.List;
 
+import com.team6.onandthefarm.entity.seller.Seller;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +23,7 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
 	@Query("select p from Product p join fetch p.category join fetch p.seller where p.category.categoryId =:categoryId order by p.productRegisterDate DESC")
 	List<Product> findProductsByCategoryNewest(@Param("categoryId") Long categoryId);
+
+	List<Product> findBySeller(Seller seller);
 }
 

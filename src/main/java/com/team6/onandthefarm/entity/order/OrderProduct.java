@@ -36,4 +36,6 @@ public class OrderProduct {
 
     private String orderProductStatus;
 
+    private String orderProductDate;
+
 }

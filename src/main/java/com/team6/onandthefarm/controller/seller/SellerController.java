@@ -193,4 +193,11 @@ public class SellerController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
+    @GetMapping("/mypage")
+    @ApiOperation(value = "셀러의 메인페이지 조회")
+    public ResponseEntity<BaseResponse> findSellerMypage(@RequestBody SellerMypageRequest sellerMypageRequest){
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }

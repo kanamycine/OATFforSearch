@@ -2,6 +2,7 @@ package com.team6.onandthefarm.repository.review;
 
 import java.util.List;
 
+import com.team6.onandthefarm.entity.seller.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	@Query("select r from Review r join fetch r.product p join fetch p.category join fetch p.seller order by r.reviewCreatedAt DESC")
 	List<Review> findReviewListByNewest();
 	//List<Review> findReviewsByProductOrderByReviewLikeCountDesc(Product product);
+
+	List<Review> findBySellerOrderByReviewCreatedAtDesc(Seller seller);
 
 }
