@@ -6,6 +6,7 @@ import com.team6.onandthefarm.dto.user.UserRegisterDto;
 import com.team6.onandthefarm.dto.user.UserUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.user.UserInfoResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,4 +24,6 @@ public interface UserService {
     Long updateUserInfo(UserUpdateDto userUpdateDto);
 
     List<ProductQnAResponse> findUserQna(Long userId);
+
+    UserInfoResponse findUserInfo(Long userId);
 }

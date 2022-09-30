@@ -18,6 +18,7 @@ import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -178,5 +179,16 @@ public class UserServiceImp implements UserService{
         }
 
         return responses;
+    }
+
+    public UserInfoResponse findUserInfo(Long userId){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        Optional<User> user = userRepository.findById(userId);
+
+        UserInfoResponse response = modelMapper.map(user.get(),UserInfoResponse.class);
+
+        return response;
     }
 }
