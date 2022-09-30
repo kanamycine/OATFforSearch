@@ -17,6 +17,8 @@ import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductWishRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
+import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.product.ProductQnaAnswerResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,16 +203,24 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
-	public Map<ProductQna, ProductQnaAnswer> findProductQnAList(Long productId){
+	public Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Optional<Product> product = productRepository.findById(productId);
 		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
 		// QNA : QNA답변
-		Map<ProductQna, ProductQnaAnswer> matching = new HashMap<>();
+		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
 		for(ProductQna productQna : productQnas){
-			if(productQna.getProductQnaStatus()=="qna0"||productQna.getProductQnaStatus()=="qna2"){
-				matching.put(productQna,null);
+			ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
+			if(productQna.getProductQnaStatus().equals("qna0")||productQna.getProductQnaStatus().equals("qna2")){
+				matching.put(response,null);
 			}
-			matching.put(productQna,productQnaAnswerRepository.findByProductQna(productQna));
+			else{
+				ProductQnaAnswer productQnaAnswer = productQnaAnswerRepository.findByProductQna(productQna);
+				ProductQnaAnswerResponse productQnaAnswerResponse
+						= modelMapper.map(productQnaAnswer, ProductQnaAnswerResponse.class);
+				matching.put(response,productQnaAnswerResponse);
+			}
 		}
 
 		return matching;

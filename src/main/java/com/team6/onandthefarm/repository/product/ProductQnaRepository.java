@@ -11,4 +11,6 @@ public interface ProductQnaRepository extends CrudRepository<ProductQna,Long> {
     List<ProductQna> findBySeller(Seller seller);
 
     List<ProductQna> findByProduct(Product product);
+
+    List<ProductQna> findByUser_UserId(Long userId);
 }

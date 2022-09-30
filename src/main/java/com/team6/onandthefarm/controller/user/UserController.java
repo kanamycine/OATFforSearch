@@ -6,6 +6,7 @@ import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
+import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -104,6 +106,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/mypage/info")
+    @ApiOperation(value = "유저 정보 조회")
+    public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal){
+        UserInfoResponse userInfoResponse = userService.findUserInfo(Long.valueOf(principal.getName()));
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(userInfoResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
     @PostMapping("/QnA")
     @ApiOperation(value = "유저 질의 생성")
     public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal, @RequestBody UserQnaRequest userQnaRequest){
@@ -120,6 +134,25 @@ public class UserController {
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(result)
+                .build();
+        return new ResponseEntity(response,HttpStatus.CREATED);
+    }
+
+    @GetMapping("/QnA")
+    @ApiOperation(value = "유저 질의 조회")
+    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(
+            @ApiIgnore Principal principal){
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        Long userId = Long.parseLong(principal.getName());
+
+        List<ProductQnAResponse> responses = userService.findUserQna(userId);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responses)
                 .build();
         return new ResponseEntity(response,HttpStatus.CREATED);
     }
