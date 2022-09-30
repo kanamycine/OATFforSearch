@@ -136,6 +136,19 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    public Boolean logout(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        Long kakaoNumber = user.get().getUserKakaoNumber();
+        Long returnKakaoNumber = kakaoOAuth2.logout(kakaoNumber);
+        if(returnKakaoNumber == null){
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public Long registerUserInfo(UserInfoDto userInfoDto) {
         Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
