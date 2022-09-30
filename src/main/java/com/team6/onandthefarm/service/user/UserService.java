@@ -18,6 +18,8 @@ public interface UserService {
 
     UserTokenResponse login(UserLoginDto userLoginDto);
 
+    Boolean logout(Long userId);
+
     Long registerUserInfo(UserInfoDto userInfoDto);
 
     Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);

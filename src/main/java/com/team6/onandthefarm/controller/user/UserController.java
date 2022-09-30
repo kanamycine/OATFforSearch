@@ -54,6 +54,16 @@ public class UserController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
+        userService.logout(userId);
+
+        BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     // 처음 소셜로그인 시 추가 정보 저장
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
