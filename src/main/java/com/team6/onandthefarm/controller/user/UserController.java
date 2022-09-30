@@ -108,6 +108,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/mypage/info")
+    @ApiOperation(value = "유저 정보 조회")
+    public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal){
+        UserInfoResponse userInfoResponse = userService.findUserInfo(Long.valueOf(principal.getName()));
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(userInfoResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
     @PostMapping("/QnA")
     @ApiOperation(value = "유저 질의 생성")
     public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal, @RequestBody UserQnaRequest userQnaRequest){
