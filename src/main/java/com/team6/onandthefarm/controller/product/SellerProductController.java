@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.controller.product;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import com.team6.onandthefarm.vo.product.ProductWishCancelRequest;
 import com.team6.onandthefarm.vo.product.ProductWishFormRequest;
 
 import lombok.RequiredArgsConstructor;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/seller/product")
@@ -48,13 +50,14 @@ public class SellerProductController {
 	@PostMapping(value = "/new")
 	@ApiOperation(value = "상품 등록")
 	//@RequestPart("productImg") List<MultipartFile> productImgs
-	public ResponseEntity<BaseResponse<Product>> productForm(@RequestBody ProductFormRequest productFormRequest) throws
+	public ResponseEntity<BaseResponse<Product>> productForm(@ApiIgnore Principal principal, @RequestBody ProductFormRequest productFormRequest) throws
 			Exception {
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ProductFormDto productFormDto = modelMapper.map(productFormRequest, ProductFormDto.class);
+		productFormDto.setSellerId(Long.parseLong(principal.getName()));
 
 		Long productId = productService.saveProduct(productFormDto);
 
