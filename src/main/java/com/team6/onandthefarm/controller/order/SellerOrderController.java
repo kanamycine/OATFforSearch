@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -42,7 +44,8 @@ public class SellerOrderController {
      */
     @PostMapping("/list")
     @ApiOperation(value = "셀러 주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(@RequestBody OrderSellerRequest orderSellerRequest){
+    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(
+            @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
@@ -58,7 +61,8 @@ public class SellerOrderController {
 
     @PostMapping("/list/detail")
     @ApiOperation(value = "셀러 주문 상세 조회")
-    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
+    public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(
+            @ApiIgnore Principal principal,@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
@@ -74,7 +78,8 @@ public class SellerOrderController {
 
     @PostMapping("/claim/list")
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(@RequestBody OrderSellerRequest orderSellerRequest){
+    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(
+            @ApiIgnore Principal principal,@RequestBody OrderSellerRequest orderSellerRequest){
         List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
                 .httpStatus(HttpStatus.OK)

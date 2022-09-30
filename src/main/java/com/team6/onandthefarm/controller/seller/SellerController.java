@@ -54,20 +54,21 @@ public class SellerController {
         this.env=env;
     }
 
-    @GetMapping("/{user-no}")
+    @GetMapping("/mypage/info")
     @ApiOperation(value = "셀러 회원 정보 조회")
-    public ResponseEntity<SellerInfoResponse> findBySellerId(@PathVariable("user-no") String userNo){
-        SellerInfoResponse response = sellerService.findByUserId(Long.valueOf(userNo));
+    public ResponseEntity<SellerInfoResponse> findBySellerId(@ApiIgnore Principal principal){
+        SellerInfoResponse response = sellerService.findByUserId(Long.valueOf(principal.getName()));
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PutMapping("/{user-no}")
+    @PutMapping("/mypage/info")
     @ApiOperation(value = "셀러 회원 정보 수정")
-    public ResponseEntity<BaseResponse> updateSeller(@PathVariable("user-no") String userNo, @RequestBody SellerUpdateRequest sellerUpdateRequest){
+    public ResponseEntity<BaseResponse> updateSeller(@ApiIgnore Principal principal,
+                                                     @RequestBody SellerUpdateRequest sellerUpdateRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
-        sellerService.updateByUserId(Long.valueOf(userNo),sellerDto);
+        sellerService.updateByUserId(Long.valueOf(principal.getName()),sellerDto);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -175,10 +176,12 @@ public class SellerController {
         return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/QnA/{seller-no}")
+    @GetMapping("/QnA")
     @ApiOperation(value = "셀러의 전체 질의 조회")
-    public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (@RequestParam(value = "seller-no") String sellerId){
-        List<SellerProductQnaResponse> productQnas = sellerService.findSellerQnA(Long.valueOf(sellerId));
+    public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (
+            @ApiIgnore Principal principal){
+        List<SellerProductQnaResponse> productQnas
+                = sellerService.findSellerQnA(Long.valueOf(principal.getName()));
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
