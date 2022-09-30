@@ -2,8 +2,7 @@ package com.team6.onandthefarm.controller.user;
 
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
-import com.team6.onandthefarm.dto.user.UserRegisterDto;
-import com.team6.onandthefarm.dto.user.UserUpdateDto;
+import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
@@ -33,19 +32,18 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<BaseResponse<UserLoginResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
+    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
 
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setProvider(userLoginRequest.getProvider());
         userLoginDto.setCode(userLoginRequest.getCode());
         userLoginDto.setState(userLoginRequest.getState());
 
-        Token accessToken = userService.login(userLoginDto);
+        UserTokenResponse userTokenResponse = userService.login(userLoginDto);
 
         BaseResponse response = null;
-        if(accessToken != null){
-            UserLoginResponse loginResponse = UserLoginResponse.builder().token(accessToken).build();
-            response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").data(loginResponse).build();
+        if(userTokenResponse.getToken() != null){
+            response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").data(userTokenResponse).build();
         }
         else{
             log.error("oauth 접근 토큰 발급 실패");
@@ -61,7 +59,7 @@ public class UserController {
 
         BaseResponse response = null;
 
-        UserRegisterDto userRegisterDto = UserRegisterDto.builder()
+        UserInfoDto userInfoDto = UserInfoDto.builder()
                 .userId(Long.parseLong(principal.getName()))
                 .userZipcode(userRegisterRequest.getUserZipcode())
                 .userAddress(userRegisterRequest.getUserAddress())
@@ -72,7 +70,7 @@ public class UserController {
                 .userSex(userRegisterRequest.getUserSex())
                 .build();
 
-        Long userId = userService.registerUserInfo(userRegisterDto);
+        Long userId = userService.registerUserInfo(userInfoDto);
         if (userId != -1L) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
         } else {
@@ -86,7 +84,7 @@ public class UserController {
 
         BaseResponse response = null;
 
-        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+        UserInfoDto userInfoDto = UserInfoDto.builder()
                 .userId(Long.parseLong(principal.getName()))
                 .userZipcode(userUpdateRequest.getUserZipcode())
                 .userAddress(userUpdateRequest.getUserAddress())
@@ -97,7 +95,7 @@ public class UserController {
                 .userSex(userUpdateRequest.getUserSex())
                 .build();
 
-        Long userId = userService.updateUserInfo(userUpdateDto);
+        Long userId = userService.updateUserInfo(userInfoDto);
         if (userId != -1L) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
         } else {

@@ -2,13 +2,10 @@ package com.team6.onandthefarm.service.user;
 
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
-import com.team6.onandthefarm.dto.user.UserRegisterDto;
-import com.team6.onandthefarm.dto.user.UserUpdateDto;
+import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
-import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
-import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
@@ -17,6 +14,7 @@ import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -83,8 +81,10 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public Token login(UserLoginDto userLoginDto) {
+    public UserTokenResponse login(UserLoginDto userLoginDto) {
+
         Token token = null;
+        Boolean needRegister = false;
 
         String provider = userLoginDto.getProvider();
         if(provider.equals("google")){
@@ -96,17 +96,18 @@ public class UserServiceImp implements UserService{
         else if(provider.equals("kakao")){
             // 카카오 액세스 토큰 받아오기
             String kakaoAccessToken = kakaoOAuth2.getAccessToken(userLoginDto);
-            //System.out.println("kakao access token : "+kakaoAccessToken);
 
             if(kakaoAccessToken != null){
                 // 카카오 액세스 토큰으로 유저 정보 받아오기
                 OAuth2UserDto userInfo = kakaoOAuth2.getUserInfo(kakaoAccessToken);
-                //System.out.println("userInfo : "+userInfo.toString());
 
                 User user = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
 
                 // DB에 유저 정보가 없다면 저장
                 if(user == null){
+                    // 유저 정보 추가 등록이 필요함
+                    needRegister = true;
+
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
                             .role("ROLE_USER")
@@ -114,27 +115,31 @@ public class UserServiceImp implements UserService{
                             .userKakaoNumber(userInfo.getKakaoId())
                             .build();
                     user = userRepository.save(newUser);
-                    //System.out.println("newUser :"+user.toString());
                 }
 
                 // jwt 토큰 발행
-                token = jwtTokenUtil.generateToken(user.getUserId());
+                token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
             }
         }
-        return token;
+        UserTokenResponse userTokenResponse = UserTokenResponse.builder()
+                .token(token)
+                .needRegister(needRegister)
+                .build();
+
+        return userTokenResponse;
     }
 
     @Override
-    public Long registerUserInfo(UserRegisterDto userRegisterDto) {
-        Optional<User> user = userRepository.findById(userRegisterDto.getUserId());
+    public Long registerUserInfo(UserInfoDto userInfoDto) {
+        Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
-        user.get().setUserName(userRegisterDto.getUserName());
-        user.get().setUserPhone(userRegisterDto.getUserPhone());
-        user.get().setUserZipcode(userRegisterDto.getUserZipcode());
-        user.get().setUserAddress(userRegisterDto.getUserAddress());
-        user.get().setUserAddressDetail(userRegisterDto.getUserAddressDetail());
-        user.get().setUserBirthday(userRegisterDto.getUserBirthday());
-        user.get().setUserSex(userRegisterDto.getUserSex());
+        user.get().setUserName(userInfoDto.getUserName());
+        user.get().setUserPhone(userInfoDto.getUserPhone());
+        user.get().setUserZipcode(userInfoDto.getUserZipcode());
+        user.get().setUserAddress(userInfoDto.getUserAddress());
+        user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
+        user.get().setUserBirthday(userInfoDto.getUserBirthday());
+        user.get().setUserSex(userInfoDto.getUserSex());
 
         return user.get().getUserId();
     }
@@ -145,16 +150,16 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public Long updateUserInfo(UserUpdateDto userUpdateDto) {
-        Optional<User> user = userRepository.findById(userUpdateDto.getUserId());
+    public Long updateUserInfo(UserInfoDto userInfoDto) {
+        Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
-        user.get().setUserName(userUpdateDto.getUserName());
-        user.get().setUserPhone(userUpdateDto.getUserPhone());
-        user.get().setUserZipcode(userUpdateDto.getUserZipcode());
-        user.get().setUserAddress(userUpdateDto.getUserAddress());
-        user.get().setUserAddressDetail(userUpdateDto.getUserAddressDetail());
-        user.get().setUserBirthday(userUpdateDto.getUserBirthday());
-        user.get().setUserSex(userUpdateDto.getUserSex());
+        user.get().setUserName(userInfoDto.getUserName());
+        user.get().setUserPhone(userInfoDto.getUserPhone());
+        user.get().setUserZipcode(userInfoDto.getUserZipcode());
+        user.get().setUserAddress(userInfoDto.getUserAddress());
+        user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
+        user.get().setUserBirthday(userInfoDto.getUserBirthday());
+        user.get().setUserSex(userInfoDto.getUserSex());
 
         return user.get().getUserId();
     }
