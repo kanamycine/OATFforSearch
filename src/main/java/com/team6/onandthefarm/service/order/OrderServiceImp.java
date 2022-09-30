@@ -148,6 +148,9 @@ public class OrderServiceImp implements OrderService{
             if(product.get().getProductTotalStock()>=orderProduct.getProductQty()){
                 return true;
             }
+            if(!product.get().getProductStatus().equals("p0")){
+                return false;
+            }
         }
         return false;
     }
