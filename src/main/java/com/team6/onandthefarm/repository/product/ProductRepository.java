@@ -26,6 +26,6 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
 	List<Product> findBySeller(Seller seller);
 
-	List<Product> findBySellerOOrderByProductWishCountDesc(Seller seller);
+	List<Product> findBySellerOrderByProductWishCountDesc(Seller seller);
 }
 

@@ -299,7 +299,7 @@ public class SellerServiceImp implements SellerService{
 
         Optional<Seller> seller = sellerRepository.findById(sellerId);
 
-        List<Product> products = productRepository.findBySellerOOrderByProductWishCountDesc(seller.get());
+        List<Product> products = productRepository.findBySellerOrderByProductWishCountDesc(seller.get());
 
         for(Product product : products){
             SellerPopularProductResponse response =
