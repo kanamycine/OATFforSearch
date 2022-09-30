@@ -2,15 +2,20 @@ package com.team6.onandthefarm.service.seller;
 
 import com.team6.onandthefarm.dto.seller.SellerDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
+import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
+import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
+import com.team6.onandthefarm.repository.product.ProductRepository;
+import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
 import com.team6.onandthefarm.vo.seller.SellerProductQnaResponse;
+import com.team6.onandthefarm.vo.seller.SellerRecentReviewResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +31,17 @@ import java.util.Optional;
 @Transactional
 public class SellerServiceImp implements SellerService{
 
+    private final int listNum = 5;
+
     private SellerRepository sellerRepository;
 
     private ProductQnaRepository productQnaRepository;
 
     private ProductQnaAnswerRepository productQnaAnswerRepository;
+
+    private ReviewRepository reviewRepository;
+
+    private ProductRepository productRepository;
 
     private DateUtils dateUtils;
 
@@ -42,12 +53,16 @@ public class SellerServiceImp implements SellerService{
                             DateUtils dateUtils,
                             Environment env,
                             ProductQnaRepository productQnaRepository,
-                            ProductQnaAnswerRepository productQnaAnswerRepository) {
+                            ProductQnaAnswerRepository productQnaAnswerRepository,
+                            ReviewRepository reviewRepository,
+                            ProductRepository productRepository) {
         this.sellerRepository = sellerRepository;
         this.dateUtils=dateUtils;
         this.env=env;
         this.productQnaRepository=productQnaRepository;
         this.productQnaAnswerRepository=productQnaAnswerRepository;
+        this.reviewRepository=reviewRepository;
+        this.productRepository=productRepository;
     }
 
     public boolean updateByUserId(Long userId,SellerDto sellerDto){
@@ -168,5 +183,19 @@ public class SellerServiceImp implements SellerService{
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
+    }
+
+    public List<SellerRecentReviewResponse> findReviewMypage(Long sellerId){
+        Optional<Seller> seller = sellerRepository.findById(sellerId);
+        List<Product> products = productRepository.findBySeller(seller.get());
+        List<Review> reviews = reviewRepository.findBySellerOrderByReviewCreatedAtDesc(seller.get());
+        for(Review review : reviews.subList(0,listNum)){
+
+            SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
+
+                    .build();
+        }
+
+        return
     }
 }

@@ -209,6 +209,7 @@ public class OrderServiceImp implements OrderService{
                     .productId(order.getProductId())
                     .sellerId(order.getSellerId())
                     .orderProductStatus(orders.getOrdersStatus())
+                    .orderProductDate(orders.getOrdersDate())
                     .build();
             orderProductRepository.save(orderProduct); // 각각의 주문 상품 생성
             Optional<Product> product = productRepository.findById(order.getProductId());
