@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserUpdateDto {
+public class UserInfoDto {
 
     private Long userId;
 

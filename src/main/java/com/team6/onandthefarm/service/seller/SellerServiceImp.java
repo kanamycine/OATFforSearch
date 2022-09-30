@@ -8,6 +8,8 @@ import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
+import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
+import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
 import com.team6.onandthefarm.vo.seller.SellerProductQnaResponse;
@@ -26,13 +28,15 @@ import java.util.Optional;
 @Transactional
 public class SellerServiceImp implements SellerService{
 
-    private SellerRepository sellerRepository;
+    private final SellerRepository sellerRepository;
 
-    private ProductQnaRepository productQnaRepository;
+    private final ProductQnaRepository productQnaRepository;
 
-    private ProductQnaAnswerRepository productQnaAnswerRepository;
+    private final ProductQnaAnswerRepository productQnaAnswerRepository;
 
-    private DateUtils dateUtils;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    private final DateUtils dateUtils;
 
     private Environment env;
 
@@ -42,12 +46,14 @@ public class SellerServiceImp implements SellerService{
                             DateUtils dateUtils,
                             Environment env,
                             ProductQnaRepository productQnaRepository,
-                            ProductQnaAnswerRepository productQnaAnswerRepository) {
+                            ProductQnaAnswerRepository productQnaAnswerRepository,
+                            JwtTokenUtil jwtTokenUtil) {
         this.sellerRepository = sellerRepository;
         this.dateUtils=dateUtils;
         this.env=env;
         this.productQnaRepository=productQnaRepository;
         this.productQnaAnswerRepository=productQnaAnswerRepository;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     public boolean updateByUserId(Long userId,SellerDto sellerDto){
@@ -70,9 +76,18 @@ public class SellerServiceImp implements SellerService{
      */
     public SellerInfoResponse findByUserId(Long userId){
         Optional<Seller> sellerEntity = sellerRepository.findById(userId);
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        SellerInfoResponse response = modelMapper.map(sellerEntity.get(),SellerInfoResponse.class);
+        Seller seller = sellerEntity.get();
+
+        SellerInfoResponse response = SellerInfoResponse.builder()
+                .email(seller.getSellerEmail())
+                .zipcode(seller.getSellerZipcode())
+                .address(seller.getSellerAddress())
+                .addressDetail(seller.getSellerAddressDetail())
+                .phone(seller.getSellerPhone())
+                .name(seller.getSellerName())
+                .businessNumber(seller.getSellerBusinessNumber())
+                .registerDate(seller.getSellerRegisterDate())
+                .build();
         return response;
     }
 
@@ -108,6 +123,7 @@ public class SellerServiceImp implements SellerService{
                 .sellerRegisterDate(date)
                 .sellerShopName(sellerDto.getShopName())
                 .sellerIsActived(Boolean.TRUE)
+                .role("ROLE_ADMIN")
                 .build();
 
         seller.setSellerRegisterDate(date);
@@ -168,5 +184,18 @@ public class SellerServiceImp implements SellerService{
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
+    }
+
+    @Override
+    public Token login(SellerDto sellerDto) {
+
+        Token token = null;
+
+        Seller seller = sellerRepository.findBySellerEmailAndSellerPassword(sellerDto.getEmail(), sellerDto.getPassword());
+        if(seller != null){
+            token = jwtTokenUtil.generateToken(seller.getSellerId(), seller.getRole());
+        }
+
+        return token;
     }
 }

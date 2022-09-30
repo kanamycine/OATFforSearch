@@ -27,5 +27,6 @@ public class Seller {
     private String sellerBusinessNumber;
     private String sellerRegisterDate;
     private Boolean sellerIsActived;
+    private String role;
 
 }

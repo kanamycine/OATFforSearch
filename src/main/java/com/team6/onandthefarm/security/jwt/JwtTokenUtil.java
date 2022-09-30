@@ -37,15 +37,20 @@ public class JwtTokenUtil {
         this.secretKey = Keys.hmacShaKeyFor(decodedByte);
     }
 
-    public Token generateToken(Long userId) {
+    public Token generateToken(Long id, String role) {
         long tokenPeriod = 1000L * 60L * 1440L; //5분
         long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L;
+
+        Claims claims = Jwts.claims();
+        claims.put("role", role);
+        claims.put("id", id);
 
         Date now = new Date();
         return new Token(
                 Jwts.builder()
                         .setSubject("Access Token")
-                        .claim("userId", userId)
+                        //.claim("userId", userId)
+                        .setClaims(claims)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + tokenPeriod))
                         .signWith(secretKey, SignatureAlgorithm.HS512)
@@ -75,8 +80,12 @@ public class JwtTokenUtil {
     }
 
     //UserId 가져오기
-    public Long getUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
+    public Long getId(String token) {
+        return extractAllClaims(token).get("id", Long.class);
+    }
+
+    public String getRole(String token){
+        return extractAllClaims(token).get("role", String.class);
     }
 
     public Boolean validateToken(String token) {

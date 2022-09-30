@@ -6,8 +6,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserLoginResponse {
+public class UserTokenResponse {
 
-    Token token;
+    private Token token;
+
+    private Boolean needRegister;
 
 }
