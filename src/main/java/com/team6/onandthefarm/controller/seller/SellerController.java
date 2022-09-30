@@ -4,6 +4,7 @@ import com.team6.onandthefarm.dto.seller.EmailDto;
 import com.team6.onandthefarm.dto.seller.SellerDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
 import com.team6.onandthefarm.entity.product.ProductQna;
+import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.service.seller.MailService;
 import com.team6.onandthefarm.service.seller.SellerService;
 import com.team6.onandthefarm.service.seller.SellerServiceImp;
@@ -65,6 +66,27 @@ public class SellerController {
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
         sellerService.updateByUserId(Long.valueOf(userNo),sellerDto);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    @ApiOperation(value = "셀러 로그인")
+    public ResponseEntity<BaseResponse<SellerLoginResponse>> login(@RequestBody SellerRequest sellerRequest){
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        SellerDto sellerDto = modelMapper.map(sellerRequest, SellerDto.class);
+
+        Token token = sellerService.login(sellerDto);
+
+        SellerLoginResponse sellerLoginResponse = new SellerLoginResponse();
+        sellerLoginResponse.setToken(token);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("성공")
+                .data(sellerLoginResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
     @PostMapping("/signup")
