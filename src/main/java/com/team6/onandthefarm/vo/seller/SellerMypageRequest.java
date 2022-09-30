@@ -9,5 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class SellerMypageRequest {
     private String startDate;
+
     private String endDate;
 }

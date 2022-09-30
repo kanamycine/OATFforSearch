@@ -1,12 +1,15 @@
 package com.team6.onandthefarm.service.seller;
 
 import com.team6.onandthefarm.dto.seller.SellerDto;
+import com.team6.onandthefarm.dto.seller.SellerMypageDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
+import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
@@ -15,9 +18,8 @@ import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
-import com.team6.onandthefarm.vo.seller.SellerProductQnaResponse;
-import com.team6.onandthefarm.vo.seller.SellerRecentReviewResponse;
+import com.team6.onandthefarm.vo.order.OrderProductGroupByProduct;
+import com.team6.onandthefarm.vo.seller.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -45,6 +45,8 @@ public class SellerServiceImp implements SellerService{
 
     private ProductRepository productRepository;
 
+    private OrderProductRepository orderProductRepository;
+
     private DateUtils dateUtils;
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -60,7 +62,8 @@ public class SellerServiceImp implements SellerService{
                             ProductQnaAnswerRepository productQnaAnswerRepository,
                             ReviewRepository reviewRepository,
                             ProductRepository productRepository,
-                            JwtTokenUtil jwtTokenUtil) {
+                            JwtTokenUtil jwtTokenUtil,
+                            OrderProductRepository orderProductRepository) {
 
         this.sellerRepository = sellerRepository;
         this.dateUtils=dateUtils;
@@ -70,6 +73,7 @@ public class SellerServiceImp implements SellerService{
         this.reviewRepository=reviewRepository;
         this.productRepository=productRepository;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.orderProductRepository=orderProductRepository;
     }
 
     public boolean updateByUserId(Long userId,SellerDto sellerDto){
@@ -202,20 +206,111 @@ public class SellerServiceImp implements SellerService{
         return Boolean.TRUE;
     }
 
+    public SellerMypageResponse findSellerMypage(SellerMypageDto sellerMypageDto){
 
-    public List<SellerRecentReviewResponse> findReviewMypage(Long sellerId){
-        Optional<Seller> seller = sellerRepository.findById(sellerId);
-        List<Product> products = productRepository.findBySeller(seller.get());
-        List<Review> reviews = reviewRepository.findBySellerOrderByReviewCreatedAtDesc(seller.get());
-        for(Review review : reviews.subList(0,listNum)){
+        SellerMypageResponse response = new SellerMypageResponse();
 
-            SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
+        List<SellerRecentReviewResponse> reviews = findReviewMypage(sellerMypageDto.getSellerId());
 
-                    .build();
+        List<SellerPopularProductResponse> popularProducts = findPopularProduct(sellerMypageDto.getSellerId());
+
+        response.setReviews(reviews);
+        response.setPopularProducts(popularProducts);
+
+        List<OrderProduct> orderProducts = orderProductRepository.findBySellerIdAndOrderProductDateBetween(
+                sellerMypageDto.getSellerId(),
+                sellerMypageDto.getStartDate(),
+                sellerMypageDto.getEndDate());
+
+        /*
+                해당 기간 총 수익
+         */
+        int totalPrice = 0; // 기간 총 수익
+
+        for(OrderProduct orderProduct : orderProducts){
+            totalPrice+=orderProduct.getOrderProductQty()*orderProduct.getOrderProductPrice();
         }
 
-        return
+        /*
+                일간 수익 조회
+         */
+        String startDate = sellerMypageDto.getStartDate().substring(0,10);
+        String endDate = sellerMypageDto.getEndDate().substring(0,10);
+        String nextDate = startDate;
+
+        List<Integer> dayPrices = new ArrayList<>();
+
+        while(true){
+            int dayPrice = 0;
+            List<OrderProduct> orderProductList =
+                    orderProductRepository.findBySellerIdAndOrderProductDateStartingWith(
+                    sellerMypageDto.getSellerId(),nextDate);
+            for(OrderProduct orderProduct : orderProductList){
+                dayPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
+            }
+            dayPrices.add(dayPrice);
+            nextDate = dateUtils.nextDate(nextDate);
+            if(nextDate.equals(endDate)){
+                break;
+            }
+        }
+
+        response.setDayPrices(dayPrices);
+        response.setTotalPrice(totalPrice);
+
+        return response;
     }
+
+    /**
+     * 셀러 메인페이지에 최신 리뷰 4개 보여줄 메서드
+     * @param sellerId
+     * @return
+     */
+    public List<SellerRecentReviewResponse> findReviewMypage(Long sellerId){
+        List<SellerRecentReviewResponse> responses = new ArrayList<>();
+
+        Optional<Seller> seller = sellerRepository.findById(sellerId);
+        List<Review> reviews = reviewRepository.findBySellerOrderByReviewCreatedAtDesc(seller.get());
+
+        for(Review review : reviews.subList(0,listNum)){
+            Product product = review.getProduct();
+            SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
+                    .productImg(product.getProductMainImgSrc())
+                    .productName(product.getProductName())
+                    .reviewContent(review.getReviewContent())
+                    .reviewRate(review.getReviewRate())
+                    .reviewLikeCount(review.getReviewLikeCount())
+                    .build();
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    /**
+     * 셀러 메인페이지에 찜순 상품 4개 보여줄 메서드
+     * @param sellerId
+     * @return
+     */
+    public List<SellerPopularProductResponse> findPopularProduct(Long sellerId){
+        List<SellerPopularProductResponse> responses = new ArrayList<>();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        Optional<Seller> seller = sellerRepository.findById(sellerId);
+
+        List<Product> products = productRepository.findBySellerOOrderByProductWishCountDesc(seller.get());
+
+        for(Product product : products){
+            SellerPopularProductResponse response =
+                    modelMapper.map(product,SellerPopularProductResponse.class);
+            responses.add(response);
+        }
+
+        return responses.subList(0,listNum);
+    }
+
     @Override
     public Token login(SellerDto sellerDto) {
 

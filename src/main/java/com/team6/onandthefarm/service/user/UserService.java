@@ -4,6 +4,7 @@ import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.security.jwt.Token;
+import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 

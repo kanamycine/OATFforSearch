@@ -2,6 +2,7 @@ package com.team6.onandthefarm.controller.seller;
 
 import com.team6.onandthefarm.dto.seller.EmailDto;
 import com.team6.onandthefarm.dto.seller.SellerDto;
+import com.team6.onandthefarm.dto.seller.SellerMypageDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.security.jwt.Token;
@@ -21,7 +22,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -195,7 +198,15 @@ public class SellerController {
 
     @GetMapping("/mypage")
     @ApiOperation(value = "셀러의 메인페이지 조회")
-    public ResponseEntity<BaseResponse> findSellerMypage(@RequestBody SellerMypageRequest sellerMypageRequest){
+    public ResponseEntity<BaseResponse> findSellerMypage(
+            @ApiIgnore Principal principal, @RequestBody SellerMypageRequest sellerMypageRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        SellerMypageDto sellerMypageDto = modelMapper.map(sellerMypageRequest, SellerMypageDto.class);
+        sellerMypageDto.setSellerId(Long.valueOf(principal.getName()));
+
+        sellerService.findSellerMypage(sellerMypageDto);
 
         return new ResponseEntity(HttpStatus.OK);
     }
