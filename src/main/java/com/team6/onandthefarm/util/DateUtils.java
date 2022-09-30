@@ -15,7 +15,7 @@ public class DateUtils {
     }
 
     public String nextDate(String date){
-        String[] dateFragment = date.split(".");
+        String[] dateFragment = date.split("\\.");
         int year = Integer.valueOf(dateFragment[0]);
         int month = Integer.valueOf(dateFragment[1]);
         int day = Integer.valueOf(dateFragment[2]);
@@ -52,6 +52,15 @@ public class DateUtils {
                 }
             }
         }
-        return String.valueOf(year)+"."+String.valueOf(month)+"."+String.valueOf(day);
+        String strMonth = String.valueOf(month);
+        String strDay = String.valueOf(day);
+
+        if(strMonth.length()==1){
+            strMonth = "0"+strMonth;
+        }
+        if(strDay.length()==1){
+            strDay = "0"+strDay;
+        }
+        return String.valueOf(year)+"."+strMonth+"."+strDay;
     }
 }

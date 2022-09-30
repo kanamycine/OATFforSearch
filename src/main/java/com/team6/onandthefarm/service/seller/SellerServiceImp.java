@@ -205,6 +205,11 @@ public class SellerServiceImp implements SellerService{
         return Boolean.TRUE;
     }
 
+    /**
+     * 셀러의 마이페이지를 조회하는 메서드
+     * @param sellerMypageDto
+     * @return
+     */
     public SellerMypageResponse findSellerMypage(SellerMypageDto sellerMypageDto){
 
         SellerMypageResponse response = new SellerMypageResponse();
@@ -225,10 +230,6 @@ public class SellerServiceImp implements SellerService{
                 해당 기간 총 수익
          */
         int totalPrice = 0; // 기간 총 수익
-
-        for(OrderProduct orderProduct : orderProducts){
-            totalPrice+=orderProduct.getOrderProductQty()*orderProduct.getOrderProductPrice();
-        }
 
         /*
                 일간 수익 조회
@@ -254,6 +255,19 @@ public class SellerServiceImp implements SellerService{
             }
         }
 
+        int dayPrice = 0;
+        List<OrderProduct> orderProductList =
+                orderProductRepository.findBySellerIdAndOrderProductDateStartingWith(
+                        sellerMypageDto.getSellerId(),nextDate);
+        for(OrderProduct orderProduct : orderProductList){
+            dayPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
+        }
+        dayPrices.add(dayPrice);
+
+        for(Integer price : dayPrices){
+            totalPrice += price;
+        }
+
         response.setDayPrices(dayPrices);
         response.setTotalPrice(totalPrice);
 
@@ -270,18 +284,33 @@ public class SellerServiceImp implements SellerService{
 
         Optional<Seller> seller = sellerRepository.findById(sellerId);
         List<Review> reviews = reviewRepository.findBySellerOrderByReviewCreatedAtDesc(seller.get());
-
-        for(Review review : reviews.subList(0,listNum)){
-            Product product = review.getProduct();
-            SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
-                    .productImg(product.getProductMainImgSrc())
-                    .productName(product.getProductName())
-                    .reviewContent(review.getReviewContent())
-                    .reviewRate(review.getReviewRate())
-                    .reviewLikeCount(review.getReviewLikeCount())
-                    .build();
-            responses.add(response);
+        if(reviews.size()<listNum){
+            for(Review review : reviews){
+                Product product = review.getProduct();
+                SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
+                        .productImg(product.getProductMainImgSrc())
+                        .productName(product.getProductName())
+                        .reviewContent(review.getReviewContent())
+                        .reviewRate(review.getReviewRate())
+                        .reviewLikeCount(review.getReviewLikeCount())
+                        .build();
+                responses.add(response);
+            }
         }
+        else{
+            for(Review review : reviews.subList(0,listNum)){
+                Product product = review.getProduct();
+                SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
+                        .productImg(product.getProductMainImgSrc())
+                        .productName(product.getProductName())
+                        .reviewContent(review.getReviewContent())
+                        .reviewRate(review.getReviewRate())
+                        .reviewLikeCount(review.getReviewLikeCount())
+                        .build();
+                responses.add(response);
+            }
+        }
+
 
         return responses;
     }
@@ -305,6 +334,9 @@ public class SellerServiceImp implements SellerService{
             SellerPopularProductResponse response =
                     modelMapper.map(product,SellerPopularProductResponse.class);
             responses.add(response);
+        }
+        if(responses.size()<listNum){
+            return responses;
         }
         return responses.subList(0,listNum);
     }

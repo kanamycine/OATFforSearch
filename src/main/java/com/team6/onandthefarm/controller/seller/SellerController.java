@@ -207,7 +207,7 @@ public class SellerController {
 
     @GetMapping("/mypage")
     @ApiOperation(value = "셀러의 메인페이지 조회")
-    public ResponseEntity<BaseResponse> findSellerMypage(
+    public ResponseEntity<BaseResponse<SellerMypageResponse>> findSellerMypage(
             @ApiIgnore Principal principal, @RequestBody SellerMypageRequest sellerMypageRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -215,9 +215,15 @@ public class SellerController {
         SellerMypageDto sellerMypageDto = modelMapper.map(sellerMypageRequest, SellerMypageDto.class);
         sellerMypageDto.setSellerId(Long.valueOf(principal.getName()));
 
-        sellerService.findSellerMypage(sellerMypageDto);
+        SellerMypageResponse mypageResponse = sellerService.findSellerMypage(sellerMypageDto);
 
-        return new ResponseEntity(HttpStatus.OK);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(mypageResponse)
+                .build();
+
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
 }
