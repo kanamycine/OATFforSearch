@@ -3,7 +3,7 @@ package com.team6.onandthefarm.vo.user;
 import lombok.Data;
 
 @Data
-public class UserRegisterRequest {
+public class UserInfoRequest {
 
     private Integer userZipcode;
 
