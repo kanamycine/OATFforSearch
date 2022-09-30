@@ -20,8 +20,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductFormRequest {
-	private Long sellerId;
-
 	private String productName;
 
 	private String productCategory;

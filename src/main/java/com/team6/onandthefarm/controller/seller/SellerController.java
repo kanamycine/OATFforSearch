@@ -63,12 +63,18 @@ public class SellerController {
 
     @PutMapping("/{user-no}")
     @ApiOperation(value = "셀러 회원 정보 수정")
-    public ResponseEntity updateSeller(@PathVariable("user-no") String userNo, @RequestBody SellerUpdateRequest sellerUpdateRequest){
+    public ResponseEntity<BaseResponse> updateSeller(@PathVariable("user-no") String userNo, @RequestBody SellerUpdateRequest sellerUpdateRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
         sellerService.updateByUserId(Long.valueOf(userNo),sellerDto);
-        return new ResponseEntity(HttpStatus.OK);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("성공")
+                .build();
+
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     @PostMapping("/login")
