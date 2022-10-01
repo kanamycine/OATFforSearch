@@ -97,6 +97,7 @@ public class ReviewController {
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
+
 	// review like
 	@PostMapping(value="/like/up")
 	@ApiOperation("리뷰 좋아요 +1")
@@ -117,6 +118,7 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	//review like cancle
 	@DeleteMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
 	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
@@ -135,7 +137,6 @@ public class ReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	//review like cancle
 	@GetMapping("/list/orderby/likecount/{productId}/{page-no}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 

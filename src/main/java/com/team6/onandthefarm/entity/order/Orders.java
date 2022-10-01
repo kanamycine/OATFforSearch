@@ -20,7 +20,7 @@ public class Orders {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
-    private User userId;
+    private User user;
 
     private String ordersDate;
 
