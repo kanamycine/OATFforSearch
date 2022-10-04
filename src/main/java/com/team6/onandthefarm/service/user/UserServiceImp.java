@@ -13,6 +13,7 @@ import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
+import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
@@ -43,6 +44,7 @@ public class UserServiceImp implements UserService{
     private final ProductRepository productRepository;
 
     private final KakaoOAuth2 kakaoOAuth2;
+    private final NaverOAuth2 naverOAuth2;
 
     private final JwtTokenUtil jwtTokenUtil;
 
@@ -57,6 +59,7 @@ public class UserServiceImp implements UserService{
                           ProductQnaRepository productQnaRepository,
                           ProductRepository productRepository,
                           KakaoOAuth2 kakaoOAuth2,
+                          NaverOAuth2 naverOAuth2,
                           JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.dateUtils = dateUtils;
@@ -64,6 +67,7 @@ public class UserServiceImp implements UserService{
         this.productQnaRepository=productQnaRepository;
         this.productRepository=productRepository;
         this.kakaoOAuth2 = kakaoOAuth2;
+        this.naverOAuth2 = naverOAuth2;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -97,7 +101,32 @@ public class UserServiceImp implements UserService{
 
         }
         else if(provider.equals("naver")){
+            // 카카오 액세스 토큰 받아오기
+            String naverAccessToken = naverOAuth2.getAccessToken(userLoginDto);
 
+            if(naverAccessToken != null){
+                // 카카오 액세스 토큰으로 유저 정보 받아오기
+                OAuth2UserDto userInfo = naverOAuth2.getUserInfo(naverAccessToken);
+
+                User user = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
+
+                // DB에 유저 정보가 없다면 저장
+                if(user == null){
+                    // 유저 정보 추가 등록이 필요함
+                    needRegister = true;
+
+                    User newUser = User.builder()
+                            .userEmail(userInfo.getEmail())
+                            .role("ROLE_USER")
+                            .provider(provider)
+                            .userNaverNumber(userInfo.getNaverId())
+                            .build();
+                    user = userRepository.save(newUser);
+                }
+
+                // jwt 토큰 발행
+                token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+            }
         }
         else if(provider.equals("kakao")){
             // 카카오 액세스 토큰 받아오기
@@ -117,7 +146,7 @@ public class UserServiceImp implements UserService{
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
                             .role("ROLE_USER")
-                            .provider("kakao")
+                            .provider(provider)
                             .userKakaoNumber(userInfo.getKakaoId())
                             .build();
                     user = userRepository.save(newUser);

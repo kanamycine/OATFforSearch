@@ -33,12 +33,12 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
+    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestParam String provider, @RequestParam String code, @RequestParam String state){
 
         UserLoginDto userLoginDto = new UserLoginDto();
-        userLoginDto.setProvider(userLoginRequest.getProvider());
-        userLoginDto.setCode(userLoginRequest.getCode());
-        userLoginDto.setState(userLoginRequest.getState());
+        userLoginDto.setProvider(provider);
+        userLoginDto.setCode(code);
+        userLoginDto.setState(state);
 
         UserTokenResponse userTokenResponse = userService.login(userLoginDto);
 
