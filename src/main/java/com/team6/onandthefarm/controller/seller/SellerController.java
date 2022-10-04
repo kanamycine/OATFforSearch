@@ -208,10 +208,13 @@ public class SellerController {
     @GetMapping("/mypage")
     @ApiOperation(value = "셀러의 메인페이지 조회")
     public ResponseEntity<BaseResponse<SellerMypageResponse>> findSellerMypage(
-            @ApiIgnore Principal principal, @RequestBody SellerMypageRequest sellerMypageRequest){
+            @ApiIgnore Principal principal, @RequestParam Map<String,String> map){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
+        SellerMypageRequest sellerMypageRequest = SellerMypageRequest.builder()
+                .startDate(map.get("startDate"))
+                .endDate(map.get("endDate"))
+                .build();
         SellerMypageDto sellerMypageDto = modelMapper.map(sellerMypageRequest, SellerMypageDto.class);
         sellerMypageDto.setSellerId(Long.valueOf(principal.getName()));
 

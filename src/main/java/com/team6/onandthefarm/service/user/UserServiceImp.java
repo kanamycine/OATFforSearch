@@ -3,6 +3,7 @@ package com.team6.onandthefarm.service.user;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
+import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.user.User;
@@ -213,5 +214,29 @@ public class UserServiceImp implements UserService{
         UserInfoResponse response = modelMapper.map(user.get(),UserInfoResponse.class);
 
         return response;
+    }
+
+    /**
+     * 유저의 질의를 수정하는 메서드
+     * @param userQnaUpdateDto
+     * @return
+     */
+    public Boolean updateUserQna(UserQnaUpdateDto userQnaUpdateDto){
+        Optional<ProductQna> productQna = productQnaRepository.findById(userQnaUpdateDto.getProductQnaId());
+        productQna.get().setProductQnaContent(userQnaUpdateDto.getProductQnaContent());
+        productQna.get().setProductQnaModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+        if(productQna.get().getProductQnaContent().equals(userQnaUpdateDto.getProductQnaContent())){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    public Boolean deleteUserQna(Long productQnaId){
+        Optional<ProductQna> productQna = productQnaRepository.findById(productQnaId);
+        productQna.get().setProductQnaStatus("qna2");
+        if(productQna.get().getProductQnaStatus().equals("qna2")){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }

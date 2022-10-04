@@ -252,6 +252,7 @@ public class OrderServiceImp implements OrderService{
             int totalPrice = 0;
             Optional<Orders> order = orderRepository.findById(orderId);
             Optional<User> user = userRepository.findById(order.get().getUser().getUserId());
+
             for(OrderProduct orderProduct : orderProductList){
                 if(orderProduct.getOrders().getOrdersId()!=orderId) continue;
                 OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
@@ -466,6 +467,9 @@ public class OrderServiceImp implements OrderService{
     public Boolean createCancel(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
         orderProduct.get().setOrderProductStatus("os1"); // 취소상태
+        /**
+         * 재고 추가하는 코드 작성
+         */
         Refund refund = Refund.builder()
                 .refundContent(refundDto.getRefundDetail())
                 .orderProductId(refundDto.getOrderProductId())

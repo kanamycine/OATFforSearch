@@ -8,6 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductQnAResponse {
+    private Long productQnaId;
+
     private String productQnaContent;
 
     private String productQnaCreatedAt;
