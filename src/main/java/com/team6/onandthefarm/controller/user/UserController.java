@@ -3,6 +3,7 @@ package com.team6.onandthefarm.controller.user;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
+import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
@@ -164,6 +165,37 @@ public class UserController {
                 .data(responses)
                 .build();
         return new ResponseEntity(response,HttpStatus.CREATED);
+    }
+
+    @PutMapping("/QnA")
+    @ApiOperation(value = "유저 질의 수정")
+    public ResponseEntity<BaseResponse<Boolean>> updateUserQnA(
+            @ApiIgnore Principal principal,@RequestBody UserQnaUpdateRequest userQnaUpdateRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        UserQnaUpdateDto userQnaUpdateDto = modelMapper.map(userQnaUpdateRequest, UserQnaUpdateDto.class);
+        userQnaUpdateDto.setUserId(Long.valueOf(principal.getName()));
+        Boolean result = userService.updateUserQna(userQnaUpdateDto);
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/QnA")
+    @ApiOperation(value = "유저 질의 삭제")
+    public ResponseEntity<BaseResponse<Boolean>> deleteUserQnA(@RequestParam Long productQnaId){
+        Boolean result = userService.deleteUserQna(productQnaId);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(result)
+                .build();
+
+        return new ResponseEntity(response,HttpStatus.OK);
     }
 
 }

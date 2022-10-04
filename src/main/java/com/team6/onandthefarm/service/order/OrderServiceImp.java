@@ -251,6 +251,9 @@ public class OrderServiceImp implements OrderService{
             List<OrderSellerResponse> orderResponse = new ArrayList<>();
             int totalPrice = 0;
             Optional<Orders> order = orderRepository.findById(orderId);
+            /**
+             *      feign
+             */
             Optional<User> user = userRepository.findById(order.get().getUserId().getUserId());
             for(OrderProduct orderProduct : orderProductList){
                 if(orderProduct.getOrders().getOrdersId()!=orderId) continue;
@@ -466,6 +469,9 @@ public class OrderServiceImp implements OrderService{
     public Boolean createCancel(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
         orderProduct.get().setOrderProductStatus("os1"); // 취소상태
+        /**
+         * 재고 추가하는 코드 작성
+         */
         Refund refund = Refund.builder()
                 .refundContent(refundDto.getRefundDetail())
                 .orderProductId(refundDto.getOrderProductId())
@@ -534,6 +540,9 @@ public class OrderServiceImp implements OrderService{
         for(OrderProduct orderProduct : orderProducts){
             OrderSellerResponse orderSellerResponse = modelMapper.map(orderProduct,OrderSellerResponse.class);
             Optional<Orders> orders = orderRepository.findById(orderProduct.getOrders().getOrdersId());
+            /**
+             *      feign
+             */
             Optional<User> user = userRepository.findById(orders.get().getUserId().getUserId());
 
             orderSellerResponse.setOrdersDate(orders.get().getOrdersDate());
