@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface OAuth2UserUtil {
 
-	String getAuthCode();
 	String getAccessToken(UserLoginDto userLoginDto);
 
 	OAuth2UserDto getUserInfo(String accessToken);

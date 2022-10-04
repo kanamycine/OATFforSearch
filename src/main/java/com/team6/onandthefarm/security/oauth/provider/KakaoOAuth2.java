@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class KakaoOAuth2 {
 
-	Environment env;
+	private Environment env;
 
 	private String clientId;
 
@@ -111,11 +111,11 @@ public class KakaoOAuth2 {
 			// Http 요청하기 - Post방식으로 - 그리고 response 변수의 응답 받음.
 			ResponseEntity<String> response = rt.exchange( "https://kapi.kakao.com/v2/user/me", HttpMethod.POST, kakaoUserInfoRequest, String.class );
 			// JSON -> 액세스 토큰 파싱
-			String userInfoJson = response.getBody();
-			JSONObject ijson = new JSONObject(userInfoJson);
-			Long kakaoId = ijson.getLong("id");
-			//String name = ijson.getJSONObject("kakao_account").getString("name");
-			String email = ijson.getJSONObject("kakao_account").getString("email");
+			String userInfoString = response.getBody();
+			JSONObject iJson = new JSONObject(userInfoString);
+			Long kakaoId = iJson.getLong("id");
+			//String name = iJson.getJSONObject("kakao_account").getString("name");
+			String email = iJson.getJSONObject("kakao_account").getString("email");
 
 			OAuth2UserDto userDto = OAuth2UserDto.builder()
 					.kakaoId(kakaoId)

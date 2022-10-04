@@ -10,5 +10,6 @@ public class OAuth2UserDto {
     private String name;
     private String email;
     private Long kakaoId;
+    private String naverId;
 
 }

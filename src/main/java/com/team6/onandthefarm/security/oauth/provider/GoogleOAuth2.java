@@ -12,11 +12,6 @@ public class GoogleOAuth2 implements OAuth2UserUtil {
 
 
 	@Override
-	public String getAuthCode() {
-		return null;
-	}
-
-	@Override
 	public String getAccessToken(UserLoginDto userLoginDto) {
 		return null;
 	}
