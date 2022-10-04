@@ -1,24 +1,27 @@
 package com.team6.onandthefarm.service.product;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
 import com.team6.onandthefarm.dto.product.ProductWishFormDto;
+import com.team6.onandthefarm.entity.order.OrderProduct;
+import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.product.Wish;
+import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.order.OrderProductRepository;
+import com.team6.onandthefarm.repository.order.OrderRepository;
 import com.team6.onandthefarm.repository.product.ProductPagingRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductWishRepository;
+import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
-import com.team6.onandthefarm.vo.product.ProductQnAResponse;
-import com.team6.onandthefarm.vo.product.ProductQnaAnswerResponse;
+import com.team6.onandthefarm.vo.product.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,6 @@ import com.team6.onandthefarm.repository.category.CategoryRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.product.ProductSelectionResponse;
 
 @Service
 @Transactional
@@ -48,8 +50,12 @@ public class ProductServiceImpl implements ProductService {
 	private ProductQnaRepository productQnaRepository;
 	private ProductQnaAnswerRepository productQnaAnswerRepository;
 	private SellerRepository sellerRepository;
+	private UserRepository userRepository;
 	private ProductPagingRepository productPagingRepository;
 	private ProductWishRepository productWishRepository;
+	private OrderRepository orderRepository;
+	private OrderProductRepository orderProductRepository;
+	private ReviewRepository reviewRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -61,8 +67,12 @@ public class ProductServiceImpl implements ProductService {
 							  ProductQnaRepository productQnaRepository,
 							  ProductQnaAnswerRepository productQnaAnswerRepository,
 							  SellerRepository sellerRepository,
+							  UserRepository userRepository,
 							  ProductWishRepository productWishRepository,
-							  ProductPagingRepository productPagingRepository) {
+							  ProductPagingRepository productPagingRepository,
+							  OrderRepository orderRepository,
+							  OrderProductRepository orderProductRepository,
+							  ReviewRepository reviewRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.productPagingRepository = productPagingRepository;
@@ -71,9 +81,14 @@ public class ProductServiceImpl implements ProductService {
 		this.productQnaRepository = productQnaRepository;
 		this.productQnaAnswerRepository = productQnaAnswerRepository;
 		this.sellerRepository = sellerRepository;
+		this.userRepository = userRepository;
 		this.productWishRepository = productWishRepository;
+		this.orderRepository = orderRepository;
+		this.orderProductRepository = orderProductRepository;
+		this.reviewRepository = reviewRepository;
 	}
 
+	@Override
 	public Long saveProduct(ProductFormDto productFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -93,6 +108,7 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.save(product).getProductId();
 	}
 
+	@Override
 	public Long updateProduct(ProductUpdateFormDto productUpdateFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -114,6 +130,7 @@ public class ProductServiceImpl implements ProductService {
 		return product.get().getProductId();
 	}
 
+	@Override
 	public Long deleteProduct(ProductDeleteDto productDeleteDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -125,16 +142,14 @@ public class ProductServiceImpl implements ProductService {
 		return product.get().getProductId();
 	}
 
+	@Override
 	public Long addProductToWishList(ProductWishFormDto productWishFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
 
-		/*
-		추후 유저 추가 되면 추가
 		Optional<User> user = userRepository.findById(productWishFormDto.getUserId());
 		wish.setUser(user.get());
-		* */
 
 		Optional<Product> product = productRepository.findById(productWishFormDto.getProductId());
 		wish.setProduct(product.get());
@@ -144,6 +159,7 @@ public class ProductServiceImpl implements ProductService {
 		return wishId;
 	}
 
+	@Override
 	public Long cancelProductFromWishList(ProductWishCancelDto productWishCancelDto){
 		Long wishId = productWishCancelDto.getWishId();
 		Wish wish = productWishRepository.findById(wishId).get();
@@ -153,6 +169,27 @@ public class ProductServiceImpl implements ProductService {
 		return wishId;
 	}
 
+	@Override
+	public List<ProductInfoResponse> getWishList(Long userId) {
+		List<Wish> wishList =  productWishRepository.findWishListByUserId(userId);
+
+		List<ProductInfoResponse> productInfos = new ArrayList<>();
+		for(Wish w : wishList){
+			ProductInfoResponse productInfoResponse = ProductInfoResponse.builder()
+					.productName(w.getProduct().getProductName())
+					.productMainImgSrc(w.getProduct().getProductMainImgSrc())
+					.productDetail(w.getProduct().getProductDetail())
+					.productDetailShort(w.getProduct().getProductDetailShort())
+					.productPrice(w.getProduct().getProductPrice())
+					.build();
+
+			productInfos.add(productInfoResponse);
+		}
+
+		return productInfos;
+	}
+
+	@Override
 	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 		return productPagingRepository.findAllProductOrderByNewest(pageRequest)
@@ -161,6 +198,7 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public List<ProductSelectionResponse> getProductsListByHighPrice(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 		return productPagingRepository.findProductListByHighPrice(pageRequest)
@@ -169,6 +207,7 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public List<ProductSelectionResponse> getProductsListByLowPrice(Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 		return productPagingRepository.findProductListByLowPrice(pageRequest)
@@ -186,6 +225,7 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public List<ProductSelectionResponse> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId)
@@ -203,6 +243,7 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -225,4 +266,39 @@ public class ProductServiceImpl implements ProductService {
 
 		return matching;
 	}
+
+	/**
+	 * 유저별로 리뷰 작성이 가능한 상품을 조회하는 메서드
+	 * @param userId
+	 * @return List<ProductReviewResponse>
+	 */
+	@Override
+	public List<ProductReviewResponse> getProductsWithoutReview(Long userId) {
+
+		List<ProductReviewResponse> productReviewResponses = new ArrayList<>();
+
+		List<Orders> orders = orderRepository.findWithOrderAndDeliveryStatus(userId);
+		for(Orders o : orders){
+			List<OrderProduct> orderProducts = orderProductRepository.findByOrders(o);
+			Optional<Seller> seller = sellerRepository.findById(o.getOrdersSellerId());
+
+			for(OrderProduct orderProduct : orderProducts){
+				Optional<Review> review = reviewRepository.findReviewByOrderProductId(orderProduct.getOrderProductId());
+
+				if(!review.isPresent()) {
+					Optional<Product> product = productRepository.findById(orderProduct.getProductId());
+					ProductReviewResponse productReviewResponse = ProductReviewResponse.builder()
+							.productName(product.get().getProductName())
+							.productMainImgSrc(product.get().getProductMainImgSrc())
+							.productOriginPlace(product.get().getProductOriginPlace())
+							.sellerShopName(seller.get().getSellerShopName())
+							.build();
+					productReviewResponses.add(productReviewResponse);
+				}
+			}
+		}
+
+		return productReviewResponses;
+	}
+
 }

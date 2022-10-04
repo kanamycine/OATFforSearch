@@ -44,6 +44,8 @@ public class Review {
 
     private String reviewStatus;
 
+    private Long orderProductId;
+
 
     public Long updateReview(String reviewContent, Integer reviewRate){
         this.reviewContent = reviewContent;
