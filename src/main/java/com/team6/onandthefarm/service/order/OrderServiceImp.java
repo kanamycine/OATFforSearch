@@ -185,7 +185,7 @@ public class OrderServiceImp implements OrderService{
                 .ordersSerial(UUID.randomUUID().toString())
                 .ordersDate(dateUtils.transDate(env.getProperty("dateutils.format")))
                 .ordersStatus("os0")
-                .userId(user.get())
+                .user(user.get())
                 .build(); // 주문 엔티티 생성
         for(OrderProductDto orderProductDto : orderDto.getProductList()){
             Optional<Product> product = productRepository.findById(orderProductDto.getProductId());
@@ -251,10 +251,8 @@ public class OrderServiceImp implements OrderService{
             List<OrderSellerResponse> orderResponse = new ArrayList<>();
             int totalPrice = 0;
             Optional<Orders> order = orderRepository.findById(orderId);
-            /**
-             *      feign
-             */
-            Optional<User> user = userRepository.findById(order.get().getUserId().getUserId());
+            Optional<User> user = userRepository.findById(order.get().getUser().getUserId());
+
             for(OrderProduct orderProduct : orderProductList){
                 if(orderProduct.getOrders().getOrdersId()!=orderId) continue;
                 OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
@@ -321,7 +319,7 @@ public class OrderServiceImp implements OrderService{
 
         Optional<User> user = userRepository.findById(Long.valueOf(orderUserFindDto.getUserId()));
 
-        List<Orders> myOrders = orderRepository.findByUserId(user.get());
+        List<Orders> myOrders = orderRepository.findByUser(user.get());
 
         for(Orders order : myOrders){
             int totalPrice = 0;
@@ -413,7 +411,7 @@ public class OrderServiceImp implements OrderService{
 
         Orders orders = orderRepository.findByOrdersSerial(orderSerial);
 
-        Optional<User> user = userRepository.findById(orders.getUserId().getUserId());
+        Optional<User> user = userRepository.findById(orders.getUser().getUserId());
 
         List<OrderProduct> orderProducts = orderProductRepository.findByOrders(orders); // 주문에 대한 모든 제품가져옴
 
@@ -540,10 +538,7 @@ public class OrderServiceImp implements OrderService{
         for(OrderProduct orderProduct : orderProducts){
             OrderSellerResponse orderSellerResponse = modelMapper.map(orderProduct,OrderSellerResponse.class);
             Optional<Orders> orders = orderRepository.findById(orderProduct.getOrders().getOrdersId());
-            /**
-             *      feign
-             */
-            Optional<User> user = userRepository.findById(orders.get().getUserId().getUserId());
+            Optional<User> user = userRepository.findById(orders.get().getUser().getUserId());
 
             orderSellerResponse.setOrdersDate(orders.get().getOrdersDate());
             orderSellerResponse.setOrdersSerial(orders.get().getOrdersSerial());
@@ -614,7 +609,7 @@ public class OrderServiceImp implements OrderService{
     public RefundDetailResponse findRefundDetail(Long orderProductId){
         Refund refund = refundRepository.findByOrderProductId(orderProductId);
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
-        User user = orderProduct.get().getOrders().getUserId();
+        User user = orderProduct.get().getOrders().getUser();
         RefundDetailResponse response = RefundDetailResponse.builder()
                 .cancelDetail(refund.getRefundContent())
                 .productName(orderProduct.get().getOrderProductName())

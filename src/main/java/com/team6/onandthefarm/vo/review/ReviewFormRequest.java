@@ -16,8 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewFormRequest {
-	private Long productId;
-	private Long sellerId;
+	private Long orderProductId;
 	private String reviewContent;
 	private String reviewCreatedAt;
 	private String reviewModifiedAt;

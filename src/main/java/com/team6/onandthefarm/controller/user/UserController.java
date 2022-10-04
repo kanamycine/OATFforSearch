@@ -4,9 +4,14 @@ import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
+import com.team6.onandthefarm.service.product.ProductService;
+import com.team6.onandthefarm.service.review.ReviewService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
+import com.team6.onandthefarm.vo.product.ProductInfoResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.product.ProductReviewResponse;
+import com.team6.onandthefarm.vo.review.ReviewFormResponse;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +32,16 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ProductService productService) {
         this.userService = userService;
+        this.productService = productService;
     }
 
     @GetMapping("/login")
+    @ApiOperation(value = "유저 소셜 로그인")
     public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
 
         UserLoginDto userLoginDto = new UserLoginDto();
@@ -56,6 +64,7 @@ public class UserController {
     }
 
     @GetMapping("/logout")
+    @ApiOperation(value = "유저 로그아웃")
     public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal){
 
         Long userId = Long.parseLong(principal.getName());
@@ -65,8 +74,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // 처음 소셜로그인 시 추가 정보 저장
     @PostMapping("/register")
+    @ApiOperation(value = "소셜 로그인 후 유저의 추가 정보 저장")
     public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
@@ -92,6 +101,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
+    @ApiOperation(value = "유저 정보 수정")
     public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
@@ -128,6 +138,39 @@ public class UserController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
+    @GetMapping("/mypage/wish")
+    @ApiOperation(value = "사용자 별 위시리스트 조회")
+    public ResponseEntity<BaseResponse<List<ProductInfoResponse>>> getWishList(@ApiIgnore Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
+        List<ProductInfoResponse> productInfos = productService.getWishList(userId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.CREATED)
+                .message("get wish list by user completed")
+                .data(productInfos)
+                .build();
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/mypage/review")
+    @ApiOperation(value = "사용자 별로 작성 가능한 리뷰 조회")
+    public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(@ApiIgnore Principal principal){
+
+        Long userId = Long.parseLong(principal.getName());
+
+        List<ProductReviewResponse> productsWithoutReview = productService.getProductsWithoutReview(userId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("get writable reviews completed")
+                .data(productsWithoutReview)
+                .build();
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/QnA")
     @ApiOperation(value = "유저 질의 생성")
     public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal, @RequestBody UserQnaRequest userQnaRequest){
@@ -145,13 +188,12 @@ public class UserController {
                 .message("OK")
                 .data(result)
                 .build();
-        return new ResponseEntity(response,HttpStatus.CREATED);
+        return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/QnA")
+    @GetMapping("/mypage/QnA")
     @ApiOperation(value = "유저 질의 조회")
-    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(
-            @ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(@ApiIgnore Principal principal){
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -161,10 +203,10 @@ public class UserController {
         List<ProductQnAResponse> responses = userService.findUserQna(userId);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
-                .message("OK")
+                .message("유저 QNA 조회")
                 .data(responses)
                 .build();
-        return new ResponseEntity(response,HttpStatus.CREATED);
+        return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/QnA")
