@@ -123,7 +123,7 @@ public class OrderServiceImp implements OrderService{
 
         for(Cart cart :carts){
             Product product = cart.getProduct();
-            OrderFindOneResponse.builder()
+            OrderFindOneResponse response = OrderFindOneResponse.builder()
                     .productQty(cart.getCartQty())
                     .productName(product.getProductName())
                     .productImg(product.getProductMainImgSrc())
@@ -131,6 +131,7 @@ public class OrderServiceImp implements OrderService{
                     .productId(product.getProductId())
                     .sellerId(product.getSeller().getSellerId())
                     .build();
+            list.add(response);
         }
 
         return list;
@@ -427,12 +428,6 @@ public class OrderServiceImp implements OrderService{
                         .build();
 
         for(OrderProduct orderProduct : orderProducts){
-            if(orderProduct.getOrderProductStatus().equals("os1")){
-                continue;
-            }
-            if(orderProduct.getOrderProductStatus().equals("os2")){
-                continue;
-            }
             OrderFindOneDetailResponse orderFindOneResponse = OrderFindOneDetailResponse.builder()
                     .productPrice(orderProduct.getOrderProductPrice())
                     .productName(orderProduct.getOrderProductName())
@@ -497,6 +492,7 @@ public class OrderServiceImp implements OrderService{
                 .refundContent(refundDto.getRefundDetail())
                 .orderProductId(refundDto.getOrderProductId())
                 .refundImage(refundDto.getRefundImage())
+                .userId(refundDto.getUserId())
                 .build();
         refundRepository.save(refund);
 

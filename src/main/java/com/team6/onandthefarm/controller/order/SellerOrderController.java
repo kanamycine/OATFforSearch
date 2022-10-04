@@ -50,6 +50,8 @@ public class SellerOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         orderSellerRequest.setSellerId(principal.getName());
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
+        orderSellerFindDto.setSellerId(principal.getName());
+
         List<OrderSellerResponseList> responses  = orderService.findSellerOrders(orderSellerFindDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -68,7 +70,10 @@ public class SellerOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         orderSellerDetailRequest.setSellerId(principal.getName());
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
+        orderSellerDetailDto.setSellerId(principal.getName());
+
         OrderUserDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSellerDetailDto);
+
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -82,6 +87,7 @@ public class SellerOrderController {
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(
             @ApiIgnore Principal principal,@RequestBody OrderSellerRequest orderSellerRequest){
+        orderSellerRequest.setSellerId(principal.getName());
         List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
                 .httpStatus(HttpStatus.OK)
