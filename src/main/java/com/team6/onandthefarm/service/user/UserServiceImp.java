@@ -109,12 +109,14 @@ public class UserServiceImp implements UserService{
                 // 카카오 액세스 토큰으로 유저 정보 받아오기
                 OAuth2UserDto userInfo = naverOAuth2.getUserInfo(naverAccessToken);
 
-                User user = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
+                Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
+                User user = null;
 
-                // DB에 유저 정보가 없다면 저장
-                if(user == null){
-                    // 유저 정보 추가 등록이 필요함
-                    needRegister = true;
+                if(savedUser.isPresent()){
+                    user = savedUser.get();
+                }
+                else { // DB에 유저 정보가 없다면 저장
+                    needRegister = true; // 유저 정보 추가 등록이 필요함
 
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
@@ -139,7 +141,7 @@ public class UserServiceImp implements UserService{
 
                 Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
 
-                User user = new User();
+                User user = null;
                 if(savedUser.isPresent()){
                     user = savedUser.get();
                 }
