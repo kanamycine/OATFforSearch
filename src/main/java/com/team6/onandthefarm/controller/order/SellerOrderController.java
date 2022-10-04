@@ -48,6 +48,7 @@ public class SellerOrderController {
             @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        orderSellerRequest.setSellerId(principal.getName());
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
         List<OrderSellerResponseList> responses  = orderService.findSellerOrders(orderSellerFindDto);
         BaseResponse response = BaseResponse.builder()
@@ -65,6 +66,7 @@ public class SellerOrderController {
             @ApiIgnore Principal principal,@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        orderSellerDetailRequest.setSellerId(principal.getName());
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
         OrderUserDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSellerDetailDto);
         BaseResponse response = BaseResponse.builder()
