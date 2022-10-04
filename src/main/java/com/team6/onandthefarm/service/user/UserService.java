@@ -3,6 +3,7 @@ package com.team6.onandthefarm.service.user;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
+import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
@@ -29,4 +30,8 @@ public interface UserService {
     List<ProductQnAResponse> findUserQna(Long userId);
 
     UserInfoResponse findUserInfo(Long userId);
+
+    Boolean updateUserQna(UserQnaUpdateDto userQnaUpdateDto);
+
+    Boolean deleteUserQna(Long productQnaId);
 }

@@ -48,7 +48,7 @@ public class SellerOrderController {
             @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
+        orderSellerRequest.setSellerId(principal.getName());
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
         orderSellerFindDto.setSellerId(principal.getName());
 
@@ -68,7 +68,7 @@ public class SellerOrderController {
             @ApiIgnore Principal principal,@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
+        orderSellerDetailRequest.setSellerId(principal.getName());
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
         orderSellerDetailDto.setSellerId(principal.getName());
 

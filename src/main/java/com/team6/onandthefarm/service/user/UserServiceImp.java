@@ -3,6 +3,7 @@ package com.team6.onandthefarm.service.user;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
+import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.user.User;
@@ -136,12 +137,14 @@ public class UserServiceImp implements UserService{
                 // 카카오 액세스 토큰으로 유저 정보 받아오기
                 OAuth2UserDto userInfo = kakaoOAuth2.getUserInfo(kakaoAccessToken);
 
-                User user = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
+                Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
 
-                // DB에 유저 정보가 없다면 저장
-                if(user == null){
-                    // 유저 정보 추가 등록이 필요함
-                    needRegister = true;
+                User user = new User();
+                if(savedUser.isPresent()){
+                    user = savedUser.get();
+                }
+                else{ // DB에 유저 정보가 없다면 저장
+                    needRegister = true; // 유저 정보 추가 등록이 필요함
 
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
@@ -216,13 +219,16 @@ public class UserServiceImp implements UserService{
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        List<ProductQna> productQnas = productQnaRepository.findByUser_UserId(userId);
-
         List<ProductQnAResponse> responses = new ArrayList<>();
 
-        for(ProductQna productQna : productQnas){
-            ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
-            responses.add(response);
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()) {
+            List<ProductQna> productQnas = productQnaRepository.findByUser(user.get());
+
+            for (ProductQna productQna : productQnas) {
+                ProductQnAResponse response = modelMapper.map(productQna, ProductQnAResponse.class);
+                responses.add(response);
+            }
         }
 
         return responses;
@@ -237,5 +243,29 @@ public class UserServiceImp implements UserService{
         UserInfoResponse response = modelMapper.map(user.get(),UserInfoResponse.class);
 
         return response;
+    }
+
+    /**
+     * 유저의 질의를 수정하는 메서드
+     * @param userQnaUpdateDto
+     * @return
+     */
+    public Boolean updateUserQna(UserQnaUpdateDto userQnaUpdateDto){
+        Optional<ProductQna> productQna = productQnaRepository.findById(userQnaUpdateDto.getProductQnaId());
+        productQna.get().setProductQnaContent(userQnaUpdateDto.getProductQnaContent());
+        productQna.get().setProductQnaModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+        if(productQna.get().getProductQnaContent().equals(userQnaUpdateDto.getProductQnaContent())){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    public Boolean deleteUserQna(Long productQnaId){
+        Optional<ProductQna> productQna = productQnaRepository.findById(productQnaId);
+        productQna.get().setProductQnaStatus("qna2");
+        if(productQna.get().getProductQnaStatus().equals("qna2")){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 }

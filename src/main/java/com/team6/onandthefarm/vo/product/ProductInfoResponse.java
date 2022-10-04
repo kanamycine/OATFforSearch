@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductFormResponse {
+public class ProductInfoResponse {
 	private String productName;
 	private Integer productPrice;
 	private Integer productTotalStock;

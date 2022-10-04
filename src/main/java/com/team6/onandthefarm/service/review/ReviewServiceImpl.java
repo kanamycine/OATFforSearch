@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.entity.order.OrderProduct;
+import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.order.OrderProductRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +41,24 @@ public class ReviewServiceImpl implements ReviewService{
 	private ReviewPagingRepository reviewPagingRepository;
 	private ReviewLikeRepository reviewLikeRepository;
 	private SellerRepository sellerRepository;
+	private UserRepository userRepository;
 	private ProductRepository productRepository;
+	private OrderProductRepository orderProductRepository;
 
 	private DateUtils dateUtils;
 	private Environment env;
 
 	@Autowired ReviewServiceImpl(ReviewRepository reviewRepository, ReviewPagingRepository reviewPagingRepository,
-			ReviewLikeRepository reviewLikeRepository, SellerRepository sellerRepository, ProductRepository productRepository,
-			DateUtils dateUtils, Environment env){
+								 ReviewLikeRepository reviewLikeRepository, SellerRepository sellerRepository, UserRepository userRepository,
+								 ProductRepository productRepository, OrderProductRepository orderProductRepository,
+								 DateUtils dateUtils, Environment env){
 		this.reviewRepository = reviewRepository;
 		this.reviewPagingRepository = reviewPagingRepository;
 		this.reviewLikeRepository = reviewLikeRepository;
 		this.sellerRepository = sellerRepository;
+		this.userRepository = userRepository;
 		this.productRepository = productRepository;
+		this.orderProductRepository = orderProductRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
 	}
@@ -60,17 +69,15 @@ public class ReviewServiceImpl implements ReviewService{
 
 		Review review = modelMapper.map(reviewFormDto, Review.class);
 
-		Long productId = reviewFormDto.getProductId();
+		Optional<OrderProduct> orderProduct = orderProductRepository.findById(reviewFormDto.getOrderProductId());
+		Long productId = orderProduct.get().getProductId();
 		Optional<Product> product = productRepository.findById(productId);
 		Long userId = reviewFormDto.getUserId();
-		// 유저 해야함
-		// Optional<User> user = userRepository.findById(userId);
-
-
+		Optional<User> user = userRepository.findById(userId);
 
 		review.setSeller(product.get().getSeller());
 		review.setProduct(product.get());
-		// review.setUser(user.get());
+		review.setUser(user.get());
 		review.setReviewCreatedAt((dateUtils.transDate(env.getProperty("dateutils.format"))));
 		review.setReviewLikeCount(0);
 		review.setReviewStatus("created");
@@ -107,11 +114,22 @@ public class ReviewServiceImpl implements ReviewService{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-		ReviewLike reviewLike = modelMapper.map(reviewLikeFormDto, ReviewLike.class);
+		Optional<User> user = userRepository.findById(reviewLikeFormDto.getUserId());
+		Optional<ReviewLike> savedReviewLike = reviewLikeRepository.findReviewLikeByUser(user.get());
 
-		Optional<Review> review = reviewRepository.findById(reviewLikeFormDto.getReviewId());
-		reviewLike.setReview(review.get());
-		Long reviewLikeId = reviewLikeRepository.save(reviewLike).getReviewLikeId();
+		Long reviewLikeId = null;
+		if(savedReviewLike.isPresent()){
+			reviewLikeId = savedReviewLike.get().getReviewLikeId();
+		}
+		else {
+			ReviewLike reviewLike = modelMapper.map(reviewLikeFormDto, ReviewLike.class);
+
+			Optional<Review> review = reviewRepository.findById(reviewLikeFormDto.getReviewId());
+			reviewLike.setReview(review.get());
+			reviewLike.setUser(user.get());
+
+			reviewLikeId = reviewLikeRepository.save(reviewLike).getReviewLikeId();
+		}
 
 		return reviewLikeId;
 	}
@@ -119,6 +137,8 @@ public class ReviewServiceImpl implements ReviewService{
 	public Long cancelReviewLikeCount(ReviewLikeCancelFormDto reviewLikeCancelFormDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+
 		Long reviewLikeId = reviewLikeCancelFormDto.getReviewId();
 		ReviewLike reviewLike = reviewLikeRepository.findById(reviewLikeId).get();
 

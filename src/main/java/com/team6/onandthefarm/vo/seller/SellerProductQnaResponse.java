@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellerProductQnaResponse {
+    private Long productQnaId;
 
     private String productQnaContent;
 
@@ -15,7 +16,7 @@ public class SellerProductQnaResponse {
 
     private String productQnaModifiedAt;
 
-    private Boolean productQnaStatus;
+    private String productQnaStatus;
 
     private String productQnaCategory;
 }

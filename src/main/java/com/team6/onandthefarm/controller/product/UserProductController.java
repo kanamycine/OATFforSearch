@@ -1,7 +1,6 @@
 package com.team6.onandthefarm.controller.product;
 
 import com.team6.onandthefarm.dto.product.*;
-import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.service.product.ProductService;
@@ -28,10 +27,9 @@ public class UserProductController {
 
 	private final ProductService productService;
 
-
 	@PostMapping(value = "/wish/add")
 	@ApiOperation("위시리스트 추가")
-	public ResponseEntity<BaseResponse<Product>> addProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
+	public ResponseEntity<BaseResponse> addProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishFormDto productWishFormDto = modelMapper.map(productWishFormRequest, ProductWishFormDto.class);
@@ -49,7 +47,7 @@ public class UserProductController {
 
 	@DeleteMapping(value = "/wish/delete")
 	@ApiOperation("위시리스트 삭제")
-	public ResponseEntity<BaseResponse<Product>> deleteProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
+	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest, ProductWishCancelDto.class);
