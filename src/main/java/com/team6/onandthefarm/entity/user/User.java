@@ -22,7 +22,7 @@ public class User {
 
     //private String userPassword;
 
-    private Integer userZipcode;
+    private String userZipcode;
 
     private String userAddress;
 
