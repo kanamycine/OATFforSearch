@@ -96,6 +96,15 @@ public class SellerController {
                 .message("성공")
                 .data(sellerLoginResponse)
                 .build();
+
+        if(token == null){
+            response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("실패")
+                    .data(sellerLoginResponse)
+                    .build();
+        }
+
         return new ResponseEntity(response,HttpStatus.OK);
     }
 

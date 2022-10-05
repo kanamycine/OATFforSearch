@@ -96,6 +96,7 @@ public class UserServiceImp implements UserService{
 
         Token token = null;
         Boolean needRegister = false;
+        String email = new String();
 
         String provider = userLoginDto.getProvider();
         if(provider.equals("google")){
@@ -114,9 +115,15 @@ public class UserServiceImp implements UserService{
 
                 if(savedUser.isPresent()){
                     user = savedUser.get();
+
+                    if(user.getUserName() == null){
+                        needRegister = true;
+                        email = user.getUserEmail();
+                    }
                 }
                 else { // DB에 유저 정보가 없다면 저장
                     needRegister = true; // 유저 정보 추가 등록이 필요함
+                    email = userInfo.getEmail();
 
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
@@ -144,9 +151,15 @@ public class UserServiceImp implements UserService{
                 User user = null;
                 if(savedUser.isPresent()){
                     user = savedUser.get();
+
+                    if(user.getUserName() == null){
+                        needRegister = true;
+                        email = user.getUserEmail();
+                    }
                 }
                 else{ // DB에 유저 정보가 없다면 저장
                     needRegister = true; // 유저 정보 추가 등록이 필요함
+                    email = userInfo.getEmail();
 
                     User newUser = User.builder()
                             .userEmail(userInfo.getEmail())
@@ -164,6 +177,7 @@ public class UserServiceImp implements UserService{
         UserTokenResponse userTokenResponse = UserTokenResponse.builder()
                 .token(token)
                 .needRegister(needRegister)
+                .email(email)
                 .build();
 
         return userTokenResponse;
