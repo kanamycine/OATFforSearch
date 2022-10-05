@@ -32,9 +32,9 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/seller")
 @Api(value = "셀러",description = "QNA status\n" +
-        "     * qna0 : 답변 대기\n" +
-        "     * qna1 : 답변 완료\n" +
-        "     * qna2 : qna 삭제")
+        "     * waiting(qna0) : 답변 대기\n" +
+        "     * completed(qna1) : 답변 완료\n" +
+        "     * deleted(qna2) : qna 삭제")
 public class SellerController {
 
     private MailService mailService;

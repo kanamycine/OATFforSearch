@@ -38,7 +38,7 @@ public class Orders {
 
     private Long ordersSellerId;
 
-    private String ordersDeliveryStatus;
+    //private String ordersDeliveryStatus;
 
     private String ordersDeliveryWaybillNumber;
 

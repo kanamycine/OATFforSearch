@@ -81,7 +81,7 @@ public class UserServiceImp implements UserService{
                 .user(user.get())
                 .productQnaContent(userQnaDto.getProductQnaContent())
                 .productQnaCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")))
-                .productQnaStatus("qna0")
+                .productQnaStatus("waiting")
                 .seller(product.get().getSeller())
                 .build();
         ProductQna newQna = productQnaRepository.save(productQna);
@@ -278,8 +278,8 @@ public class UserServiceImp implements UserService{
 
     public Boolean deleteUserQna(Long productQnaId){
         Optional<ProductQna> productQna = productQnaRepository.findById(productQnaId);
-        productQna.get().setProductQnaStatus("qna2");
-        if(productQna.get().getProductQnaStatus().equals("qna2")){
+        productQna.get().setProductQnaStatus("deleted");
+        if(productQna.get().getProductQnaStatus().equals("deleted")){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;

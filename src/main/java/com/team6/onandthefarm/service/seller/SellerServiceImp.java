@@ -185,14 +185,14 @@ public class SellerServiceImp implements SellerService{
     /**
      * 답변 생성하는 메서드
      * status
-     * qna0 : 답변 대기
-     * qna1 : 답변 완료
-     * qna2 : qna 삭제
+     * waiting(qna0) : 답변 대기
+     * completed(qna1) : 답변 완료
+     * deleted(qna2) : qna 삭제
      * @param sellerQnaDto
      */
     public Boolean createQnaAnswer(SellerQnaDto sellerQnaDto){
         Optional<ProductQna> qna = productQnaRepository.findById(Long.valueOf(sellerQnaDto.getProductQnaId()));
-        qna.get().setProductQnaStatus("qna1");
+        qna.get().setProductQnaStatus("completed");
         ProductQnaAnswer productQnaAnswer = ProductQnaAnswer.builder()
                 .productQna(qna.get())
                 .productQnaAnswerContent(sellerQnaDto.getProductQnaAnswerContent())

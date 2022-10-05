@@ -253,7 +253,7 @@ public class ProductServiceImpl implements ProductService {
 		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
 		for(ProductQna productQna : productQnas){
 			ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
-			if(productQna.getProductQnaStatus().equals("qna0")||productQna.getProductQnaStatus().equals("qna2")){
+			if(productQna.getProductQnaStatus().equals("waiting")||productQna.getProductQnaStatus().equals("deleted")){
 				matching.put(response,null);
 			}
 			else{
@@ -277,7 +277,7 @@ public class ProductServiceImpl implements ProductService {
 
 		List<ProductReviewResponse> productReviewResponses = new ArrayList<>();
 
-		List<Orders> orders = orderRepository.findWithOrderAndDeliveryStatus(userId);
+		List<Orders> orders = orderRepository.findWithOrderAndOrdersStatus(userId);
 		for(Orders o : orders){
 			List<OrderProduct> orderProducts = orderProductRepository.findByOrders(o);
 			Optional<Seller> seller = sellerRepository.findById(o.getOrdersSellerId());

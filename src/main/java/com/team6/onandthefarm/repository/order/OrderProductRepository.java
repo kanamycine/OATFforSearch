@@ -22,4 +22,6 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct,Long
     List<OrderProduct> findBySellerIdAndOrderProductDateStartingWith(Long sellerId, String date);
 
     List<OrderProduct> findByProductId(Long productId);
+
+    List<OrderProduct> findOrderProductsByOrders(Orders orders);
 }
