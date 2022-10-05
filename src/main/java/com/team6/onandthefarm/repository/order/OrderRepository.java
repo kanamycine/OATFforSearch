@@ -21,6 +21,6 @@ public interface OrderRepository extends CrudRepository<Orders,Long> {
 
     List<Orders> findByUser(User user);
 
-    @Query("select o from Orders o join fetch o.user u where o.user.userId=:userId and o.ordersDeliveryStatus = 'd2' and o.ordersStatus <> 'o2'")
-    List<Orders> findWithOrderAndDeliveryStatus(@Param("userId") Long userId);
+    @Query("select o from Orders o join fetch o.user u where o.user.userId=:userId and o.ordersStatus = 'deliveryCompleted'")
+    List<Orders> findWithOrderAndOrdersStatus(@Param("userId") Long userId);
 }

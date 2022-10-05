@@ -21,12 +21,12 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/seller/orders")
 @Api(value = "주문",description = "주문 상태\n" +
-        " * os0 : 주문완료\n" +
-        " * os1 : 주문취소\n" +
-        " * os2 : 반품신청\n" +
-        " * os3 : 반품확정\n" +
-        " * os4 : 배송 중\n" +
-        " * os5 : 배송 완료")
+        " * activated(os0) : 주문완료\n" +
+        " * canceled(os1) : 주문취소\n" +
+        " * refundRequest(os2) : 반품신청\n" +
+        " * refundCompleted(os3) : 반품확정\n" +
+        " * deliveryProgress(os4) : 배송 중\n" +
+        " * deliveryCompleted(os5) : 배송 완료")
 public class SellerOrderController {
     private OrderService orderService;
 

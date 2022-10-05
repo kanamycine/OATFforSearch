@@ -30,12 +30,12 @@ import java.util.*;
 @Slf4j
 /**
  * 주문 상태
- * os0 : 주문완료
- * os1 : 주문취소
- * os2 : 반품신청
- * os3 : 반품확정
- * os4 : 배송 중
- * os5 : 배송 완료
+ * activated(os0) : 주문완료
+ * canceled(os1) : 주문취소
+ * refundRequest(os2) : 반품신청
+ * refundCompleted(os3) : 반품확정
+ * deliveryProgress(os4) : 배송 중
+ * deliveryCompleted(os5) : 배송 완료
  */
 public class OrderServiceImp implements OrderService{
 
@@ -149,7 +149,7 @@ public class OrderServiceImp implements OrderService{
             if(product.get().getProductTotalStock()>=orderProduct.getProductQty()){
                 return true;
             }
-            if(!product.get().getProductStatus().equals("p0")){
+            if(!product.get().getProductStatus().equals("selling")){
                 return false;
             }
         }
@@ -184,7 +184,7 @@ public class OrderServiceImp implements OrderService{
                 .ordersRecipientName(orderDto.getOrderRecipientName())
                 .ordersSerial(UUID.randomUUID().toString())
                 .ordersDate(dateUtils.transDate(env.getProperty("dateutils.format")))
-                .ordersStatus("os0")
+                .ordersStatus("activated")
                 .user(user.get())
                 .build(); // 주문 엔티티 생성
         for(OrderProductDto orderProductDto : orderDto.getProductList()){
@@ -265,8 +265,8 @@ public class OrderServiceImp implements OrderService{
                         .ordersSerial(order.get().getOrdersSerial())
                         .orderProductStatus(orderProduct.getOrderProductStatus())
                         .build();
-                if(orderProduct.getOrderProductStatus().equals("os4")||
-                        orderProduct.getOrderProductStatus().equals("os5")){
+                if(orderProduct.getOrderProductStatus().equals("deliveryProgress")||
+                        orderProduct.getOrderProductStatus().equals("deliveryCompleted")){
                     orderSellerResponse.setOrderProductDeliveryWaybillNumber(order.get().getOrdersDeliveryWaybillNumber());
                     orderSellerResponse.setOrderProductDeliveryCompany(order.get().getOrdersDeliveryCompany());
                     orderSellerResponse.setOrderProductDeliveryDate(order.get().getOrdersDeliveryDate());
@@ -466,7 +466,25 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean createCancel(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
-        orderProduct.get().setOrderProductStatus("os1"); // 취소상태
+        orderProduct.get().setOrderProductStatus("canceled"); // 취소상태
+
+        // 모든 주문상품의 상태가 취소처리되면 주문상태 또한 취소상태로 바꾸는 부분
+        Orders orders = orderProduct.get().getOrders();
+        Optional<Orders> savedOrders = orderRepository.findById(orders.getOrdersId());
+
+        int canceledCount = 0;
+        int orderProductsCount = 0;
+        List<OrderProduct> productOfSameOrders = orderProductRepository.findOrderProductsByOrders(orders);
+        for(OrderProduct oProduct : productOfSameOrders){
+            if(oProduct.getOrderProductStatus().equals("canceled")){
+                canceledCount++;
+            }
+            orderProductsCount++;
+        }
+        if(canceledCount == orderProductsCount) {
+            savedOrders.get().setOrdersStatus("canceled");
+        }
+
         /**
          * 재고 추가하는 코드 작성
          */
@@ -478,7 +496,7 @@ public class OrderServiceImp implements OrderService{
                 .build();
         refundRepository.save(refund);
 
-        if(orderProduct.get().getOrderProductStatus().equals("os1")){
+        if(orderProduct.get().getOrderProductStatus().equals("canceled")){
             return true;
         }
         return false;
@@ -491,16 +509,35 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean createRefund(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
-        orderProduct.get().setOrderProductStatus("os2"); // 반품신청상태
+        orderProduct.get().setOrderProductStatus("refundRequest"); // 반품신청상태
+
+        // 모든 주문상품의 상태가 환불처리되면 주문상태 또한 환불상태로 바꾸는 부분
+        Orders orders = orderProduct.get().getOrders();
+        Optional<Orders> savedOrders = orderRepository.findById(orders.getOrdersId());
+
+        int refundCount = 0;
+        int orderProductsCount = 0;
+        List<OrderProduct> productOfSameOrders = orderProductRepository.findOrderProductsByOrders(orders);
+        for(OrderProduct oProduct : productOfSameOrders){
+            if(oProduct.getOrderProductStatus().equals("refundRequest")){
+                refundCount++;
+            }
+            orderProductsCount++;
+        }
+        if(refundCount == orderProductsCount) {
+            savedOrders.get().setOrdersStatus("refundRequest");
+        }
+
         Refund refund = Refund.builder()
                 .refundContent(refundDto.getRefundDetail())
                 .orderProductId(refundDto.getOrderProductId())
                 .refundImage(refundDto.getRefundImage())
                 .userId(refundDto.getUserId())
+                .orders(orders)
                 .build();
         refundRepository.save(refund);
 
-        if(orderProduct.get().getOrderProductStatus().equals("os2")){
+        if(orderProduct.get().getOrderProductStatus().equals("refundRequest")){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -517,11 +554,11 @@ public class OrderServiceImp implements OrderService{
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         /*
-            sellerId로 orderProduct에서 제품 하나씩 찾는다. os1 os2 인 상태의 제품들을
+            sellerId로 orderProduct에서 제품 하나씩 찾는다. canceled(os1) refundRequest(os2) 인 상태의 제품들을
          */
-        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"os1");
-        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"os2");
-        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"os3");
+        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"canceled");
+        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"refundRequest");
+        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"refundCompleted");
         List<OrderProduct> orderProducts = new ArrayList<>();
         for(OrderProduct orderProduct : orderProductsSO1){
             orderProducts.add(orderProduct);
@@ -635,8 +672,8 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean conformRefund(Long orderProductId){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(orderProductId);
-        orderProduct.get().setOrderProductStatus("os3"); // 반품 확정
-        if(orderProduct.get().getOrderProductStatus().equals("os3")){
+        orderProduct.get().setOrderProductStatus("refundCompleted"); // 반품 확정
+        if(orderProduct.get().getOrderProductStatus().equals("refundCompleted")){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -652,11 +689,13 @@ public class OrderServiceImp implements OrderService{
         orders.setOrdersDeliveryCompany(orderDeliveryDto.getOrderDeliveryCompany());
         orders.setOrdersDeliveryDate(dateUtils.transDate(env.getProperty("dateutils.format")));
         orders.setOrdersDeliveryWaybillNumber(orderDeliveryDto.getOrderDeliveryWaybillNumber());
-        orders.setOrdersStatus("os4");
+        orders.setOrdersStatus("deliveryProgress");
 
         List<OrderProduct> orderProducts = orderProductRepository.findByOrders(orders);
         for(OrderProduct orderProduct : orderProducts){
-            orderProduct.setOrderProductStatus("os4");
+            if(!orderProduct.getOrderProductStatus().equals("canceled")) {
+                orderProduct.setOrderProductStatus("deliveryProgress");
+            }
         }
         return Boolean.TRUE;
     }
@@ -668,11 +707,11 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean deliveryConform(String orderSerial){
         Orders orders = orderRepository.findByOrdersSerial(orderSerial);
-        orders.setOrdersStatus("os5");
+        orders.setOrdersStatus("deliveryCompleted");
 
         List<OrderProduct> orderProducts = orderProductRepository.findByOrders(orders);
         for(OrderProduct orderProduct : orderProducts){
-            orderProduct.setOrderProductStatus("os5");
+            orderProduct.setOrderProductStatus("deliveryCompleted");
         }
         return Boolean.TRUE;
     }
