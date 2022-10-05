@@ -40,14 +40,14 @@ public class UserController {
         this.productService = productService;
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     @ApiOperation(value = "유저 소셜 로그인")
-    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestParam String provider, @RequestParam String code, @RequestParam String state){
+    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
 
         UserLoginDto userLoginDto = new UserLoginDto();
-        userLoginDto.setProvider(provider);
-        userLoginDto.setCode(code);
-        userLoginDto.setState(state);
+        userLoginDto.setProvider(userLoginRequest.getProvider());
+        userLoginDto.setCode(userLoginRequest.getCode());
+        userLoginDto.setState(userLoginRequest.getState());
 
         UserTokenResponse userTokenResponse = userService.login(userLoginDto);
 
