@@ -39,7 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/api/user/review")
 @RequiredArgsConstructor
-public class ReviewController {
+public class UserReviewController {
 	private final ReviewService reviewService;
 
 	@PostMapping("/new")

@@ -187,4 +187,22 @@ public class ReviewServiceImpl implements ReviewService{
 		}
 		return reviewResponse;
 	}
+
+	public List<ReviewSelectionResponse> getReviewBySellerNewest(Long sellerId, Integer pageNummber) {
+		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
+		PageRequest pageRequest = PageRequest.of(pageNummber, 8, Sort.by("reviewCreatedAt").descending());
+		List<Review> reviews = reviewPagingRepository.findReviewListBySeller(pageRequest, sellerId);
+		for (Review review : reviews) {
+		ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
+				.reviewId(review.getReviewId())
+				.reviewContent(review.getReviewContent())
+				.reviewCreatedAt(review.getReviewCreatedAt())
+				.reviewModifiedAt(review.getReviewModifiedAt())
+				.reviewLikeCount(review.getReviewLikeCount())
+				.reviewRate(review.getReviewRate())
+				.build();
+			reviewResponse.add(reviewSelectionResponse);
+		}
+		return reviewResponse;
+	}
 }
