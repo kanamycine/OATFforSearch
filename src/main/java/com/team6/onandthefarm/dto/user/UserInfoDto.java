@@ -9,7 +9,7 @@ public class UserInfoDto {
 
     private Long userId;
 
-    private Integer userZipcode;
+    private String userZipcode;
 
     private String userAddress;
 
