@@ -304,6 +304,13 @@ public class UserServiceImp implements UserService {
 		String followingMemberRole = memberFollowingDto.getFollowingMemberRole();
 		String followerMemberRole = memberFollowingDto.getFollowerMemberRole();
 
+		Optional<Following> savedFollowing = followingRepository.findByFollowingMemberIdAndFollowerMemberId(
+				followingMemberId, followerMemberId);
+
+		if(savedFollowing.isPresent()){
+			return savedFollowing.get().getFollowingId();
+		}
+
 		if (followingMemberRole.equals("user") && followerMemberRole.equals("user")) {
 			User followingMember = userRepository.findById(followingMemberId).get();
 			User followerMember = userRepository.findById(followerMemberId).get();
@@ -374,10 +381,8 @@ public class UserServiceImp implements UserService {
 			followerMember.setSellerFollowerCount(followingMember.getSellerFollowerCount() - 1);
 		}
 
-		Following following = followingRepository.findByFollowingMemberIdAndFollowingMemberRoleAndFollowerMemberIdAndFollowerMemberRole(
-		        followingCancelMemberId,followingCancelMemberRole,followerCancelMemberId,followerCancelMemberRole);
-		// Following following = followingRepository.findByAllCondition(followingCancelMemberId, followingCancelMemberRole,
-		// 		followerCancelMemberId, followerCancelMemberRole);
+		Following following = followingRepository.findByFollowingMemberIdAndFollowerMemberId(
+				followingCancelMemberId, followerCancelMemberId).get();
 		Long followingId = following.getFollowingId();
 		followingRepository.delete(following);
 
