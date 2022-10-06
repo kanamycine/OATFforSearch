@@ -6,6 +6,7 @@ import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.*;
+
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,7 +30,8 @@ public class UserProductController {
 
 	@PostMapping(value = "/wish/add")
 	@ApiOperation("위시리스트 추가")
-	public ResponseEntity<BaseResponse> addProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
+	public ResponseEntity<BaseResponse> addProductToWishList(@ApiIgnore Principal principal,
+			@RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishFormDto productWishFormDto = modelMapper.map(productWishFormRequest, ProductWishFormDto.class);
@@ -47,10 +49,12 @@ public class UserProductController {
 
 	@DeleteMapping(value = "/wish/delete")
 	@ApiOperation("위시리스트 삭제")
-	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal, @RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
+	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal,
+			@RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest, ProductWishCancelDto.class);
+		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest,
+				ProductWishCancelDto.class);
 		productWishCancelDto.setUserId(Long.parseLong(principal.getName()));
 		Long wishId = productService.cancelProductFromWishList(productWishCancelDto);
 
@@ -63,11 +67,26 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/{product-id}")
+	@ApiOperation(value = "상품 단건 조회")
+	public ResponseEntity<ProductInfoResponse> getProductDetail(@PathVariable("product-id") Long productId) {
+		ProductInfoResponse product = productService.getProductDetail(productId);
+
+		BaseResponse baseReponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting one products by product-id")
+				.data(product)
+				.build();
+
+		return new ResponseEntity(baseReponse, HttpStatus.OK);
+	}
+
 	@GetMapping(value = "/list/all/newest/{page-no}")
 	@ApiOperation(value = "모든 상품 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getAllProductListOrderByNewest(
 			@PathVariable("page-no") String pageNumber) {
-		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(
+				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -83,7 +102,8 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByHighPrice(
 			@PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(
+				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -130,7 +150,8 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySellerNewest(
 			@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(sellerId, Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(sellerId,
+				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -146,7 +167,8 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
 			@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(categoryId, Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(categoryId,
+				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
