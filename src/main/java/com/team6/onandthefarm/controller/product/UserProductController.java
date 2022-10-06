@@ -70,7 +70,7 @@ public class UserProductController {
 	@GetMapping(value = "/{product-id}")
 	@ApiOperation(value = "상품 단건 조회")
 	public ResponseEntity<ProductInfoResponse> getProductDetail(@PathVariable("product-id") Long productId) {
-		ProductInfoResponse product = productService.getProductDetail(productId);
+		ProductDetailResponse product = productService.getProductDetail(productId);
 
 		BaseResponse baseReponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

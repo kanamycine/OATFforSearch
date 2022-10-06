@@ -190,25 +190,13 @@ public class ProductServiceImpl implements ProductService {
 		return productInfos;
 	}
 
-	public ProductInfoResponse getProductDetail(Long productId) {
+	public ProductDetailResponse getProductDetail(Long productId) {
 		Product product = productRepository.findById(productId).get();
 
-		ProductInfoResponse productInfoResponse = ProductInfoResponse.builder()
-				.productName(product.getProductName())
-				.productPrice(product.getProductPrice())
-				.productTotalStock(product.getProductTotalStock())
-				.productMainImgSrc(product.getProductMainImgSrc())
-				.productDetail(product.getProductDetail())
-				.productOriginPlace(product.getProductOriginPlace())
-				.productDeliveryCompany(product.getProductDeliveryCompany())
-				.productStatus(product.getProductStatus())
-				.productDetailShort(product.getProductDetailShort())
-				.productWishCount(product.getProductWishCount())
-				.productSoldCount(product.getProductSoldCount())
-				.build();
+		ProductDetailResponse productDetailResponse = new ProductDetailResponse(product);
 				// product 상품 설명 이미지 dto List 추가 필요
 
-		return productInfoResponse;
+		return productDetailResponse;
 	}
 
 	@Override
