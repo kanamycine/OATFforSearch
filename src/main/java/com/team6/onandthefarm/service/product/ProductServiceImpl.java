@@ -176,6 +176,7 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductInfoResponse> productInfos = new ArrayList<>();
 		for(Wish w : wishList){
 			ProductInfoResponse productInfoResponse = ProductInfoResponse.builder()
+					.productId(w.getProduct().getProductId())
 					.productName(w.getProduct().getProductName())
 					.productMainImgSrc(w.getProduct().getProductMainImgSrc())
 					.productDetail(w.getProduct().getProductDetail())

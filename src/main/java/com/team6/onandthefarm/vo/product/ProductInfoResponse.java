@@ -17,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductInfoResponse {
+	private Long productId;
 	private String productName;
 	private Integer productPrice;
 	private Integer productTotalStock;
