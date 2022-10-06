@@ -44,6 +44,7 @@ import com.team6.onandthefarm.util.DateUtils;
 
 @Service
 @Transactional
+
 public class ProductServiceImpl implements ProductService {
 
 	private ProductRepository productRepository;
@@ -150,9 +151,14 @@ public class ProductServiceImpl implements ProductService {
 		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
 
 		Optional<User> user = userRepository.findById(productWishFormDto.getUserId());
-		wish.setUser(user.get());
-
 		Optional<Product> product = productRepository.findById(productWishFormDto.getProductId());
+
+		Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(user.get().getUserId(), product.get().getProductId());
+
+		if(savedWish.isPresent()){
+			return savedWish.get().getWishId();
+		}
+		wish.setUser(user.get());
 		wish.setProduct(product.get());
 		product.get().setProductWishCount(product.get().getProductWishCount() + 1);
 		Long wishId = productWishRepository.save(wish).getWishId();
@@ -172,6 +178,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<ProductInfoResponse> getWishList(Long userId) {
+
 		List<Wish> wishList =  productWishRepository.findWishListByUserId(userId);
 
 		List<ProductInfoResponse> productInfos = new ArrayList<>();
@@ -190,12 +197,17 @@ public class ProductServiceImpl implements ProductService {
 		return productInfos;
 	}
 
-	public ProductDetailResponse getProductDetail(Long productId) {
+	@Override
+	public ProductDetailResponse findProductDetail(Long productId, Long userId) {
 		Product product = productRepository.findById(productId).get();
-
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse(product);
+		if(userId != null){
+			Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(userId, productId);
+			if(savedWish.isPresent()){
+				productDetailResponse.setProductWishStatus(true);
+			}
+		}
 				// product 상품 설명 이미지 dto List 추가 필요
-
 		return productDetailResponse;
 	}
 

@@ -38,6 +38,7 @@ public class ProductDetailResponse {
 	private String productStatus;
 	private Integer productWishCount;
 	private Integer productSoldCount;
+	private boolean productWishStatus;
 
 	public ProductDetailResponse(Product product) {
 		this.productId = product.getProductId();
@@ -64,5 +65,6 @@ public class ProductDetailResponse {
 		this.productStatus = product.getProductStatus();
 		this.productWishCount = product.getProductWishCount();
 		this.productSoldCount = product.getProductSoldCount();
+		this.productWishStatus = false;
 	}
 }

@@ -69,8 +69,12 @@ public class UserProductController {
 
 	@GetMapping(value = "/{product-id}")
 	@ApiOperation(value = "상품 단건 조회")
-	public ResponseEntity<ProductInfoResponse> getProductDetail(@PathVariable("product-id") Long productId) {
-		ProductDetailResponse product = productService.getProductDetail(productId);
+	public ResponseEntity<ProductInfoResponse> findProductDetail(@ApiIgnore Principal principal, @PathVariable("product-id") Long productId) {
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
+		ProductDetailResponse product = productService.findProductDetail(productId, userId);
 
 		BaseResponse baseReponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
