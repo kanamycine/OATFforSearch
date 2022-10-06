@@ -52,4 +52,7 @@ public class User {
 
     private String userGoogleNumber;
 
+    private Integer userFollowingCount;
+
+    private Integer userFollowerCount;
 }
