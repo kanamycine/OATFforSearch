@@ -173,6 +173,7 @@ public class ProductServiceImpl implements ProductService {
 		productWishRepository.delete(wish);
 		Product product = productRepository.findById(productWishCancelDto.getProductId()).get();
 		product.setProductWishCount(product.getProductWishCount() - 1);
+
 		return wishId;
 	}
 

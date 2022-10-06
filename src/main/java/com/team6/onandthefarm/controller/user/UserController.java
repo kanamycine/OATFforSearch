@@ -1,17 +1,17 @@
 package com.team6.onandthefarm.controller.user;
 
+import com.team6.onandthefarm.dto.user.MemberFollowingDto;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
+import com.team6.onandthefarm.entity.user.Following;
 import com.team6.onandthefarm.service.product.ProductService;
-import com.team6.onandthefarm.service.review.ReviewService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductInfoResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import com.team6.onandthefarm.vo.product.ProductReviewResponse;
-import com.team6.onandthefarm.vo.review.ReviewFormResponse;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -240,4 +240,45 @@ public class UserController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
+	@PostMapping("/follow/add")
+	@ApiOperation(value = "다른 유저 팔로우")
+	public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal, @RequestBody UserFollowingRequest userFollowingRequest){
+
+        MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
+                .followingMemberId(Long.parseLong(principal.getName()))
+                .followingMemberRole("user")
+                .followerMemberId(userFollowingRequest.getFollowerMemberId())
+                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .build();
+
+        Long followingId = userService.addFollowList(memberFollowingDto);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(followingId)
+                .build();
+
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/follow/cancel")
+    @ApiOperation(value = "다른 유저 팔로우 취소")
+    public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal, @RequestBody UserFollowingRequest userFollowingRequest){
+
+        MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
+                .followingMemberId(Long.parseLong(principal.getName()))
+                .followingMemberRole("user")
+                .followerMemberId(userFollowingRequest.getFollowerMemberId())
+                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .build();
+        Long followingId = userService.cancelFollowList(memberFollowingDto);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(followingId)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
