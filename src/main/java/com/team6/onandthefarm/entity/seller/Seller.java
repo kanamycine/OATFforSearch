@@ -28,5 +28,6 @@ public class Seller {
     private String sellerRegisterDate;
     private Boolean sellerIsActived;
     private String role;
-
+    private Integer sellerFollowingCount;
+    private Integer sellerFollowerCount;
 }
