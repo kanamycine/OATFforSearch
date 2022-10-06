@@ -103,6 +103,8 @@ public class SellerController {
                     .message("실패")
                     .data(sellerLoginResponse)
                     .build();
+
+            return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity(response,HttpStatus.OK);
