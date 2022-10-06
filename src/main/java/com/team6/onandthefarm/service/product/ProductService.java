@@ -29,4 +29,5 @@ public interface ProductService {
 	List<ProductSelectionResponse> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
 	Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId);
 	List<ProductReviewResponse> getProductsWithoutReview(Long userId);
+	ProductInfoResponse getProductDetail(Long productId);
 }

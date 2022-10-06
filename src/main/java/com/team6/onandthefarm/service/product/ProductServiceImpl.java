@@ -3,6 +3,7 @@ package com.team6.onandthefarm.service.product;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.team6.onandthefarm.dto.product.ProductImgDto;
 import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
 import com.team6.onandthefarm.dto.product.ProductWishFormDto;
 import com.team6.onandthefarm.entity.order.OrderProduct;
@@ -187,6 +188,27 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		return productInfos;
+	}
+
+	public ProductInfoResponse getProductDetail(Long productId) {
+		Product product = productRepository.findById(productId).get();
+
+		ProductInfoResponse productInfoResponse = ProductInfoResponse.builder()
+				.productName(product.getProductName())
+				.productPrice(product.getProductPrice())
+				.productTotalStock(product.getProductTotalStock())
+				.productMainImgSrc(product.getProductMainImgSrc())
+				.productDetail(product.getProductDetail())
+				.productOriginPlace(product.getProductOriginPlace())
+				.productDeliveryCompany(product.getProductDeliveryCompany())
+				.productStatus(product.getProductStatus())
+				.productDetailShort(product.getProductDetailShort())
+				.productWishCount(product.getProductWishCount())
+				.productSoldCount(product.getProductSoldCount())
+				.build();
+				// product 상품 설명 이미지 dto List 추가 필요
+
+		return productInfoResponse;
 	}
 
 	@Override
