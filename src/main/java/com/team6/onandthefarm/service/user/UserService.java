@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.user;
 
+import com.team6.onandthefarm.dto.user.MemberFollowingDto;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
@@ -34,4 +35,8 @@ public interface UserService {
     Boolean updateUserQna(UserQnaUpdateDto userQnaUpdateDto);
 
     Boolean deleteUserQna(Long productQnaId);
+
+    Long addFollowList(MemberFollowingDto memberFollowingDto);
+
+    Long cancelFollowList(MemberFollowingDto memberFollowingDto);
 }
