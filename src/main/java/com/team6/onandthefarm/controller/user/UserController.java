@@ -12,6 +12,7 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductInfoResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import com.team6.onandthefarm.vo.product.ProductReviewResponse;
+import com.team6.onandthefarm.vo.product.ProductWishResponse;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -144,10 +145,10 @@ public class UserController {
 
     @GetMapping("/mypage/wish")
     @ApiOperation(value = "사용자 별 위시리스트 조회")
-    public ResponseEntity<BaseResponse<List<ProductInfoResponse>>> getWishList(@ApiIgnore Principal principal) {
+    public ResponseEntity<BaseResponse<List<ProductWishResponse>>> getWishList(@ApiIgnore Principal principal) {
 
         Long userId = Long.parseLong(principal.getName());
-        List<ProductInfoResponse> productInfos = productService.getWishList(userId);
+        List<ProductWishResponse> productInfos = productService.getWishList(userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
