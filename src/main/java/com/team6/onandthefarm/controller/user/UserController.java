@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ApiOperation(value = "유저 소셜 로그인")
-    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest){
+    public ResponseEntity<BaseResponse<UserTokenResponse>> login(@RequestBody UserLoginRequest userLoginRequest) {
 
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setProvider(userLoginRequest.getProvider());
@@ -52,12 +52,14 @@ public class UserController {
         UserTokenResponse userTokenResponse = userService.login(userLoginDto);
 
         BaseResponse response = null;
-        if(userTokenResponse.getToken() != null){
+        if (userTokenResponse.getToken() != null) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").data(userTokenResponse).build();
-        }
-        else{
+        } else {
             log.error("oauth 접근 토큰 발급 실패");
-            BaseResponse badResponse = BaseResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).message("잘못된 로그인 요청입니다.").build();
+            BaseResponse badResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("잘못된 로그인 요청입니다.")
+                    .build();
             return new ResponseEntity<>(badResponse, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(response, HttpStatus.OK);
@@ -65,7 +67,7 @@ public class UserController {
 
     @GetMapping("/logout")
     @ApiOperation(value = "유저 로그아웃")
-    public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal) {
 
         Long userId = Long.parseLong(principal.getName());
         userService.logout(userId);
@@ -76,7 +78,8 @@ public class UserController {
 
     @PostMapping("/register")
     @ApiOperation(value = "소셜 로그인 후 유저의 추가 정보 저장")
-    public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
+    public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal,
+            @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
 
@@ -102,7 +105,8 @@ public class UserController {
 
     @PutMapping("/update")
     @ApiOperation(value = "유저 정보 수정")
-    public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal, @RequestBody UserInfoRequest userInfoRequest) {
+    public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal,
+            @RequestBody UserInfoRequest userInfoRequest) {
 
         BaseResponse response = null;
 
@@ -128,19 +132,19 @@ public class UserController {
 
     @GetMapping("/mypage/info")
     @ApiOperation(value = "유저 정보 조회")
-    public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal) {
         UserInfoResponse userInfoResponse = userService.findUserInfo(Long.valueOf(principal.getName()));
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(userInfoResponse)
                 .build();
-        return new ResponseEntity(response,HttpStatus.OK);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     @GetMapping("/mypage/wish")
     @ApiOperation(value = "사용자 별 위시리스트 조회")
-    public ResponseEntity<BaseResponse<List<ProductInfoResponse>>> getWishList(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<List<ProductInfoResponse>>> getWishList(@ApiIgnore Principal principal) {
 
         Long userId = Long.parseLong(principal.getName());
         List<ProductInfoResponse> productInfos = productService.getWishList(userId);
@@ -156,7 +160,8 @@ public class UserController {
 
     @GetMapping("/mypage/review")
     @ApiOperation(value = "사용자 별로 작성 가능한 리뷰 조회")
-    public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(
+            @ApiIgnore Principal principal) {
 
         Long userId = Long.parseLong(principal.getName());
 
@@ -173,7 +178,8 @@ public class UserController {
 
     @PostMapping("/QnA")
     @ApiOperation(value = "유저 질의 생성")
-    public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal, @RequestBody UserQnaRequest userQnaRequest){
+    public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal,
+            @RequestBody UserQnaRequest userQnaRequest) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -193,7 +199,7 @@ public class UserController {
 
     @GetMapping("/mypage/QnA")
     @ApiOperation(value = "유저 질의 조회")
-    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(@ApiIgnore Principal principal) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -212,7 +218,7 @@ public class UserController {
     @PutMapping("/QnA")
     @ApiOperation(value = "유저 질의 수정")
     public ResponseEntity<BaseResponse<Boolean>> updateUserQnA(
-            @ApiIgnore Principal principal,@RequestBody UserQnaUpdateRequest userQnaUpdateRequest){
+            @ApiIgnore Principal principal, @RequestBody UserQnaUpdateRequest userQnaUpdateRequest) {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserQnaUpdateDto userQnaUpdateDto = modelMapper.map(userQnaUpdateRequest, UserQnaUpdateDto.class);
@@ -223,12 +229,12 @@ public class UserController {
                 .message("OK")
                 .data(result)
                 .build();
-        return new ResponseEntity(response,HttpStatus.OK);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/QnA")
     @ApiOperation(value = "유저 질의 삭제")
-    public ResponseEntity<BaseResponse<Boolean>> deleteUserQnA(@RequestParam Long productQnaId){
+    public ResponseEntity<BaseResponse<Boolean>> deleteUserQnA(@RequestParam Long productQnaId) {
         Boolean result = userService.deleteUserQna(productQnaId);
 
         BaseResponse response = BaseResponse.builder()
@@ -237,12 +243,13 @@ public class UserController {
                 .data(result)
                 .build();
 
-        return new ResponseEntity(response,HttpStatus.OK);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
-	@PostMapping("/follow/add")
-	@ApiOperation(value = "다른 유저 팔로우")
-	public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal, @RequestBody UserFollowingRequest userFollowingRequest){
+    @PostMapping("/follow/add")
+    @ApiOperation(value = "다른 유저 팔로우")
+    public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal,
+            @RequestBody UserFollowingRequest userFollowingRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
@@ -264,7 +271,8 @@ public class UserController {
 
     @PutMapping("/follow/cancel")
     @ApiOperation(value = "다른 유저 팔로우 취소")
-    public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal, @RequestBody UserFollowingRequest userFollowingRequest){
+    public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal,
+            @RequestBody UserFollowingRequest userFollowingRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
@@ -279,6 +287,23 @@ public class UserController {
                 .message("OK")
                 .data(followingId)
                 .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("follow/count")
+    @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
+    public ResponseEntity<BaseResponse<MemberFollowingCountResponse>> getFollowingCount(
+            @RequestBody MemberFollowingCountRequest memberFollowingCountRequest) {
+
+        MemberFollowingCountResponse followingCount = userService.getFollowingCount(memberFollowingCountRequest);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(followingCount)
+                .build();
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
