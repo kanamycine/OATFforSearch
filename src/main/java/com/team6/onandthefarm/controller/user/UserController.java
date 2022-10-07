@@ -233,7 +233,7 @@ public class UserController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
-    @PutMapping("/QnA")
+    @PutMapping("/QnA/delete")
     @ApiOperation(value = "유저 질의 삭제")
     public ResponseEntity<BaseResponse<Boolean>> deleteUserQnA(@RequestParam Long productQnaId) {
         Boolean result = userService.deleteUserQna(productQnaId);
