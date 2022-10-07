@@ -55,4 +55,6 @@ public class User {
     private Integer userFollowingCount;
 
     private Integer userFollowerCount;
+
+    private String userProfileImg;
 }

@@ -1,17 +1,17 @@
 package com.team6.onandthefarm.vo.user;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberFollowingCountRequest {
+public class MemberFollowCountResponse {
 	private Long memberId;
-	private String memberRole;
+	private Integer followingCount;
+	private Integer followerCount;
 }

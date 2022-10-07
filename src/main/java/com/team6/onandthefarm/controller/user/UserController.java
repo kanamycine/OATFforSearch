@@ -249,13 +249,13 @@ public class UserController {
     @PostMapping("/follow/add")
     @ApiOperation(value = "다른 유저 팔로우")
     public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal,
-            @RequestBody UserFollowingRequest userFollowingRequest) {
+            @RequestBody MemberFollowRequest memberFollowRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
                 .followingMemberRole("user")
-                .followerMemberId(userFollowingRequest.getFollowerMemberId())
-                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .followerMemberId(memberFollowRequest.getFollowerMemberId())
+                .followerMemberRole(memberFollowRequest.getFollowerMemberRole())
                 .build();
 
         Long followingId = userService.addFollowList(memberFollowingDto);
@@ -272,13 +272,13 @@ public class UserController {
     @PutMapping("/follow/cancel")
     @ApiOperation(value = "다른 유저 팔로우 취소")
     public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal,
-            @RequestBody UserFollowingRequest userFollowingRequest) {
+            @RequestBody MemberFollowRequest memberFollowRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
                 .followingMemberRole("user")
-                .followerMemberId(userFollowingRequest.getFollowerMemberId())
-                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .followerMemberId(memberFollowRequest.getFollowerMemberId())
+                .followerMemberRole(memberFollowRequest.getFollowerMemberRole())
                 .build();
         Long followingId = userService.cancelFollowList(memberFollowingDto);
 
@@ -293,15 +293,30 @@ public class UserController {
 
     @GetMapping("follow/count")
     @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
-    public ResponseEntity<BaseResponse<MemberFollowingCountResponse>> getFollowingCount(
-            @RequestBody MemberFollowingCountRequest memberFollowingCountRequest) {
+    public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
+            @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
 
-        MemberFollowingCountResponse followingCount = userService.getFollowingCount(memberFollowingCountRequest);
+        MemberFollowCountResponse followCount = userService.getFollowingCount(memberFollowCountRequest);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
-                .data(followingCount)
+                .data(followCount)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("follow/following-list")
+    @ApiOperation(value = "멤버의 팔로잉 유저 리스트 조회")
+    public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
+            @RequestBody MemberFollowingListRequest memberFollowingListRequest){
+        List<MemberFollowingListResponse> followingList = userService.getFollowingList(memberFollowingListRequest);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(followingList)
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -30,4 +30,5 @@ public class Seller {
     private String role;
     private Integer sellerFollowingCount;
     private Integer sellerFollowerCount;
+    private String sellerProfileImg;
 }
