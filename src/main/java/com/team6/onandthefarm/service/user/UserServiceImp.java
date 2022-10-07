@@ -21,6 +21,8 @@ import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.user.MemberFollowingCountRequest;
+import com.team6.onandthefarm.vo.user.MemberFollowingCountResponse;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
@@ -307,7 +309,7 @@ public class UserServiceImp implements UserService {
 		Optional<Following> savedFollowing = followingRepository.findByFollowingMemberIdAndFollowerMemberId(
 				followingMemberId, followerMemberId);
 
-		if(savedFollowing.isPresent()){
+		if (savedFollowing.isPresent()) {
 			return savedFollowing.get().getFollowingId();
 		}
 
@@ -387,5 +389,35 @@ public class UserServiceImp implements UserService {
 		followingRepository.delete(following);
 
 		return followingId;
+	}
+
+	@Override
+	public MemberFollowingCountResponse getFollowingCount(MemberFollowingCountRequest memberFollowingCountRequest) {
+		User user;
+		Seller seller;
+		MemberFollowingCountResponse memberFollowingCountResponse = null;
+		Long memberId = memberFollowingCountRequest.getMemberId();
+		String memberRole = memberFollowingCountRequest.getMemberRole();
+
+		if (memberRole.equals("user")) {
+			user = userRepository.findById(memberId).get();
+
+			memberFollowingCountResponse = MemberFollowingCountResponse.builder().
+					memberId(user.getUserId())
+					.followingCount(user.getUserFollowingCount())
+					.followerCount(user.getUserFollowerCount()).
+					build();
+			
+		} else if (memberRole.equals("seller")) {
+			seller = sellerRepository.findById(memberId).get();
+
+			memberFollowingCountResponse = MemberFollowingCountResponse.builder().
+					memberId(seller.getSellerId())
+					.followingCount(seller.getSellerFollowingCount())
+					.followerCount(seller.getSellerFollowerCount()).
+					build();
+		}
+		
+		return memberFollowingCountResponse;	
 	}
 }
