@@ -307,8 +307,23 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("follow/follower-list")
+    @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
+    public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
+            @RequestBody MemberFollowerListRequest memberFollowerListRequest){
+        List<MemberFollowerListResponse> followerList = userService.getFollowerList(memberFollowerListRequest);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(followerList)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("follow/following-list")
-    @ApiOperation(value = "멤버의 팔로잉 유저 리스트 조회")
+    @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
             @RequestBody MemberFollowingListRequest memberFollowingListRequest){
         List<MemberFollowingListResponse> followingList = userService.getFollowingList(memberFollowingListRequest);

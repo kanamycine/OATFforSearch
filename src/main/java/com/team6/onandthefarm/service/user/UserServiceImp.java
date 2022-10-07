@@ -23,6 +23,8 @@ import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
+import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
+import com.team6.onandthefarm.vo.user.MemberFollowerListResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowingListRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowingListResponse;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
@@ -424,36 +426,70 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
+	public List<MemberFollowerListResponse> getFollowerList(MemberFollowerListRequest memberFollowerListRequest){
+		User user;
+		Seller seller;
+		Long memberId = memberFollowerListRequest.getMemberId();
+		List<MemberFollowerListResponse> followerResponseList = new ArrayList<>();
+		List<Following> followerList = followingRepository.findFollowingIdByFollowerId(memberId);
+
+			for (Following following : followerList) {
+				Long followingMemberId = following.getFollowingMemberId();
+				String followingMemberRole = following.getFollowingMemberRole();
+				if(followingMemberRole.equals("user")){
+					user = userRepository.findById(followingMemberId).get();
+					MemberFollowerListResponse memberFollowerListResponse = MemberFollowerListResponse.builder()
+							.memberId(user.getUserId())
+							.memberName(user.getUserName())
+							.memberImg(user.getUserProfileImg())
+							.build();
+					followerResponseList.add(memberFollowerListResponse);
+				}
+
+				else {
+					seller = sellerRepository.findById(followingMemberId).get();
+					MemberFollowerListResponse memberFollowerListResponse = MemberFollowerListResponse.builder()
+							.memberId(seller.getSellerId())
+							.memberName(seller.getSellerName())
+							.memberImg(seller.getSellerProfileImg())
+							.build();
+					followerResponseList.add(memberFollowerListResponse);
+				}
+			}
+		return followerResponseList;
+	}
+
+	@Override
 	public List<MemberFollowingListResponse> getFollowingList(MemberFollowingListRequest memberFollowingListRequest){
 		User user;
 		Seller seller;
 		Long memberId = memberFollowingListRequest.getMemberId();
 		List<MemberFollowingListResponse> followingResponseList = new ArrayList<>();
-		List<Following> followingList = followingRepository.findFollowingIdByFollowerId(memberId);
+		List<Following> followingList = followingRepository.findFollowerIdByFollowingId(memberId);
 
-			for (Following following : followingList) {
-				Long followingMemberId = following.getFollowingMemberId();
-				String followingMemberRole = following.getFollowingMemberRole();
-				if(followingMemberRole.equals("user")){
-					user = userRepository.findById(followingMemberId).get();
-					MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
-							.memberId(user.getUserId())
-							.memberName(user.getUserName())
-							.memberImg(user.getUserProfileImg())
-							.build();
-					followingResponseList.add(memberFollowingListResponse);
-				}
-
-				else {
-					seller = sellerRepository.findById(followingMemberId).get();
-					MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
-							.memberId(seller.getSellerId())
-							.memberName(seller.getSellerName())
-							.memberImg(seller.getSellerProfileImg())
-							.build();
-					followingResponseList.add(memberFollowingListResponse);
-				}
+		for (Following following : followingList) {
+			Long followingMemberId = following.getFollowingMemberId();
+			String followingMemberRole = following.getFollowingMemberRole();
+			if(followingMemberRole.equals("user")){
+				user = userRepository.findById(followingMemberId).get();
+				MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
+						.memberId(user.getUserId())
+						.memberName(user.getUserName())
+						.memberImg(user.getUserProfileImg())
+						.build();
+				followingResponseList.add(memberFollowingListResponse);
 			}
+
+			else {
+				seller = sellerRepository.findById(followingMemberId).get();
+				MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
+						.memberId(seller.getSellerId())
+						.memberName(seller.getSellerName())
+						.memberImg(seller.getSellerProfileImg())
+						.build();
+				followingResponseList.add(memberFollowingListResponse);
+			}
+		}
 		return followingResponseList;
 	}
 }
