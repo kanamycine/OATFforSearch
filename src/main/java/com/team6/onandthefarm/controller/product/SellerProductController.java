@@ -206,6 +206,22 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/list/orderby/seller/{page-no}")
+	@ApiOperation(value = "농부별 자신이 등록한 상품 최신순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getNewestProductList(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
+
+		Long sellerId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(sellerId, Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting Newest products by farmer completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
 	//셀러 기준 질의 조회 구현 요망!
 
 }

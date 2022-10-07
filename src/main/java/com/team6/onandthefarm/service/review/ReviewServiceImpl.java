@@ -189,9 +189,11 @@ public class ReviewServiceImpl implements ReviewService{
 	}
 
 	public List<ReviewSelectionResponse> getReviewBySellerNewest(Long sellerId, Integer pageNummber) {
-		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
+
 		PageRequest pageRequest = PageRequest.of(pageNummber, 8, Sort.by("reviewCreatedAt").descending());
 		List<Review> reviews = reviewPagingRepository.findReviewListBySeller(pageRequest, sellerId);
+
+		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
 		for (Review review : reviews) {
 		ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
 				.reviewId(review.getReviewId())

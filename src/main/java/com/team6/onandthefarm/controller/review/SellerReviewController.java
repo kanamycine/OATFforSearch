@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.controller.review;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 
 import lombok.RequiredArgsConstructor;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/seller/review")
@@ -21,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 public class SellerReviewController {
 	private final ReviewService reviewService;
 
-	@GetMapping("/list/by-seller/{sellerId}/{page-no}")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewBySellerNewest(@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber){
+	@GetMapping("/list/by-seller/{page-no}")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewBySellerNewest(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
+
+		Long sellerId = Long.parseLong(principal.getName());
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewBySellerNewest(sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()

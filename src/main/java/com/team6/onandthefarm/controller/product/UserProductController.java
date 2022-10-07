@@ -36,13 +36,23 @@ public class UserProductController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishFormDto productWishFormDto = modelMapper.map(productWishFormRequest, ProductWishFormDto.class);
 		productWishFormDto.setUserId(Long.parseLong(principal.getName()));
-		Long wishId = productService.addProductToWishList(productWishFormDto);
+		ProductWishResultDto resultDto = productService.addProductToWishList(productWishFormDto);
 
-		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
-				.message("add Product to wish-list completed")
-				.data(wishId)
-				.build();
+		BaseResponse baseResponse = null;
+		if(resultDto.getIsCreated()) {
+			baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.CREATED)
+					.message("add Product to wish-list completed")
+					.data(resultDto.getWishId())
+					.build();
+		}
+		else {
+			baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.OK)
+					.message("Wish is already added")
+					.data(resultDto.getWishId())
+					.build();
+		}
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}

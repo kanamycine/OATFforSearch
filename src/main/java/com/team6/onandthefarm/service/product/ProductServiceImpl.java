@@ -3,9 +3,7 @@ package com.team6.onandthefarm.service.product;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.team6.onandthefarm.dto.product.ProductImgDto;
-import com.team6.onandthefarm.dto.product.ProductWishCancelDto;
-import com.team6.onandthefarm.dto.product.ProductWishFormDto;
+import com.team6.onandthefarm.dto.product.*;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.product.ProductQna;
@@ -32,9 +30,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.team6.onandthefarm.dto.product.ProductDeleteDto;
-import com.team6.onandthefarm.dto.product.ProductFormDto;
-import com.team6.onandthefarm.dto.product.ProductUpdateFormDto;
 import com.team6.onandthefarm.entity.category.Category;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.category.CategoryRepository;
@@ -145,25 +140,31 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Long addProductToWishList(ProductWishFormDto productWishFormDto){
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
+	public ProductWishResultDto addProductToWishList(ProductWishFormDto productWishFormDto){
+		ProductWishResultDto resultDto = new ProductWishResultDto();
 
 		Optional<User> user = userRepository.findById(productWishFormDto.getUserId());
 		Optional<Product> product = productRepository.findById(productWishFormDto.getProductId());
 
 		Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(user.get().getUserId(), product.get().getProductId());
-
 		if(savedWish.isPresent()){
-			return savedWish.get().getWishId();
+			resultDto.setWishId(savedWish.get().getWishId());
+			resultDto.setIsCreated(false);
+			return resultDto;
 		}
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
 		wish.setUser(user.get());
 		wish.setProduct(product.get());
 		product.get().setProductWishCount(product.get().getProductWishCount() + 1);
-		Long wishId = productWishRepository.save(wish).getWishId();
 
-		return wishId;
+		Long wishId = productWishRepository.save(wish).getWishId();
+		resultDto.setWishId(wishId);
+		resultDto.setIsCreated(true);
+
+		return resultDto;
 	}
 
 	@Override
@@ -181,22 +182,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductInfoResponse> getWishList(Long userId) {
+	public List<ProductWishResponse> getWishList(Long userId) {
 
 		List<Wish> wishList =  productWishRepository.findWishListByUserId(userId);
 
-		List<ProductInfoResponse> productInfos = new ArrayList<>();
+		List<ProductWishResponse> productInfos = new ArrayList<>();
 		for(Wish w : wishList){
-			ProductInfoResponse productInfoResponse = ProductInfoResponse.builder()
+			ProductWishResponse productWishResponse = ProductWishResponse.builder()
+					.wistId(w.getWishId())
 					.productId(w.getProduct().getProductId())
 					.productName(w.getProduct().getProductName())
 					.productMainImgSrc(w.getProduct().getProductMainImgSrc())
 					.productDetail(w.getProduct().getProductDetail())
 					.productDetailShort(w.getProduct().getProductDetailShort())
+					.productOriginPlace(w.getProduct().getProductOriginPlace())
 					.productPrice(w.getProduct().getProductPrice())
 					.build();
 
-			productInfos.add(productInfoResponse);
+			productInfos.add(productWishResponse);
 		}
 
 		return productInfos;
