@@ -225,6 +225,8 @@ public class UserServiceImp implements UserService {
 		user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
 		user.get().setUserBirthday(userInfoDto.getUserBirthday());
 		user.get().setUserSex(userInfoDto.getUserSex());
+		user.get().setUserFollowerCount(0);
+		user.get().setUserFollowingCount(0);
 
 		return user.get().getUserId();
 	}
