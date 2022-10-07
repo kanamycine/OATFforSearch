@@ -98,8 +98,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/all/newest/{page-no}")
 	@ApiOperation(value = "모든 상품 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getAllProductListOrderByNewest(
+			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
-		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(
+
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(userId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -114,9 +117,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/orderby/highprice/{page-no}")
 	@ApiOperation(value = "상품 높은 가격 순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByHighPrice(
+			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(userId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -131,9 +136,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/orderby/lowprice/{page-no}")
 	@ApiOperation(value = "상품 낮은 가격 순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByLowPrice(
+			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(Integer.valueOf(pageNumber));
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -147,8 +154,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/orderby/soldcount/{page-no}")
 	@ApiOperation(value = "상품 높은 판매순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySoldCount(
+			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
-		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(Integer.valueOf(pageNumber));
+
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -162,9 +172,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/orderby/seller/{sellerId}/{page-no}")
 	@ApiOperation(value = "상품 농부별 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySellerNewest(
+			@ApiIgnore Principal principal,
 			@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(sellerId,
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -179,9 +191,11 @@ public class UserProductController {
 	@GetMapping(value = "/list/orderby/category/{categoryId}/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
+			@ApiIgnore Principal principal,
 			@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber) {
 
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(categoryId,
+		Long userId = Long.parseLong(principal.getName());
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, categoryId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()

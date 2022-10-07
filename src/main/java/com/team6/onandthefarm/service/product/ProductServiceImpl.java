@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.team6.onandthefarm.dto.product.*;
+import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.product.ProductQna;
@@ -12,6 +13,7 @@ import com.team6.onandthefarm.entity.product.Wish;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
 import com.team6.onandthefarm.repository.product.ProductPagingRepository;
@@ -50,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
 	private UserRepository userRepository;
 	private ProductPagingRepository productPagingRepository;
 	private ProductWishRepository productWishRepository;
+	private CartRepository cartRepository;
 	private OrderRepository orderRepository;
 	private OrderProductRepository orderProductRepository;
 	private ReviewRepository reviewRepository;
@@ -66,6 +69,7 @@ public class ProductServiceImpl implements ProductService {
 							  SellerRepository sellerRepository,
 							  UserRepository userRepository,
 							  ProductWishRepository productWishRepository,
+							  CartRepository cartRepository,
 							  ProductPagingRepository productPagingRepository,
 							  OrderRepository orderRepository,
 							  OrderProductRepository orderProductRepository,
@@ -80,6 +84,7 @@ public class ProductServiceImpl implements ProductService {
 		this.sellerRepository = sellerRepository;
 		this.userRepository = userRepository;
 		this.productWishRepository = productWishRepository;
+		this.cartRepository = cartRepository;
 		this.orderRepository = orderRepository;
 		this.orderProductRepository = orderProductRepository;
 		this.reviewRepository = reviewRepository;
@@ -214,63 +219,59 @@ public class ProductServiceImpl implements ProductService {
 			if(savedWish.isPresent()){
 				productDetailResponse.setProductWishStatus(true);
 			}
+
+			Optional<Cart> savedCart = cartRepository.findNotDeletedCartByProduct(productId, userId);
+			if(savedCart.isPresent()){
+				productDetailResponse.setProductCartStatus(true);
+			}
 		}
 				// product 상품 설명 이미지 dto List 추가 필요
 		return productDetailResponse;
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Integer pageNumber){
+	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Long userId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findAllProductOrderByNewest(pageRequest)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+
+		List<Product> productList = productPagingRepository.findAllProductOrderByNewest(pageRequest);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsListByHighPrice(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsListByHighPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
-		return productPagingRepository.findProductListByHighPrice(pageRequest)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+
+		List<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsListByLowPrice(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsListByLowPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
-		return productPagingRepository.findProductListByLowPrice(pageRequest)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+
+		List<Product> productList =  productPagingRepository.findProductListByLowPrice(pageRequest);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsBySoldCount(Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
-		return productPagingRepository.findProductBySoldCount(pageRequest)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+		List<Product> productList = productPagingRepository.findProductBySoldCount(pageRequest);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListBySellerNewest(Long sellerId, Integer pageNumber){
+	public List<ProductSelectionResponse> getProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findProductBySellerNewest(pageRequest, sellerId)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+		List<Product> productList = productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long categoryId, Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, Long categoryId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
-		return productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId)
-				.stream()
-				.map(ProductSelectionResponse::new)
-				.collect(Collectors.toList());
+		List<Product> productList = productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
+		return setProductSelectResponse(productList, userId);
 	}
 
 	@Override
@@ -295,6 +296,36 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		return matching;
+	}
+
+	/**
+	 * 상품별로 로그인한 사용자의 wish, cart 여부 조회 메서드
+	 * @param productList, userId
+	 * @return List<ProductSelectionResponse>
+	 */
+	private List<ProductSelectionResponse> setProductSelectResponse(List<Product> productList, Long userId){
+
+		List<ProductSelectionResponse> productResponseList = new ArrayList<>();
+
+		for(Product p : productList) {
+			ProductSelectionResponse pResponse = new ProductSelectionResponse(p);
+
+			if(userId != null){
+				Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(userId, p.getProductId());
+				if(savedWish.isPresent()){
+					pResponse.setProductWishStatus(true);
+				}
+
+				Optional<Cart> savedCart = cartRepository.findNotDeletedCartByProduct(p.getProductId(), userId);
+				if(savedCart.isPresent()){
+					pResponse.setProductCartStatus(true);
+				}
+			}
+
+			productResponseList.add(pResponse);
+		}
+
+		return productResponseList;
 	}
 
 	/**
