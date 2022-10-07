@@ -101,7 +101,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(userId,
 				Integer.valueOf(pageNumber));
 
@@ -120,7 +123,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(userId,
 				Integer.valueOf(pageNumber));
 
@@ -139,7 +145,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -157,7 +166,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -175,7 +187,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId,
 				Integer.valueOf(pageNumber));
 
@@ -194,7 +209,10 @@ public class UserProductController {
 			@ApiIgnore Principal principal,
 			@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber) {
 
-		Long userId = Long.parseLong(principal.getName());
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
 		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, categoryId,
 				Integer.valueOf(pageNumber));
 

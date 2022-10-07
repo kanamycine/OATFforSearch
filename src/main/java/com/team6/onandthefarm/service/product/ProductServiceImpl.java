@@ -311,11 +311,13 @@ public class ProductServiceImpl implements ProductService {
 			ProductSelectionResponse pResponse = new ProductSelectionResponse(p);
 
 			List<Review> reviewList = reviewRepository.findReviewByProduct(p);
-			Integer reviewSum = 0;
-			for(Review review : reviewList){
-				reviewSum += review.getReviewRate();
+			if(reviewList.size() > 0) {
+				Integer reviewSum = 0;
+				for (Review review : reviewList) {
+					reviewSum += review.getReviewRate();
+				}
+				pResponse.setReviewRate((double) (reviewSum / reviewList.size()));
 			}
-			pResponse.setReviewRate((double)(reviewSum/reviewList.size()));
 
 			if(userId != null){
 				Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(userId, p.getProductId());
