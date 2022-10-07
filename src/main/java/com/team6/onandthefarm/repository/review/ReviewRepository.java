@@ -3,6 +3,7 @@ package com.team6.onandthefarm.repository.review;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.seller.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +22,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	List<Review> findBySellerOrderByReviewCreatedAtDesc(Seller seller);
 
 	Optional<Review> findReviewByOrderProductId(Long orderProductId);
+
+	List<Review> findReviewByProduct(Product product);
 
 }
