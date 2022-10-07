@@ -34,7 +34,7 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @ApiOperation(value = "장바구니 추가")
     public ResponseEntity<BaseResponse> addCart(@ApiIgnore Principal principal, @RequestBody CartRequest cartRequest){
 
@@ -53,6 +53,35 @@ public class CartController {
                 .build();
 
         if(cartIdList == null){
+            baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("cart add failed")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/set")
+    @ApiOperation(value = "장바구니 수량을 정해진 개수만큼 저장")
+    public ResponseEntity<BaseResponse> setCart(@ApiIgnore Principal principal, @RequestBody CartRequest cartRequest){
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
+
+        Long userId = Long.parseLong(principal.getName());
+        Long cartId = cartService.setCart(cartDto, userId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.CREATED)
+                .message("cart add completed")
+                .data(cartId)
+                .build();
+
+        if(cartId == null){
             baseResponse = BaseResponse.builder()
                     .httpStatus(HttpStatus.FORBIDDEN)
                     .message("cart add failed")
