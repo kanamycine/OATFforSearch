@@ -42,6 +42,7 @@ public class ProductSelectionResponse {
 	private Integer productSoldCount;
 	private Boolean productCartStatus;
 	private Boolean productWishStatus;
+	private Double reviewRate;
 
 	public ProductSelectionResponse(Product product){
 		this.productId = product.getProductId();

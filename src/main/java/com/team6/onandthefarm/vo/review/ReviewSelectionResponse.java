@@ -12,10 +12,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewSelectionResponse {
+
 	private Long reviewId;
 	private String reviewContent;
 	private String reviewCreatedAt;
 	private String reviewModifiedAt;
 	private Integer reviewLikeCount;
 	private Integer reviewRate;
+	private String userProfileImg;
+	private String userEmail;
+	private String productMainImgSrc;
+	private String productName;
+
 }
