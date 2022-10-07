@@ -59,15 +59,25 @@ public class CartServiceImpl implements CartService{
             Optional<Product> product = productRepository.findById(cartInfo.getProductId());
             Optional<User> user = userRepository.findById(userId);
 
-            Cart cart = new Cart();
-            cart.setUser(user.get());
-            cart.setProduct(product.get());
-            cart.setCartQty(cartInfo.getCartQty());
-            cart.setCartStatus(true);
-            cart.setCartIsActivated(false);
-            cart.setCartCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+            //해당 유저가 같은 상품(삭제되지않은상품)을 이미 카트에 등록했으면 수량만 증가
+            Optional<Cart> cartEntity = cartRepository.findNotDeletedCartByProduct(product.get().getProductId(), user.get().getUserId());
+            Cart savedCart = null;
 
-            Cart savedCart = cartRepository.save(cart);
+            if(cartEntity.isPresent()){
+                savedCart = cartEntity.get();
+                savedCart.setCartQty(savedCart.getCartQty()+cartInfo.getCartQty());
+            }
+            else {
+                Cart cart = new Cart();
+                cart.setUser(user.get());
+                cart.setProduct(product.get());
+                cart.setCartQty(cartInfo.getCartQty());
+                cart.setCartStatus(true);
+                cart.setCartIsActivated(false);
+                cart.setCartCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+
+                savedCart = cartRepository.save(cart);
+            }
 
             cartIdList.add(savedCart.getCartId());
         }
