@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFollowingRequest {
+public class MemberFollowingRequest {
 	private Long followerMemberId;
 	private String followerMemberRole;
 }

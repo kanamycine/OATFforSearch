@@ -249,13 +249,13 @@ public class UserController {
     @PostMapping("/follow/add")
     @ApiOperation(value = "다른 유저 팔로우")
     public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal,
-            @RequestBody UserFollowingRequest userFollowingRequest) {
+            @RequestBody MemberFollowingRequest memberFollowingRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
                 .followingMemberRole("user")
-                .followerMemberId(userFollowingRequest.getFollowerMemberId())
-                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .followerMemberId(memberFollowingRequest.getFollowerMemberId())
+                .followerMemberRole(memberFollowingRequest.getFollowerMemberRole())
                 .build();
 
         Long followingId = userService.addFollowList(memberFollowingDto);
@@ -272,13 +272,13 @@ public class UserController {
     @PutMapping("/follow/cancel")
     @ApiOperation(value = "다른 유저 팔로우 취소")
     public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal,
-            @RequestBody UserFollowingRequest userFollowingRequest) {
+            @RequestBody MemberFollowingRequest memberFollowingRequest) {
 
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
                 .followingMemberId(Long.parseLong(principal.getName()))
                 .followingMemberRole("user")
-                .followerMemberId(userFollowingRequest.getFollowerMemberId())
-                .followerMemberRole(userFollowingRequest.getFollowerMemberRole())
+                .followerMemberId(memberFollowingRequest.getFollowerMemberId())
+                .followerMemberRole(memberFollowingRequest.getFollowerMemberRole())
                 .build();
         Long followingId = userService.cancelFollowList(memberFollowingDto);
 
