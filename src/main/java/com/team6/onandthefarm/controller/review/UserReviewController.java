@@ -119,7 +119,7 @@ public class UserReviewController {
 	}
 
 	//review like cancle
-	@DeleteMapping(value="/like/cancel")
+	@PutMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
 	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();

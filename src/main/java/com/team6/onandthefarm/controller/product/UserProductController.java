@@ -57,7 +57,7 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/wish/delete")
+	@PutMapping(value = "/wish/delete")
 	@ApiOperation("위시리스트 삭제")
 	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal,
 			@RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
