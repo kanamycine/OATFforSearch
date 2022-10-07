@@ -10,6 +10,7 @@ import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.cart.CartInfoRequest;
 import com.team6.onandthefarm.vo.cart.CartRequest;
 import com.team6.onandthefarm.vo.cart.CartResponse;
 import org.modelmapper.ModelMapper;
@@ -45,27 +46,33 @@ public class CartServiceImpl implements CartService{
     /**
      * 장바구니에 추가하는 메소드
      * @param cartDto
-     * @return cartId
+     * @return List<Long> (cartId 리스트)
      */
     @Override
-    public Long addCart(CartDto cartDto, Long userId) {
+    public List<Long> addCart(CartDto cartDto, Long userId) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        Optional<Product> product = productRepository.findById(cartDto.getProductId());
-        Optional<User> user = userRepository.findById(userId);
+        List<Long> cartIdList = new ArrayList<>();
+        for(CartInfoRequest cartInfo : cartDto.getCartList()) {
+            Optional<Product> product = productRepository.findById(cartInfo.getProductId());
+            Optional<User> user = userRepository.findById(userId);
 
-        Cart cart = modelMapper.map(cartDto, Cart.class);
-        cart.setUser(user.get());
-        cart.setProduct(product.get());
-        cart.setCartStatus(true);
-        cart.setCartIsActivated(false);
-        cart.setCartCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+            Cart cart = new Cart();
+            cart.setUser(user.get());
+            cart.setProduct(product.get());
+            cart.setCartQty(cartInfo.getCartQty());
+            cart.setCartStatus(true);
+            cart.setCartIsActivated(false);
+            cart.setCartCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 
-        Cart savedCart = cartRepository.save(cart);
+            Cart savedCart = cartRepository.save(cart);
 
-        return savedCart.getCartId();
+            cartIdList.add(savedCart.getCartId());
+        }
+
+        return cartIdList;
     }
 
     /**
@@ -88,11 +95,14 @@ public class CartServiceImpl implements CartService{
      * @return cartId
      */
     @Override
-    public Long deleteCart(CartDeleteDto cartDeleteDto) {
-        Optional<Cart> cart = cartRepository.findById(cartDeleteDto.getCartId());
-        cart.get().setCartStatus(false);
+    public List<Long> deleteCart(CartDeleteDto cartDeleteDto) {
 
-        return cart.get().getCartId();
+        for(Long cartId : cartDeleteDto.getCartList()) {
+            Optional<Cart> cart = cartRepository.findById(cartId);
+            cart.get().setCartStatus(false);
+        }
+
+        return cartDeleteDto.getCartList();
     }
 
     @Override

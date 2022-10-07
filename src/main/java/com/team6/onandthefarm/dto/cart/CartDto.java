@@ -1,6 +1,9 @@
 package com.team6.onandthefarm.dto.cart;
 
+import com.team6.onandthefarm.vo.cart.CartInfoRequest;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -9,7 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 public class CartDto {
 
-    private Long productId;
-    private Integer cartQty;
+    private List<CartInfoRequest> cartList;
 
 }

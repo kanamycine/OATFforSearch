@@ -2,6 +2,8 @@ package com.team6.onandthefarm.vo.cart;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -9,6 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 public class CartDeleteRequest {
 
-    private Long cartId;
+    private List<Long> cartList;
 
 }
