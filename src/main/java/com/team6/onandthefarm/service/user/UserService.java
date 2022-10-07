@@ -6,8 +6,10 @@ import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
-import com.team6.onandthefarm.vo.user.MemberFollowingCountRequest;
-import com.team6.onandthefarm.vo.user.MemberFollowingCountResponse;
+import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
+import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
+import com.team6.onandthefarm.vo.user.MemberFollowingListRequest;
+import com.team6.onandthefarm.vo.user.MemberFollowingListResponse;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
@@ -42,5 +44,7 @@ public interface UserService {
 
     Long cancelFollowList(MemberFollowingDto memberFollowingDto);
 
-    MemberFollowingCountResponse getFollowingCount(MemberFollowingCountRequest memberFollowingCountRequest);
+    MemberFollowCountResponse getFollowingCount(MemberFollowCountRequest memberFollowCountRequest);
+
+    List<MemberFollowingListResponse> getFollowingList(MemberFollowingListRequest memberFollowingListRequest);
 }
