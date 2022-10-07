@@ -167,14 +167,17 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Long cancelProductFromWishList(ProductWishCancelDto productWishCancelDto){
-		Long wishId = productWishCancelDto.getWishId();
-		Wish wish = productWishRepository.findById(wishId).get();
-		productWishRepository.delete(wish);
-		Product product = productRepository.findById(productWishCancelDto.getProductId()).get();
-		product.setProductWishCount(product.getProductWishCount() - 1);
+	public List<Long> cancelProductFromWishList(ProductWishCancelDto productWishCancelDto){
 
-		return wishId;
+		for(Long wishId : productWishCancelDto.getWishId()) {
+			Wish wish = productWishRepository.findById(wishId).get();
+			productWishRepository.delete(wish);
+
+			Product product = productRepository.findById(wish.getProduct().getProductId()).get();
+			product.setProductWishCount(product.getProductWishCount() - 1);
+		}
+
+		return productWishCancelDto.getWishId();
 	}
 
 	@Override

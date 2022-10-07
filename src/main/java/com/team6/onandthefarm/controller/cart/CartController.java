@@ -44,22 +44,23 @@ public class CartController {
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
         Long userId = Long.parseLong(principal.getName());
-        Long cartId = cartService.addCart(cartDto, userId);
+        List<Long> cartIdList = cartService.addCart(cartDto, userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
                 .message("cart add completed")
-                .data(cartId)
+                .data(cartIdList)
                 .build();
 
-        if(cartId == null){
+        if(cartIdList == null){
             baseResponse = BaseResponse.builder()
                     .httpStatus(HttpStatus.FORBIDDEN)
                     .message("cart add failed")
                     .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
     }
 
     @PutMapping
@@ -87,9 +88,9 @@ public class CartController {
     public ResponseEntity<BaseResponse> deleteCart(@RequestBody CartDeleteRequest cartDeleteRequest){
 
         CartDeleteDto cartDeleteDto = CartDeleteDto.builder()
-                .cartId(cartDeleteRequest.getCartId()).build();
+                .cartList(cartDeleteRequest.getCartList()).build();
 
-        Long cartId = cartService.deleteCart(cartDeleteDto);
+        List<Long> cartId = cartService.deleteCart(cartDeleteDto);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)

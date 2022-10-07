@@ -2,6 +2,8 @@ package com.team6.onandthefarm.dto.cart;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -9,5 +11,5 @@ import lombok.*;
 @AllArgsConstructor
 public class CartDeleteDto {
 
-    private Long cartId;
+    private List<Long> cartList;
 }

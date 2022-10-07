@@ -19,7 +19,7 @@ public interface ProductService {
 	Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
 	Long deleteProduct(ProductDeleteDto productDeleteDto);
 	Long addProductToWishList(ProductWishFormDto productWishFormDto);
-	Long cancelProductFromWishList(ProductWishCancelDto productWishCancelDto);
+	List<Long> cancelProductFromWishList(ProductWishCancelDto productWishCancelDto);
 	List<ProductInfoResponse> getWishList(Long userId);
 	List<ProductSelectionResponse> getAllProductListOrderByNewest(Integer pageNumber);
 	List<ProductSelectionResponse> getProductsListByHighPrice(Integer pageNumber);

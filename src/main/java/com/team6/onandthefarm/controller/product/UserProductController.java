@@ -56,7 +56,7 @@ public class UserProductController {
 		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest,
 				ProductWishCancelDto.class);
 		productWishCancelDto.setUserId(Long.parseLong(principal.getName()));
-		Long wishId = productService.cancelProductFromWishList(productWishCancelDto);
+		List<Long> wishId = productService.cancelProductFromWishList(productWishCancelDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.CREATED)
