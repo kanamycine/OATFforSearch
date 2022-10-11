@@ -13,6 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewLikeRepository extends CrudRepository<ReviewLike, Long> {
-    @Query("select r from Review r join fetch r.user where r.reviewId =:reviewId and r.user.userId =:userId")
+    @Query("select r from ReviewLike r join fetch r.user where r.review.reviewId =:reviewId and r.user.userId =:userId")
     Optional<ReviewLike> findReviewLikeByUser(@Param("userId")Long userId, @Param("reviewId")Long reviewId);
 }
