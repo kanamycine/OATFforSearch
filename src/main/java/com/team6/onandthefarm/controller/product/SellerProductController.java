@@ -196,13 +196,13 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/list/orderby/category/{categoryId}/{page-no}")
+	@GetMapping(value = "/list/orderby/{category}/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
-			@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber) {
+			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, categoryId, Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, category, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
