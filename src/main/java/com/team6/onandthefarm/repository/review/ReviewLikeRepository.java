@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public interface ReviewLikeRepository extends CrudRepository<ReviewLike, Long> {
 
-    Optional<ReviewLike> findReviewLikeByUser(User user);
+    Optional<ReviewLike> findReviewLikeByUser(User user, Long reviewId);
+
+
+    Boolean reviewIsNotNull(User user, Long reviewID);
 
 }

@@ -116,16 +116,18 @@ public class ReviewServiceImpl implements ReviewService{
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		Optional<User> user = userRepository.findById(reviewLikeFormDto.getUserId());
-		Optional<ReviewLike> savedReviewLike = reviewLikeRepository.findReviewLikeByUser(user.get());
+		Boolean isReviewExist = reviewLikeRepository.reviewIsNotNull(user.get(), reviewLikeFormDto.getReviewId());
 
 		Long reviewLikeId = null;
-		if(savedReviewLike.isPresent()){
+		if(isReviewExist){
+			Optional<ReviewLike> savedReviewLike = reviewLikeRepository.findReviewLikeByUser(user.get(), reviewLikeFormDto.getReviewId());
 			reviewLikeId = savedReviewLike.get().getReviewLikeId();
 		}
 		else {
 			ReviewLike reviewLike = modelMapper.map(reviewLikeFormDto, ReviewLike.class);
 
 			Optional<Review> review = reviewRepository.findById(reviewLikeFormDto.getReviewId());
+			review.get().setReviewLikeCount(review.get().getReviewLikeCount() + 1);
 			reviewLike.setReview(review.get());
 			reviewLike.setUser(user.get());
 
@@ -144,6 +146,9 @@ public class ReviewServiceImpl implements ReviewService{
 		ReviewLike reviewLike = reviewLikeRepository.findById(reviewLikeId).get();
 
 		reviewLikeRepository.delete(reviewLike);
+		Optional<Review> review = reviewRepository.findById(reviewLikeCancelFormDto.getReviewId());
+		review.get().setReviewLikeCount(review.get().getReviewLikeCount() - 1);
+
 		return reviewLikeId;
 	}
 
@@ -164,6 +169,7 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewModifiedAt(review.getReviewModifiedAt())
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
+					.userId(review.getUser().getUserId())
 					.build();
 			reviewResponses.add(reviewSelectionResponse);
 		}
@@ -183,6 +189,7 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewModifiedAt(review.getReviewModifiedAt())
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
+					.userId(review.getUser().getUserId())
 					.build();
 			reviewResponse.add(reviewSelectionResponse);
 		}
@@ -207,6 +214,7 @@ public class ReviewServiceImpl implements ReviewService{
 					.userEmail(review.getUser().getUserEmail())
 					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
 					.productName(review.getProduct().getProductName())
+					.userId(review.getUser().getUserId())
 					.build();
 			reviewResponse.add(reviewSelectionResponse);
 		}
