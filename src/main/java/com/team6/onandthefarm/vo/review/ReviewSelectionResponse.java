@@ -23,5 +23,6 @@ public class ReviewSelectionResponse {
 	private String userEmail;
 	private String productMainImgSrc;
 	private String productName;
+	private Long userId;
 
 }

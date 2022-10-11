@@ -32,6 +32,7 @@ import com.team6.onandthefarm.vo.review.ReviewLikeFormRequest;
 import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 import com.team6.onandthefarm.vo.review.ReviewUpdateFormRequest;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import springfox.documentation.annotations.ApiIgnore;
@@ -82,6 +83,7 @@ public class UserReviewController {
 	}
 
 	@PutMapping(value="/delete")
+	@ApiOperation("리뷰 삭제")
 	public ResponseEntity<BaseResponse<Review>> productDelete(@RequestBody ReviewDeleteRequest reviewDeleteRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
