@@ -40,6 +40,9 @@ public class ProductSelectionResponse {
 	private String productStatus;
 	private Integer productWishCount;
 	private Integer productSoldCount;
+	private Boolean productCartStatus;
+	private Boolean productWishStatus;
+	private Double reviewRate;
 
 	public ProductSelectionResponse(Product product){
 		this.productId = product.getProductId();
@@ -66,5 +69,7 @@ public class ProductSelectionResponse {
 		this.productStatus = product.getProductStatus();
 		this.productWishCount = product.getProductWishCount();
 		this.productSoldCount = product.getProductSoldCount();
+		this.productWishStatus = false;
+		this.productCartStatus = false;
 	}
 }

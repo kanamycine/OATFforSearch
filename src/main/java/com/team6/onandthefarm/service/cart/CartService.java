@@ -13,4 +13,5 @@ public interface CartService {
     Long updateCartIsActivated(CartIsActivatedDto cartIsActivatedDto);
     List<Long> deleteCart(CartDeleteDto cartDeleteDto);
     List<CartResponse> selectCart(Long userId);
+    Long setCart(CartDto cartDto, Long userId);
 }

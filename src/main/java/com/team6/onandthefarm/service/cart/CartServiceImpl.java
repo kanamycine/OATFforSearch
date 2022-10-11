@@ -86,6 +86,27 @@ public class CartServiceImpl implements CartService{
     }
 
     /**
+     * 장바구니를 정해진 개수로 세팅하는 메서드
+     * @param cartDto
+     * @return Long
+     */
+    @Override
+    public Long setCart(CartDto cartDto, Long userId) {
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        CartInfoRequest cartInfo = cartDto.getCartList().get(0);
+        Optional<Product> product = productRepository.findById(cartInfo.getProductId());
+        Optional<User> user = userRepository.findById(userId);
+
+        Optional<Cart> cart = cartRepository.findNotDeletedCartByProduct(product.get().getProductId(), user.get().getUserId());
+        cart.get().setCartQty(cartInfo.getCartQty());
+
+        return cart.get().getCartId();
+    }
+
+    /**
      * 장바구니의 유지 여부를 변경하는 메소드
      * @param cartIsActivatedDto
      * @return cartId

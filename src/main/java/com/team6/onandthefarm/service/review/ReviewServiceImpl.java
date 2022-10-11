@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.entity.order.OrderProduct;
+import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
@@ -195,14 +196,18 @@ public class ReviewServiceImpl implements ReviewService{
 
 		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
 		for (Review review : reviews) {
-		ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
-				.reviewId(review.getReviewId())
-				.reviewContent(review.getReviewContent())
-				.reviewCreatedAt(review.getReviewCreatedAt())
-				.reviewModifiedAt(review.getReviewModifiedAt())
-				.reviewLikeCount(review.getReviewLikeCount())
-				.reviewRate(review.getReviewRate())
-				.build();
+			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
+					.reviewId(review.getReviewId())
+					.reviewContent(review.getReviewContent())
+					.reviewCreatedAt(review.getReviewCreatedAt())
+					.reviewModifiedAt(review.getReviewModifiedAt())
+					.reviewLikeCount(review.getReviewLikeCount())
+					.reviewRate(review.getReviewRate())
+					.userProfileImg(review.getUser().getUserProfileImg())
+					.userEmail(review.getUser().getUserEmail())
+					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
+					.productName(review.getProduct().getProductName())
+					.build();
 			reviewResponse.add(reviewSelectionResponse);
 		}
 		return reviewResponse;

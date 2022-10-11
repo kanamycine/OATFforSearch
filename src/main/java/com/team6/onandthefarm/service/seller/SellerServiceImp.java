@@ -145,6 +145,8 @@ public class SellerServiceImp implements SellerService{
                 .sellerShopName(sellerDto.getShopName())
                 .sellerIsActived(Boolean.TRUE)
                 .role("ROLE_ADMIN")
+                .sellerFollowerCount(0)
+                .sellerFollowingCount(0)
                 .build();
 
         seller.setSellerRegisterDate(date);
