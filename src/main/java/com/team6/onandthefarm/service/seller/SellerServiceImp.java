@@ -9,12 +9,14 @@ import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.util.DateUtils;
@@ -179,6 +181,19 @@ public class SellerServiceImp implements SellerService{
         for(ProductQna productQna : productQnas){
             SellerProductQnaResponse response
                     = modelMapper.map(productQna,SellerProductQnaResponse.class);
+            Product product
+                    = productRepository.findById(productQna.getProduct().getProductId()).get();
+            User user = productQna.getUser();
+            response.setProductImg(product.getProductMainImgSrc());
+            response.setProductName(product.getProductName());
+            response.setUserName(user.getUserName());
+            response.setUserProfileImg(null); // 추가 해야 함
+            if(productQna.getProductQnaStatus().equals("completed")){
+                String answer = productQnaAnswerRepository
+                        .findByProductQna(productQna)
+                        .getProductQnaAnswerContent();
+                response.setProductSellerAnswer(answer);
+            }
             sellerProductQnaResponses.add(response);
         }
         return sellerProductQnaResponses;

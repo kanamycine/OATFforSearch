@@ -10,6 +10,7 @@ import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.Following;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
@@ -58,6 +59,8 @@ public class UserServiceImp implements UserService {
 
 	private final ProductQnaRepository productQnaRepository;
 
+	private final ProductQnaAnswerRepository productQnaAnswerRepository;
+
 	private final ProductRepository productRepository;
 
 	private final FollowingRepository followingRepository;
@@ -78,6 +81,7 @@ public class UserServiceImp implements UserService {
 			DateUtils dateUtils,
 			Environment env,
 			ProductQnaRepository productQnaRepository,
+			ProductQnaAnswerRepository productQnaAnswerRepository,
 			ProductRepository productRepository,
 			KakaoOAuth2 kakaoOAuth2,
 			NaverOAuth2 naverOAuth2,
@@ -88,6 +92,7 @@ public class UserServiceImp implements UserService {
 		this.dateUtils = dateUtils;
 		this.env = env;
 		this.productQnaRepository = productQnaRepository;
+		this.productQnaAnswerRepository=productQnaAnswerRepository;
 		this.productRepository = productRepository;
 		this.kakaoOAuth2 = kakaoOAuth2;
 		this.naverOAuth2 = naverOAuth2;
@@ -263,6 +268,13 @@ public class UserServiceImp implements UserService {
 
 			for (ProductQna productQna : productQnas) {
 				ProductQnAResponse response = modelMapper.map(productQna, ProductQnAResponse.class);
+				if(response.getProductQnaStatus().equals("completed")){
+					String answer =
+							productQnaAnswerRepository
+									.findByProductQna(productQna)
+									.getProductQnaAnswerContent();
+					response.setProductSellerAnswer(answer);
+				}
 				responses.add(response);
 			}
 		}

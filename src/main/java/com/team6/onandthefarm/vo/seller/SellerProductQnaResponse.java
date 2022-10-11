@@ -19,4 +19,15 @@ public class SellerProductQnaResponse {
     private String productQnaStatus;
 
     private String productQnaCategory;
+
+    private String userProfileImg;
+
+    private String userName;
+
+    private String productName;
+
+    private String productImg;
+
+    private String productSellerAnswer;
+
 }
