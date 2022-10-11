@@ -116,11 +116,10 @@ public class ReviewServiceImpl implements ReviewService{
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		Optional<User> user = userRepository.findById(reviewLikeFormDto.getUserId());
-		Boolean isReviewExist = reviewLikeRepository.reviewIsNotNull(user.get(), reviewLikeFormDto.getReviewId());
+		Optional<ReviewLike> savedReviewLike = reviewLikeRepository.findReviewLikeByUser(reviewLikeFormDto.getUserId(), reviewLikeFormDto.getReviewId());
 
 		Long reviewLikeId = null;
-		if(isReviewExist){
-			Optional<ReviewLike> savedReviewLike = reviewLikeRepository.findReviewLikeByUser(user.get(), reviewLikeFormDto.getReviewId());
+		if(savedReviewLike.isPresent()){
 			reviewLikeId = savedReviewLike.get().getReviewLikeId();
 		}
 		else {
