@@ -1,17 +1,18 @@
 package com.team6.onandthefarm.repository.review;
 
+import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.user.User;
+
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.team6.onandthefarm.entity.review.ReviewLike;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewLikeRepository extends CrudRepository<ReviewLike, Long> {
-
-    Optional<ReviewLike> findReviewLikeByUser(User user, Long reviewId);
-
-
-    Boolean reviewIsNotNull(User user, Long reviewID);
-
+    @Query("select r from Review r join fetch r.user where r.reviewId =:reviewId and r.user.userId =:userId")
+    Optional<ReviewLike> findReviewLikeByUser(@Param("userId")Long userId, @Param("reviewId")Long reviewId);
 }
