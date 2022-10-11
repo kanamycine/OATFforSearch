@@ -21,4 +21,9 @@ public class ProductQnAResponse {
     private String productQnaCategory;
 
     private String productSellerAnswer;
+
+    private String userName;
+
+    private String userProfile;
+
 }

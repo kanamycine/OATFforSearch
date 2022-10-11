@@ -302,15 +302,19 @@ public class ProductServiceImpl implements ProductService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Optional<Product> product = productRepository.findById(productId);
 		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
+
 		List<ProductQnAResponse> responses = new ArrayList<>();
 
 		for(ProductQna productQna : productQnas){
+			User user = userRepository.findById(productQna.getUser().getUserId()).get();
 			ProductQnAResponse response = ProductQnAResponse.builder()
 					.productQnaStatus(productQna.getProductQnaStatus())
 					.productQnaCreatedAt(productQna.getProductQnaCreatedAt())
 					.productQnaContent(productQna.getProductQnaContent())
 					.productQnaId(productQna.getProductQnaId())
 					.productQnaModifiedAt(productQna.getProductQnaModifiedAt())
+					.userName(user.getUserName())
+					.userProfile(user.getUserProfileImg())
 					.build();
 			if(productQna.getProductQnaStatus().equals("waiting")){
 				responses.add(response);
