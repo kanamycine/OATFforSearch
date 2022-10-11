@@ -268,11 +268,33 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, Long categoryId, Integer pageNumber) {
+	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
-		List<Product> productList = productPagingRepository.findProductsByCategoryNewest(pageRequest,categoryId);
+		List<Product> productList = productPagingRepository.findProductsByCategoryNewest(pageRequest,category);
 		return setProductSelectResponse(productList, userId);
 	}
+
+	@Override
+	public List<ProductSelectionResponse> getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
+		List<Product> productList = productPagingRepository.findProductByCategoryHighest(pageRequest,category);
+		return setProductSelectResponse(productList, userId);
+	}
+
+	@Override
+	public List<ProductSelectionResponse> getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
+		List<Product> productList = productPagingRepository.findProductByCategoryLowest(pageRequest,category);
+		return setProductSelectResponse(productList, userId);
+	}
+
+	@Override
+	public List<ProductSelectionResponse> getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
+		List<Product> productList = productPagingRepository.findProductByCategorySoldCount(pageRequest,category);
+		return setProductSelectResponse(productList, userId);
+	}
+
 
 	@Override
 	public List<ProductQnAResponse> findProductQnAList(Long productId){

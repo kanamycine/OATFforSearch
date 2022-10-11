@@ -203,22 +203,82 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/list/orderby/category/{categoryId}/{page-no}")
+	@GetMapping(value = "/list/{category}/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
 			@ApiIgnore Principal principal,
-			@PathVariable("categoryId") Long categoryId, @PathVariable("page-no") String pageNumber) {
+			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
 		if (principal != null){
 			userId = Long.parseLong(principal.getName());
 		}
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, categoryId,
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, category,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting Newest products by category  completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/list/{category}/highprice/{page-no}")
+	@ApiOperation(value = "상품 카테고리별 높은가격 순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryHighest(
+			@ApiIgnore Principal principal,
+			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryHighest(userId, category, Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting highest products by category  completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/list/{category}/lowprice/{page-no}")
+	@ApiOperation(value = "상품 카테고리별 낮은가격 순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryLowest(
+			@ApiIgnore Principal principal,
+			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
+		List<ProductSelectionResponse> products = productService.getProductListByCategoryLowest(userId, category, Integer.valueOf(pageNumber));
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting lowest products by category completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/list/{category}/soldcount/{page-no}")
+	@ApiOperation(value = "상품 카테고리별 판매 순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategorySoldCount(
+			@ApiIgnore Principal principal,
+			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
+
+		Long userId = null;
+		if (principal != null){
+			userId = Long.parseLong(principal.getName());
+		}
+		List<ProductSelectionResponse> products = productService.getProductsByCategorySoldCount(userId, category, Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting products by high price completed")
 				.data(products)
 				.build();
 

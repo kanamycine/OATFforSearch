@@ -31,7 +31,13 @@ public interface ProductService {
 
     List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber);
 
-    List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, Long CategoryId, Integer pageNumber);
+    List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String Category, Integer pageNumber);
+
+    List<ProductSelectionResponse> getProductListByCategoryHighest(Long userId, String Category, Integer pageNumber);
+
+    List<ProductSelectionResponse> getProductListByCategoryLowest(Long userId, String category, Integer pageNumber);
+
+    List<ProductSelectionResponse> getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber);
 
     List<ProductSelectionResponse> getProductListBySellerNewest(Long userId, Long SellerId, Integer pageNumber);
 
