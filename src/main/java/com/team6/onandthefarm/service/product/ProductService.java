@@ -23,7 +23,7 @@ public interface ProductService {
 	List<ProductSelectionResponse> getProductsBySoldCount(Integer pageNumber);
 	List<ProductSelectionResponse> getProductListByCategoryNewest(Long CategoryId, Integer pageNumber);
 	List<ProductSelectionResponse> getProductListBySellerNewest(Long SellerId, Integer pageNumber);
-	Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId);
+	List<ProductQnAResponse> findProductQnAList(Long productId);
 	List<ProductReviewResponse> getProductsWithoutReview(Long userId);
 	ProductDetailResponse findProductDetail(Long productId, Long userId);
 }

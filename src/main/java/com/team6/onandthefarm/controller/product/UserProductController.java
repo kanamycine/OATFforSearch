@@ -198,7 +198,7 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<Map<ProductQna, ProductQnaAnswer>>> findProductQnAList(
 			@PathVariable("product-no") Long productId) {
 
-		Map<ProductQnAResponse, ProductQnaAnswerResponse> products
+		List<ProductQnAResponse> products
 				= productService.findProductQnAList(productId);
 
 		BaseResponse baseResponse = BaseResponse.builder()

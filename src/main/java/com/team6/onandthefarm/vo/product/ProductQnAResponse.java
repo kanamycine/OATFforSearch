@@ -19,4 +19,6 @@ public class ProductQnAResponse {
     private String productQnaStatus;
 
     private String productQnaCategory;
+
+    private String productSellerAnswer;
 }

@@ -274,27 +274,52 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Map<ProductQnAResponse, ProductQnaAnswerResponse> findProductQnAList(Long productId){
+	public List<ProductQnAResponse> findProductQnAList(Long productId){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Optional<Product> product = productRepository.findById(productId);
 		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
-		// QNA : QNA답변
-		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
+		List<ProductQnAResponse> responses = new ArrayList<>();
+
 		for(ProductQna productQna : productQnas){
-			ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
-			if(productQna.getProductQnaStatus().equals("waiting")||productQna.getProductQnaStatus().equals("deleted")){
-				matching.put(response,null);
+			ProductQnAResponse response = ProductQnAResponse.builder()
+					.productQnaStatus(productQna.getProductQnaStatus())
+					.productQnaCreatedAt(productQna.getProductQnaCreatedAt())
+					.productQnaContent(productQna.getProductQnaContent())
+					.productQnaId(productQna.getProductQnaId())
+					.productQnaModifiedAt(productQna.getProductQnaModifiedAt())
+					.build();
+			if(productQna.getProductQnaStatus().equals("waiting")){
+				responses.add(response);
+				continue;
 			}
-			else{
-				ProductQnaAnswer productQnaAnswer = productQnaAnswerRepository.findByProductQna(productQna);
-				ProductQnaAnswerResponse productQnaAnswerResponse
-						= modelMapper.map(productQnaAnswer, ProductQnaAnswerResponse.class);
-				matching.put(response,productQnaAnswerResponse);
+			if(productQna.getProductQnaStatus().equals("deleted")){
+				continue;
 			}
+			String answer =
+					productQnaAnswerRepository
+							.findByProductQna(productQna)
+							.getProductQnaAnswerContent();
+			response.setProductSellerAnswer(answer);
+			responses.add(response);
 		}
 
-		return matching;
+//		// QNA : QNA답변
+//		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
+//		for(ProductQna productQna : productQnas){
+//			ProductQnAResponse response = modelMapper.map(productQna,ProductQnAResponse.class);
+//			if(productQna.getProductQnaStatus().equals("waiting")||productQna.getProductQnaStatus().equals("deleted")){
+//				matching.put(response,null);
+//			}
+//			else{
+//				ProductQnaAnswer productQnaAnswer = productQnaAnswerRepository.findByProductQna(productQna);
+//				ProductQnaAnswerResponse productQnaAnswerResponse
+//						= modelMapper.map(productQnaAnswer, ProductQnaAnswerResponse.class);
+//				matching.put(response,productQnaAnswerResponse);
+//			}
+//		}
+
+		return responses;
 	}
 
 	/**
