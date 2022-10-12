@@ -20,5 +20,8 @@ public interface FollowingRepository extends CrudRepository<Following, Long> {
 
 	@Query("select f from Following f where f.followingMemberId =:followingId")
 	List<Following> findFollowerIdByFollowingId(@Param("followingId")Long followingId);
+
+	@Query("select f from Following f where f.followingMemberId=:memberId")
+	List<Following> findByFollowingMemberId(@Param("memberId") Long memberId);
 }
 
