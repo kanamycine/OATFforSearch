@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.entity.order.OrderProduct;
-import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
@@ -30,7 +29,6 @@ import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.review.ReviewLikeRepository;
 import com.team6.onandthefarm.repository.review.ReviewPagingRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
-import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 
@@ -38,25 +36,23 @@ import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 @Transactional
 public class ReviewServiceImpl implements ReviewService{
 
-	private ReviewRepository reviewRepository;
-	private ReviewPagingRepository reviewPagingRepository;
-	private ReviewLikeRepository reviewLikeRepository;
-	private SellerRepository sellerRepository;
-	private UserRepository userRepository;
-	private ProductRepository productRepository;
-	private OrderProductRepository orderProductRepository;
+	private final ReviewRepository reviewRepository;
+	private final ReviewPagingRepository reviewPagingRepository;
+	private final ReviewLikeRepository reviewLikeRepository;
+	private final UserRepository userRepository;
+	private final ProductRepository productRepository;
+	private final OrderProductRepository orderProductRepository;
 
-	private DateUtils dateUtils;
-	private Environment env;
+	private final DateUtils dateUtils;
+	private final Environment env;
 
 	@Autowired ReviewServiceImpl(ReviewRepository reviewRepository, ReviewPagingRepository reviewPagingRepository,
-								 ReviewLikeRepository reviewLikeRepository, SellerRepository sellerRepository, UserRepository userRepository,
+								 ReviewLikeRepository reviewLikeRepository, UserRepository userRepository,
 								 ProductRepository productRepository, OrderProductRepository orderProductRepository,
 								 DateUtils dateUtils, Environment env){
 		this.reviewRepository = reviewRepository;
 		this.reviewPagingRepository = reviewPagingRepository;
 		this.reviewLikeRepository = reviewLikeRepository;
-		this.sellerRepository = sellerRepository;
 		this.userRepository = userRepository;
 		this.productRepository = productRepository;
 		this.orderProductRepository = orderProductRepository;
@@ -141,8 +137,10 @@ public class ReviewServiceImpl implements ReviewService{
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 
-		Long reviewLikeId = reviewLikeCancelFormDto.getReviewId();
-		ReviewLike reviewLike = reviewLikeRepository.findById(reviewLikeId).get();
+		Long reviewId = reviewLikeCancelFormDto.getReviewId();
+		Long userId = reviewLikeCancelFormDto.getUserId();
+		ReviewLike reviewLike = reviewLikeRepository.findReviewLikeByUser(userId, reviewId).get();
+		Long reviewLikeId = reviewLike.getReviewLikeId();
 
 		reviewLikeRepository.delete(reviewLike);
 		Optional<Review> review = reviewRepository.findById(reviewLikeCancelFormDto.getReviewId());
@@ -152,7 +150,7 @@ public class ReviewServiceImpl implements ReviewService{
 	}
 
 
-	public List<ReviewSelectionResponse> getReviewListByLikeCount(Long productId, Integer pageNumber){
+	public List<ReviewSelectionResponse> getReviewListByLikeCount(Long userId, Long productId, Integer pageNumber){
 		// msa 고려하여 다시 설계할 것
 		// Product product = productRepository.findById(productId).get();
 		// List<Review> reviews = reviewRepository.findReviewsByProductOrderByReviewLikeCountDesc(product);
@@ -168,14 +166,24 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewModifiedAt(review.getReviewModifiedAt())
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
-					.userId(review.getUser().getUserId())
+					.userName(review.getUser().getUserName())
+					.isMyReview(false)
+					.isAvailableUp(false)
 					.build();
+
+			if(review.getUser().getUserId() == userId){
+				reviewSelectionResponse.setIsMyReview(true);
+			}
+			Optional<ReviewLike> reviewLike = reviewLikeRepository.findReviewLikeByUser(userId, review.getReviewId());
+			if(reviewLike.isPresent()){
+				reviewSelectionResponse.setIsAvailableUp(false);
+			}
 			reviewResponses.add(reviewSelectionResponse);
 		}
 		return reviewResponses;
 	}
 
-	public List<ReviewSelectionResponse> getReviewListOrderByNewest(Long productId, Integer pageNumber) {
+	public List<ReviewSelectionResponse> getReviewListOrderByNewest(Long userId, Long productId, Integer pageNumber) {
 		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewCreatedAt").descending());
 		List<Review> reviews = reviewPagingRepository.findReviewListByNewest(pageRequest, productId);
@@ -188,19 +196,30 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewModifiedAt(review.getReviewModifiedAt())
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
-					.userId(review.getUser().getUserId())
+					.userName(review.getUser().getUserName())
+					.isMyReview(false)
+					.isAvailableUp(false)
 					.build();
+
+			if(review.getUser().getUserId() == userId){
+				reviewSelectionResponse.setIsMyReview(true);
+			}
+			Optional<ReviewLike> reviewLike = reviewLikeRepository.findReviewLikeByUser(userId, review.getReviewId());
+			if(reviewLike.isPresent()){
+				reviewSelectionResponse.setIsAvailableUp(false);
+			}
 			reviewResponse.add(reviewSelectionResponse);
 		}
 		return reviewResponse;
 	}
 
-	public List<ReviewSelectionResponse> getReviewBySellerNewest(Long sellerId, Integer pageNummber) {
+	public List<ReviewSelectionResponse> getReviewBySellerNewest(Long sellerId, Integer pageNumber) {
 
-		PageRequest pageRequest = PageRequest.of(pageNummber, 8, Sort.by("reviewCreatedAt").descending());
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewCreatedAt").descending());
 		List<Review> reviews = reviewPagingRepository.findReviewListBySeller(pageRequest, sellerId);
 
 		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
+
 		for (Review review : reviews) {
 			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
 					.reviewId(review.getReviewId())
@@ -213,7 +232,33 @@ public class ReviewServiceImpl implements ReviewService{
 					.userEmail(review.getUser().getUserEmail())
 					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
 					.productName(review.getProduct().getProductName())
-					.userId(review.getUser().getUserId())
+					.userName(review.getUser().getUserName())
+					.build();
+			reviewResponse.add(reviewSelectionResponse);
+		}
+
+		return reviewResponse;
+	}
+
+	public List<ReviewSelectionResponse> getMyReview(Long userId, Integer pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("reviewCreatedAt").descending());
+		List<Review> reviews = reviewPagingRepository.findReviewListByUser(pageRequest, userId);
+
+		List<ReviewSelectionResponse> reviewResponse = new ArrayList<>();
+
+		for (Review review : reviews) {
+			ReviewSelectionResponse reviewSelectionResponse = ReviewSelectionResponse.builder()
+					.reviewId(review.getReviewId())
+					.reviewContent(review.getReviewContent())
+					.reviewCreatedAt(review.getReviewCreatedAt())
+					.reviewModifiedAt(review.getReviewModifiedAt())
+					.reviewLikeCount(review.getReviewLikeCount())
+					.reviewRate(review.getReviewRate())
+					.userProfileImg(review.getUser().getUserProfileImg())
+					.userEmail(review.getUser().getUserEmail())
+					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
+					.productName(review.getProduct().getProductName())
+					.userName(review.getUser().getUserName())
 					.build();
 			reviewResponse.add(reviewSelectionResponse);
 		}

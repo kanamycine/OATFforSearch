@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReviewLikeCancelFormDto {
+public class
+ReviewLikeCancelFormDto {
 	private Long reviewId;
 	private Long userId;
 }
