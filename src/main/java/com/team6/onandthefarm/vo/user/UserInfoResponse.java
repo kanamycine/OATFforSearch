@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoResponse {
+
     private String userEmail;
 
-    private Integer userZipcode;
+    private String userZipcode;
 
     private String userAddress;
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -59,6 +60,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().cors();
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // controller 시작 전에 jwt 인증을 하기 위한 필터 등록
         http.addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class); // jwt 인증 시 발생하는 exception 처리 필터 등록
+
+    }
+
+    @Override
+    public void configure(WebSecurity web){
 
     }
 

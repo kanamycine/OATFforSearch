@@ -13,5 +13,8 @@ public class ProductReviewResponse {
     private String productMainImgSrc;
     private String productOriginPlace;
     private String sellerShopName;
+    private String ordersDate;
+    private Long productId;
+    private Long orderProductId;
 
 }
