@@ -387,6 +387,9 @@ public class ProductServiceImpl implements ProductService {
 							.productMainImgSrc(product.get().getProductMainImgSrc())
 							.productOriginPlace(product.get().getProductOriginPlace())
 							.sellerShopName(seller.get().getSellerShopName())
+							.productId(orderProduct.getProductId())
+							.orderProductId(orderProduct.getOrderProductId())
+							.ordersDate(o.getOrdersDate())
 							.build();
 					productReviewResponses.add(productReviewResponse);
 				}
