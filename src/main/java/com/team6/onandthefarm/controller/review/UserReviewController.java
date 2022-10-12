@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +31,6 @@ import com.team6.onandthefarm.vo.review.ReviewLikeFormRequest;
 import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 import com.team6.onandthefarm.vo.review.ReviewUpdateFormRequest;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import springfox.documentation.annotations.ApiIgnore;
@@ -120,7 +118,7 @@ public class UserReviewController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	//review like cancle
+	//review like cancel
 	@PutMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
 	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
@@ -140,9 +138,13 @@ public class UserReviewController {
 	}
 
 	@GetMapping("/list/orderby/likecount/{productId}/{page-no}")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
-
-		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(productId, Integer.valueOf(pageNumber));
+	@ApiOperation("리뷰 좋아요순 조회")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
+		Long userId = null;
+		if(principal != null) {
+			userId = Long.parseLong(principal.getName());
+		}
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(userId, productId, Integer.valueOf(pageNumber));
 
 		//필요 부분만 보내기 위해 (셀러, 프로덕트 짜르기)
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -156,13 +158,33 @@ public class UserReviewController {
 
 
 	@GetMapping("/list/orderby/newest/{productId}/{page-no}")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
+	@ApiOperation("상품상세 리뷰조회 최신순")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
+		Long userId = null;
+		if(principal != null) {
+			userId = Long.parseLong(principal.getName());
+		}
 
-		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest(productId, Integer.valueOf(pageNumber));
+		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest(userId, productId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("get reviews order by registerdate completed")
+				.data(reviews)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping("/list/my-review/{page-no}")
+	@ApiOperation("내가쓴 리스트 리뷰 조회")
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getMyReview(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
+
+		List<ReviewSelectionResponse> reviews = reviewService.getMyReview(Long.parseLong(principal.getName()), Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("get reviews List by User completed")
 				.data(reviews)
 				.build();
 
