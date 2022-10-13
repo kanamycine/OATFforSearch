@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberFollowingListResponse {
 	private Long memberId;
+	private String memberRole;
 	private String memberName;
 	private String memberImg;
 }
