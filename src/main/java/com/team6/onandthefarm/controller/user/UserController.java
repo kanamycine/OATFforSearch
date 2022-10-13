@@ -13,6 +13,7 @@ import com.team6.onandthefarm.vo.product.ProductInfoResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import com.team6.onandthefarm.vo.product.ProductReviewResponse;
 import com.team6.onandthefarm.vo.product.ProductWishResponse;
+import com.team6.onandthefarm.vo.seller.SellerUpdateRequest;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
@@ -106,8 +108,11 @@ public class UserController {
 
     @PutMapping("/update")
     @ApiOperation(value = "유저 정보 수정")
-    public ResponseEntity<BaseResponse> updateUserInfo(@ApiIgnore Principal principal,
-            @RequestBody UserInfoRequest userInfoRequest) {
+    public ResponseEntity<BaseResponse> updateUserInfo(
+            @ApiIgnore Principal principal,
+            @RequestPart(value = "images", required = false) MultipartFile profile,
+            @RequestPart(value = "data", required = false) UserInfoRequest userInfoRequest)
+            throws Exception{
 
         BaseResponse response = null;
 
@@ -120,6 +125,7 @@ public class UserController {
                 .userBirthday(userInfoRequest.getUserBirthday())
                 .userName(userInfoRequest.getUserName())
                 .userSex(userInfoRequest.getUserSex())
+                .profile(profile)
                 .build();
 
         Long userId = userService.updateUserInfo(userInfoDto);

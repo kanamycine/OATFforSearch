@@ -22,6 +22,7 @@ import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
@@ -44,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +76,8 @@ public class UserServiceImp implements UserService {
 
 	private final Environment env;
 
+	private final S3Upload s3Upload;
+
 	@Autowired
 	public UserServiceImp(UserRepository userRepository,
 			SellerRepository sellerRepository,
@@ -85,7 +89,8 @@ public class UserServiceImp implements UserService {
 			ProductRepository productRepository,
 			KakaoOAuth2 kakaoOAuth2,
 			NaverOAuth2 naverOAuth2,
-			JwtTokenUtil jwtTokenUtil) {
+			JwtTokenUtil jwtTokenUtil,
+			S3Upload s3Upload) {
 		this.userRepository = userRepository;
 		this.sellerRepository = sellerRepository;
 		this.followingRepository = followingRepository;
@@ -97,6 +102,7 @@ public class UserServiceImp implements UserService {
 		this.kakaoOAuth2 = kakaoOAuth2;
 		this.naverOAuth2 = naverOAuth2;
 		this.jwtTokenUtil = jwtTokenUtil;
+		this.s3Upload=s3Upload;
 	}
 
 	public Boolean createProductQnA(UserQnaDto userQnaDto) {
@@ -242,8 +248,10 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public Long updateUserInfo(UserInfoDto userInfoDto) {
+	public Long updateUserInfo(UserInfoDto userInfoDto) throws IOException {
 		Optional<User> user = userRepository.findById(userInfoDto.getUserId());
+
+		String url = s3Upload.upload(userInfoDto.getProfile());
 
 		user.get().setUserName(userInfoDto.getUserName());
 		user.get().setUserPhone(userInfoDto.getUserPhone());
@@ -252,6 +260,7 @@ public class UserServiceImp implements UserService {
 		user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
 		user.get().setUserBirthday(userInfoDto.getUserBirthday());
 		user.get().setUserSex(userInfoDto.getUserSex());
+		user.get().setUserProfileImg(url);
 
 		return user.get().getUserId();
 	}
