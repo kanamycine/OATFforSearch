@@ -279,6 +279,7 @@ public class UserServiceImp implements UserService {
 
 			for (ProductQna productQna : productQnas) {
 				ProductQnAResponse response = modelMapper.map(productQna, ProductQnAResponse.class);
+				if(response.getProductQnaStatus().equals("deleted")) continue;
 				if(response.getProductQnaStatus().equals("completed")){
 					String answer =
 							productQnaAnswerRepository
