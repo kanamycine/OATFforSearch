@@ -318,6 +318,7 @@ public class SellerServiceImp implements SellerService{
         List<Review> reviews = reviewRepository.findBySellerOrderByReviewCreatedAtDesc(seller.get());
         if(reviews.size()<listNum){
             for(Review review : reviews){
+                if(review.getReviewStatus().equals("deleted")) continue;
                 Product product = review.getProduct();
                 SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
                         .productImg(product.getProductMainImgSrc())
@@ -331,6 +332,7 @@ public class SellerServiceImp implements SellerService{
         }
         else{
             for(Review review : reviews.subList(0,listNum)){
+                if(review.getReviewStatus().equals("deleted")) continue;
                 Product product = review.getProduct();
                 SellerRecentReviewResponse response = SellerRecentReviewResponse.builder()
                         .productImg(product.getProductMainImgSrc())
