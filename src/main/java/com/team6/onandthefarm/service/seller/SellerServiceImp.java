@@ -123,6 +123,7 @@ public class SellerServiceImp implements SellerService{
                 .name(seller.getSellerName())
                 .businessNumber(seller.getSellerBusinessNumber())
                 .registerDate(seller.getSellerRegisterDate())
+                .sellerProfileImg(seller.getSellerProfileImg())
                 .build();
         return response;
     }

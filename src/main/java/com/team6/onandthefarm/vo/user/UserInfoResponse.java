@@ -27,4 +27,6 @@ public class UserInfoResponse {
 
     private String userName;
 
+    private String userProfileImg;
+
 }
