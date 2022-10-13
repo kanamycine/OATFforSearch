@@ -115,7 +115,7 @@ public class UserController {
     @ApiOperation(value = "유저 정보 수정")
     public ResponseEntity<BaseResponse> updateUserInfo(
             @ApiIgnore Principal principal,
-            @RequestPart(value = "images", required = false) MultipartFile profile,
+            @RequestPart(value = "images", required = false) List<MultipartFile> profile,
             @RequestPart(value = "data", required = false) UserInfoRequest userInfoRequest)
             throws Exception{
 
@@ -133,7 +133,7 @@ public class UserController {
                 .userBirthday(userInfoRequest.getUserBirthday())
                 .userName(userInfoRequest.getUserName())
                 .userSex(userInfoRequest.getUserSex())
-                .profile(profile)
+                .profile(profile.get(0))
                 .build();
 
         Long savedUserId = userService.updateUserInfo(userInfoDto);

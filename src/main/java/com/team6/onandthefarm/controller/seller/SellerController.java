@@ -70,7 +70,7 @@ public class SellerController {
     @ApiOperation(value = "셀러 회원 정보 수정")
     public ResponseEntity<BaseResponse> updateSeller(
             @ApiIgnore Principal principal,
-            @RequestPart(value = "images", required = false) MultipartFile profile,
+            @RequestPart(value = "images", required = false) List<MultipartFile> profile,
             @RequestPart(value = "data", required = false) SellerUpdateRequest sellerUpdateRequest)
             throws Exception{
 
@@ -80,7 +80,7 @@ public class SellerController {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
-        sellerDto.setProfile(profile);
+        sellerDto.setProfile(profile.get(0));
         sellerService.updateByUserId(sellerId, sellerDto);
 
         BaseResponse response = BaseResponse.builder()
