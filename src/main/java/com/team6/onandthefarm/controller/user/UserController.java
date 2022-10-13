@@ -11,6 +11,7 @@ import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
+import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
 import com.team6.onandthefarm.vo.product.ProductReviewResponse;
 import com.team6.onandthefarm.vo.product.ProductWishResponse;
 import com.team6.onandthefarm.vo.user.*;
@@ -220,9 +221,10 @@ public class UserController {
         return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/mypage/QnA")
+    @GetMapping("/mypage/QnA/{page-num}")
     @ApiOperation(value = "유저 질의 조회")
-    public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findUserQnA(@ApiIgnore Principal principal) {
+    public ResponseEntity<BaseResponse<ProductQnAResultResponse>> findUserQnA(
+            @ApiIgnore Principal principal, @PathVariable("page-num") String pageNum) {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -230,7 +232,7 @@ public class UserController {
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
-        List<ProductQnAResponse> responses = userService.findUserQna(userId);
+        ProductQnAResultResponse responses = userService.findUserQna(userId,Integer.valueOf(pageNum));
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("유저 QNA 조회")

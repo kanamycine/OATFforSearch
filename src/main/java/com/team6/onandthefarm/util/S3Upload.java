@@ -19,8 +19,41 @@ public class S3Upload {
 
     private final AmazonS3 amazonS3;
 
-    public String upload(MultipartFile multipartFile) throws IOException {
-        String s3FileName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+    public String profileUserUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "profile/user/"+UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
+    public String profileSellerUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "profile/seller/"+UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
+    public String productUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "product/"+UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
+    public String feedUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "feed/"+UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
 
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentLength(multipartFile.getInputStream().available());

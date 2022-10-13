@@ -227,7 +227,7 @@ public class OrderServiceImp implements OrderService{
      * @param orderSellerFindDto : 셀러 ID와 조회할 기간을 가진 DTO
      * @return
      */
-    public List<OrderSellerResponseList> findSellerOrders(OrderSellerFindDto orderSellerFindDto){
+    public OrderSellerResponseListResponse findSellerOrders(OrderSellerFindDto orderSellerFindDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -288,6 +288,8 @@ public class OrderServiceImp implements OrderService{
         /**
          * 아래가 정렬 및 페이징처리 코드
          */
+
+        OrderSellerResponseListResponse resultResponse = new OrderSellerResponseListResponse();
         responseList.sort((o1, o2) -> {
             int result = o2.getOrderDate().compareTo(o1.getOrderDate());
             return result;
@@ -299,10 +301,26 @@ public class OrderServiceImp implements OrderService{
 
 
         if(size<startIndex+pageContentNumber){
-            return responseList.subList(startIndex,size);
+            resultResponse.setResponses(responseList.subList(startIndex,size));
+            resultResponse.setCurrentPageNum(orderSellerFindDto.getPageNumber());
+            if(size%pageContentNumber!=0){
+                resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+            }
+            else{
+                resultResponse.setTotalPageNum(size/pageContentNumber);
+            }
+            return resultResponse;
         }
 
-        return responseList.subList(startIndex,startIndex+pageContentNumber);
+        resultResponse.setResponses(responseList.subList(startIndex,startIndex+pageContentNumber));
+        resultResponse.setCurrentPageNum(orderSellerFindDto.getPageNumber());
+        if(size%pageContentNumber!=0){
+            resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+        }
+        else{
+            resultResponse.setTotalPageNum(size/pageContentNumber);
+        }
+        return resultResponse;
     }
 
     /**
@@ -311,7 +329,7 @@ public class OrderServiceImp implements OrderService{
      * @param orderUserFindDto
      * @return
      */
-    public List<OrderUserResponseList> findUserOrders(OrderUserFindDto orderUserFindDto){
+    public OrderUserResponseListResponse findUserOrders(OrderUserFindDto orderUserFindDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -347,6 +365,8 @@ public class OrderServiceImp implements OrderService{
             response.add(orderUserResponseList);
         }
 
+        OrderUserResponseListResponse resultResponse = new OrderUserResponseListResponse();
+
         response.sort((o1, o2) -> {
             int result = o2.getOrderDate().compareTo(o1.getOrderDate());
             return result;
@@ -358,10 +378,26 @@ public class OrderServiceImp implements OrderService{
 
 
         if(size<startIndex+pageContentNumber){
-            return response.subList(startIndex,size);
+            resultResponse.setResponses(response.subList(startIndex,size));
+            resultResponse.setCurrentPageNum(orderUserFindDto.getPageNumber());
+            if(size%pageContentNumber!=0){
+                resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+            }
+            else{
+                resultResponse.setTotalPageNum(size/pageContentNumber);
+            }
+            return resultResponse;
         }
 
-        return response.subList(startIndex,startIndex+pageContentNumber);
+        resultResponse.setResponses(response.subList(startIndex,startIndex+pageContentNumber));
+        resultResponse.setCurrentPageNum(orderUserFindDto.getPageNumber());
+        if(size%pageContentNumber!=0){
+            resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+        }
+        else{
+            resultResponse.setTotalPageNum(size/pageContentNumber);
+        }
+        return resultResponse;
     }
 
     public OrderUserDetailResponse findSellerOrderDetail(OrderSellerDetailDto orderSellerDetailDto){
@@ -549,7 +585,7 @@ public class OrderServiceImp implements OrderService{
      * @param orderSellerRequest
      * @return
      */
-    public List<OrderSellerResponse> findSellerClaims(OrderSellerRequest orderSellerRequest){
+    public OrderSellerResultResponse findSellerClaims(OrderSellerRequest orderSellerRequest){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -586,6 +622,8 @@ public class OrderServiceImp implements OrderService{
             responseList.add(orderSellerResponse);
         }
 
+        OrderSellerResultResponse resultResponse = new OrderSellerResultResponse();
+
         responseList.sort((o1, o2) -> {
             int result = o2.getOrdersDate().compareTo(o1.getOrdersDate());
             return result;
@@ -596,13 +634,29 @@ public class OrderServiceImp implements OrderService{
         int size = responseList.size();
 
         if(size<startIndex+pageContentNumber){
-            return responseList.subList(startIndex,size);
+            resultResponse.setResponses(responseList.subList(startIndex,size));
+            resultResponse.setCurrentPageNum(orderSellerRequest.getPageNumber());
+            if(size%pageContentNumber!=0){
+                resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+            }
+            else{
+                resultResponse.setTotalPageNum(size/pageContentNumber);
+            }
+            return resultResponse;
         }
 
-        return responseList.subList(startIndex,startIndex+pageContentNumber);
+        resultResponse.setResponses(responseList.subList(startIndex,startIndex+pageContentNumber));
+        resultResponse.setCurrentPageNum(orderSellerRequest.getPageNumber());
+        if(size%pageContentNumber!=0){
+            resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+        }
+        else{
+            resultResponse.setTotalPageNum(size/pageContentNumber);
+        }
+        return resultResponse;
     }
 
-    public List<OrderSellerResponse> findUserClaims(OrderUserFindDto orderUserFindDto){
+    public OrderSellerResultResponse findUserClaims(OrderUserFindDto orderUserFindDto){
         List<OrderSellerResponse> responses = new ArrayList<>();
 
         List<Refund> refunds = refundRepository.findByUserId(Long.valueOf(orderUserFindDto.getUserId()));
@@ -622,6 +676,8 @@ public class OrderServiceImp implements OrderService{
             responses.add(response);
         }
 
+        OrderSellerResultResponse resultResponse = new OrderSellerResultResponse();
+
         responses.sort((o1, o2) -> {
             int result = o2.getOrdersDate().compareTo(o1.getOrdersDate());
             return result;
@@ -632,10 +688,26 @@ public class OrderServiceImp implements OrderService{
         int size = responses.size();
 
         if(size<startIndex+pageContentNumber){
-            return responses.subList(startIndex,size);
+            resultResponse.setResponses(responses.subList(startIndex,size));
+            resultResponse.setCurrentPageNum(orderUserFindDto.getPageNumber());
+            if(size%pageContentNumber!=0){
+                resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+            }
+            else{
+                resultResponse.setTotalPageNum(size/pageContentNumber);
+            }
+            return resultResponse;
         }
 
-        return responses.subList(startIndex,startIndex+pageContentNumber);
+        resultResponse.setResponses(responses.subList(startIndex,startIndex+pageContentNumber));
+        resultResponse.setCurrentPageNum(orderUserFindDto.getPageNumber());
+        if(size%pageContentNumber!=0){
+            resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+        }
+        else{
+            resultResponse.setTotalPageNum(size/pageContentNumber);
+        }
+        return resultResponse;
     }
 
     /**

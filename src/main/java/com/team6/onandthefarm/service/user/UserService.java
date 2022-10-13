@@ -7,6 +7,7 @@ import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
+import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
@@ -37,7 +38,7 @@ public interface UserService {
 
     Long updateUserInfo(UserInfoDto userInfoDto) throws IOException;
 
-    List<ProductQnAResponse> findUserQna(Long userId);
+    ProductQnAResultResponse findUserQna(Long userId, Integer pageNum);
 
     UserInfoResponse findUserInfo(Long userId);
 

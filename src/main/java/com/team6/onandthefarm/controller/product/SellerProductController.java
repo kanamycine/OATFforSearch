@@ -46,8 +46,8 @@ public class SellerProductController {
 	//@RequestPart("productImg") List<MultipartFile> productImgs
 	public ResponseEntity<BaseResponse<Product>> productForm(
 			@ApiIgnore Principal principal,
-			@RequestPart(value = "images", required = false) List<MultipartFile> photo,
-			@RequestPart(value = "data", required = false) ProductFormRequest productFormRequest
+			@RequestPart(value = "images", required = false) List<MultipartFile> photo
+			//@RequestPart(value = "data", required = false) ProductFormRequest productFormRequest
 			) throws Exception {
 
 		String[] principalInfo = principal.getName().split(" ");
@@ -56,7 +56,7 @@ public class SellerProductController {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-		ProductFormDto productFormDto = modelMapper.map(productFormRequest, ProductFormDto.class);
+		ProductFormDto productFormDto = new ProductFormDto();//modelMapper.map(productFormRequest, ProductFormDto.class);
 		productFormDto.setSellerId(sellerId);
 		productFormDto.setImages(photo);
 
