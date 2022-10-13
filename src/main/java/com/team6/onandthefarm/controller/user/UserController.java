@@ -1,6 +1,7 @@
 package com.team6.onandthefarm.controller.user;
 
 import com.team6.onandthefarm.dto.user.MemberFollowingDto;
+import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
@@ -9,11 +10,9 @@ import com.team6.onandthefarm.entity.user.Following;
 import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.product.ProductInfoResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 import com.team6.onandthefarm.vo.product.ProductReviewResponse;
 import com.team6.onandthefarm.vo.product.ProductWishResponse;
-import com.team6.onandthefarm.vo.seller.SellerUpdateRequest;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -369,6 +368,24 @@ public class UserController {
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(followingList)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/profile")
+    @ApiOperation(value = "멤버의 프로필 조회")
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getUserProfile(MemberProfileRequest memberProfileRequest){
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        MemberProfileDto memberProfileDto = modelMapper.map(memberProfileRequest, MemberProfileDto.class);
+        MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(memberProfileResponse)
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

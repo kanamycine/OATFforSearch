@@ -1,6 +1,7 @@
 package com.team6.onandthefarm.service.user;
 
 import com.team6.onandthefarm.dto.user.MemberFollowingDto;
+import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.dto.user.UserLoginDto;
 import com.team6.onandthefarm.dto.user.UserQnaDto;
 import com.team6.onandthefarm.dto.user.UserInfoDto;
@@ -12,6 +13,7 @@ import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowerListResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowingListRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowingListResponse;
+import com.team6.onandthefarm.vo.user.MemberProfileResponse;
 import com.team6.onandthefarm.vo.user.UserInfoResponse;
 import com.team6.onandthefarm.vo.user.UserTokenResponse;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
@@ -52,4 +54,6 @@ public interface UserService {
     List<MemberFollowerListResponse> getFollowerList(MemberFollowerListRequest memberFollowerListRequest);
 
     List<MemberFollowingListResponse> getFollowingList(MemberFollowingListRequest memberFollowingListRequest);
+
+    MemberProfileResponse getMemberProfile(MemberProfileDto memberProfileDto);
 }
