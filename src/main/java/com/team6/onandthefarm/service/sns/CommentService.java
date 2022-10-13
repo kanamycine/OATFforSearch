@@ -12,4 +12,6 @@ public interface CommentService {
     Long addComment(CommentInfoDto commentInfoDto);
 
     Long modifyComment(CommentInfoDto commentInfoDto);
+
+    Long deleteComment(CommentInfoDto commentInfoDto);
 }
