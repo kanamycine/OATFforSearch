@@ -30,8 +30,10 @@ public class CommentController {
     @ApiOperation("피드 댓글 등록")
     public ResponseEntity<BaseResponse> addComment(@ApiIgnore Principal principal, @RequestBody CommentRequest commentUploadRequest){
 
-        Long memberId = null;
-        String memberRole = null;
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
+
         CommentInfoDto commentInfoDto = CommentInfoDto.builder()
                 .memberId(memberId)
                 .memberRole(memberRole)
@@ -60,8 +62,10 @@ public class CommentController {
     @ApiOperation("피드 댓글 수정")
     public ResponseEntity<BaseResponse> modifyComment(@ApiIgnore Principal principal, @RequestBody CommentRequest commentModityRequest){
 
-        Long memberId = null;
-        String memberRole = null;
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
+
         CommentInfoDto commentInfoDto = CommentInfoDto.builder()
                 .memberId(memberId)
                 .memberRole(memberRole)
@@ -90,7 +94,9 @@ public class CommentController {
     @ApiOperation("피드 댓글 조회")
     public ResponseEntity<BaseResponse<List<CommentDetailResponse>>> findComment(@ApiIgnore Principal principal, @RequestParam Long feedId){
 
-        Long memberId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
         List<CommentDetailResponse> commentList = commentService.findCommentDetail(feedId, memberId);
 
         BaseResponse baseResponse = BaseResponse.builder()

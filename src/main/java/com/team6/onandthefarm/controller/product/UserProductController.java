@@ -32,10 +32,14 @@ public class UserProductController {
 	@ApiOperation("위시리스트 추가")
 	public ResponseEntity<BaseResponse> addProductToWishList(@ApiIgnore Principal principal,
 			@RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishFormDto productWishFormDto = modelMapper.map(productWishFormRequest, ProductWishFormDto.class);
-		productWishFormDto.setUserId(Long.parseLong(principal.getName()));
+		productWishFormDto.setUserId(userId);
 		ProductWishResultDto resultDto = productService.addProductToWishList(productWishFormDto);
 
 		BaseResponse baseResponse = null;
@@ -61,11 +65,15 @@ public class UserProductController {
 	@ApiOperation("위시리스트 삭제")
 	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal,
 			@RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ProductWishCancelDto productWishCancelDto = modelMapper.map(productWishCancelRequest,
 				ProductWishCancelDto.class);
-		productWishCancelDto.setUserId(Long.parseLong(principal.getName()));
+		productWishCancelDto.setUserId(userId);
 		List<Long> wishId = productService.cancelProductFromWishList(productWishCancelDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -80,9 +88,11 @@ public class UserProductController {
 	@GetMapping(value = "/{product-id}")
 	@ApiOperation(value = "상품 단건 조회")
 	public ResponseEntity<ProductInfoResponse> findProductDetail(@ApiIgnore Principal principal, @PathVariable("product-id") Long productId) {
+
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		ProductDetailResponse product = productService.findProductDetail(productId, userId);
 
@@ -103,7 +113,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(userId,
 				Integer.valueOf(pageNumber));
@@ -125,7 +136,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(userId,
 				Integer.valueOf(pageNumber));
@@ -147,7 +159,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
 
@@ -168,7 +181,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
 
@@ -189,7 +203,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId,
 				Integer.valueOf(pageNumber));
@@ -211,7 +226,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, category,
 				Integer.valueOf(pageNumber));
@@ -232,7 +248,8 @@ public class UserProductController {
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductListByCategoryHighest(userId, category, Integer.valueOf(pageNumber));
 
@@ -252,7 +269,8 @@ public class UserProductController {
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductListByCategoryLowest(userId, category, Integer.valueOf(pageNumber));
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -272,7 +290,8 @@ public class UserProductController {
 
 		Long userId = null;
 		if (principal != null){
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ProductSelectionResponse> products = productService.getProductsByCategorySoldCount(userId, category, Integer.valueOf(pageNumber));
 

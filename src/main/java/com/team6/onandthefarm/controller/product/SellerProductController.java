@@ -50,11 +50,14 @@ public class SellerProductController {
 			@RequestPart(value = "data", required = false) ProductFormRequest productFormRequest
 			) throws Exception {
 
+		String[] principalInfo = principal.getName().split(" ");
+		Long sellerId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ProductFormDto productFormDto = modelMapper.map(productFormRequest, ProductFormDto.class);
-		productFormDto.setSellerId(Long.parseLong(principal.getName()));
+		productFormDto.setSellerId(sellerId);
 		productFormDto.setImages(photo);
 
 		Long productId = productService.saveProduct(productFormDto);
@@ -215,8 +218,10 @@ public class SellerProductController {
 	@ApiOperation(value = "농부별 자신이 등록한 상품 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getNewestProductList(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
 
+		String[] principalInfo = principal.getName().split(" ");
+		Long sellerId = Long.parseLong(principalInfo[0]);
 		Long userId = null;
-		Long sellerId = Long.parseLong(principal.getName());
+
 		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()

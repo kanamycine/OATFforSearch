@@ -43,7 +43,9 @@ public class CartController {
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+
+        Long userId = Long.parseLong(principalInfo[0]);
         List<Long> cartIdList = cartService.addCart(cartDto, userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
@@ -72,7 +74,9 @@ public class CartController {
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+
+        Long userId = Long.parseLong(principalInfo[0]);
         Long cartId = cartService.setCart(cartDto, userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
@@ -134,7 +138,9 @@ public class CartController {
     @ApiOperation(value = "장바구니 조회")
     public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(@ApiIgnore Principal principal){
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+
+        Long userId = Long.parseLong(principalInfo[0]);
         List<CartResponse> cartResponses = cartService.selectCart(userId);
 
         BaseResponse baseResponse = BaseResponse.builder()

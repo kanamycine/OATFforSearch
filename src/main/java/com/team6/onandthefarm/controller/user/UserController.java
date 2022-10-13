@@ -72,7 +72,9 @@ public class UserController {
     @ApiOperation(value = "유저 로그아웃")
     public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal) {
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         userService.logout(userId);
 
         BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
@@ -84,10 +86,13 @@ public class UserController {
     public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal,
             @RequestBody UserInfoRequest userInfoRequest) {
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         BaseResponse response = null;
 
         UserInfoDto userInfoDto = UserInfoDto.builder()
-                .userId(Long.parseLong(principal.getName()))
+                .userId(userId)
                 .userZipcode(userInfoRequest.getUserZipcode())
                 .userAddress(userInfoRequest.getUserAddress())
                 .userAddressDetail(userInfoRequest.getUserAddressDetail())
@@ -97,8 +102,8 @@ public class UserController {
                 .userSex(userInfoRequest.getUserSex())
                 .build();
 
-        Long userId = userService.registerUserInfo(userInfoDto);
-        if (userId != -1L) {
+        Long savedUserId = userService.registerUserInfo(userInfoDto);
+        if (savedUserId != -1L) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
         } else {
             response = BaseResponse.builder().httpStatus(HttpStatus.FORBIDDEN).message("실패").build();
@@ -114,10 +119,13 @@ public class UserController {
             @RequestPart(value = "data", required = false) UserInfoRequest userInfoRequest)
             throws Exception{
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         BaseResponse response = null;
 
         UserInfoDto userInfoDto = UserInfoDto.builder()
-                .userId(Long.parseLong(principal.getName()))
+                .userId(userId)
                 .userZipcode(userInfoRequest.getUserZipcode())
                 .userAddress(userInfoRequest.getUserAddress())
                 .userAddressDetail(userInfoRequest.getUserAddressDetail())
@@ -128,8 +136,8 @@ public class UserController {
                 .profile(profile)
                 .build();
 
-        Long userId = userService.updateUserInfo(userInfoDto);
-        if (userId != -1L) {
+        Long savedUserId = userService.updateUserInfo(userInfoDto);
+        if (savedUserId != -1L) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
         } else {
             response = BaseResponse.builder().httpStatus(HttpStatus.FORBIDDEN).message("실패").build();
@@ -140,7 +148,11 @@ public class UserController {
     @GetMapping("/mypage/info")
     @ApiOperation(value = "유저 정보 조회")
     public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal) {
-        UserInfoResponse userInfoResponse = userService.findUserInfo(Long.valueOf(principal.getName()));
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
+        UserInfoResponse userInfoResponse = userService.findUserInfo(userId);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -153,7 +165,9 @@ public class UserController {
     @ApiOperation(value = "사용자 별 위시리스트 조회")
     public ResponseEntity<BaseResponse<List<ProductWishResponse>>> getWishList(@ApiIgnore Principal principal) {
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         List<ProductWishResponse> productInfos = productService.getWishList(userId);
 
         BaseResponse baseResponse = BaseResponse.builder()
@@ -170,7 +184,8 @@ public class UserController {
     public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(
             @ApiIgnore Principal principal) {
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
 
         List<ProductReviewResponse> productsWithoutReview = productService.getProductsWithoutReview(userId);
 
@@ -191,7 +206,9 @@ public class UserController {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         UserQnaDto userQnaDto = modelMapper.map(userQnaRequest, UserQnaDto.class);
         userQnaDto.setUserId(userId);
 
@@ -211,7 +228,8 @@ public class UserController {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        Long userId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
 
         List<ProductQnAResponse> responses = userService.findUserQna(userId);
         BaseResponse response = BaseResponse.builder()
@@ -226,10 +244,14 @@ public class UserController {
     @ApiOperation(value = "유저 질의 수정")
     public ResponseEntity<BaseResponse<Boolean>> updateUserQnA(
             @ApiIgnore Principal principal, @RequestBody UserQnaUpdateRequest userQnaUpdateRequest) {
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long userId = Long.parseLong(principalInfo[0]);
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         UserQnaUpdateDto userQnaUpdateDto = modelMapper.map(userQnaUpdateRequest, UserQnaUpdateDto.class);
-        userQnaUpdateDto.setUserId(Long.valueOf(principal.getName()));
+        userQnaUpdateDto.setUserId(userId);
         Boolean result = userService.updateUserQna(userQnaUpdateDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -258,9 +280,13 @@ public class UserController {
     public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal,
             @RequestBody MemberFollowRequest memberFollowRequest) {
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
+
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
-                .followingMemberId(Long.parseLong(principal.getName()))
-                .followingMemberRole("user")
+                .followingMemberId(memberId)
+                .followingMemberRole(memberRole)
                 .followerMemberId(memberFollowRequest.getFollowerMemberId())
                 .followerMemberRole(memberFollowRequest.getFollowerMemberRole())
                 .build();
@@ -281,9 +307,13 @@ public class UserController {
     public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal,
             @RequestBody MemberFollowRequest memberFollowRequest) {
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
+
         MemberFollowingDto memberFollowingDto = MemberFollowingDto.builder()
-                .followingMemberId(Long.parseLong(principal.getName()))
-                .followingMemberRole("user")
+                .followingMemberId(memberId)
+                .followingMemberRole(memberRole)
                 .followerMemberId(memberFollowRequest.getFollowerMemberId())
                 .followerMemberRole(memberFollowRequest.getFollowerMemberRole())
                 .build();
@@ -298,7 +328,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("follow/count")
+    @GetMapping("/follow/count")
     @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
     public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
             @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
@@ -314,7 +344,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("follow/follower-list")
+    @GetMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
             @RequestBody MemberFollowerListRequest memberFollowerListRequest){
@@ -329,7 +359,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("follow/following-list")
+    @GetMapping("/follow/following-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
             @RequestBody MemberFollowingListRequest memberFollowingListRequest){

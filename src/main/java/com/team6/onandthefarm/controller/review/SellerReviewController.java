@@ -26,7 +26,9 @@ public class SellerReviewController {
 	@GetMapping("/list/by-seller/{page-no}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewBySellerNewest(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
 
-		Long sellerId = Long.parseLong(principal.getName());
+		String[] principalInfo = principal.getName().split(" ");
+		Long sellerId = Long.parseLong(principalInfo[0]);
+
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewBySellerNewest(sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()

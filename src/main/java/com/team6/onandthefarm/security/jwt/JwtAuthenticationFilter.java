@@ -77,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         if (jwtTokenUtil.validateToken(accessToken)) {
                             System.out.println("토큰 유효성 검사 통과");
                             // 4-1. 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성
-                            UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(sellerId,
+                            UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(sellerId+" seller",
                                     sellerId + adminKey, AuthorityUtils.createAuthorityList(seller.getRole()));
                             System.out.println("인증 정보 생성 후");
 
@@ -108,7 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         if (jwtTokenUtil.validateToken(accessToken)) {
                             System.out.println("토큰 유효성 검사 통과");
                             // 4-1. 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성
-                            UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(userId,
+                            UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(userId+" user",
                                     userId + adminKey, AuthorityUtils.createAuthorityList(user.getRole()));
                             System.out.println("인증 정보 생성 후");
 

@@ -42,8 +42,9 @@ public class FeedContentController {
         feedInfoDto.setFeedProductIdList(feedUploadProductRequest.getFeedProductIdList());
         feedInfoDto.setFeedImgSrcList(feedImages);
 
-        Long memberId = Long.parseLong(principal.getName());
-        String memberRole = null;
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
 
         Long feedId = feedService.uploadFeed(memberId, memberRole, feedInfoDto);
 
@@ -73,7 +74,9 @@ public class FeedContentController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        Long memberId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
         FeedDetailResponse feedDetailResponse = feedService.findFeedDetail(feedId, memberId);
 
         BaseResponse baseResponse = BaseResponse.builder()
@@ -108,7 +111,8 @@ public class FeedContentController {
         feedInfoDto.setFeedImgSrcList(feedImages);
         feedInfoDto.setDeleteImg(feedModifyRequest.getDeleteImg());
 
-        Long memberId = Long.parseLong(principal.getName());
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
 
         Long feedId = feedService.modifyFeed(memberId, feedInfoDto);
 
@@ -132,8 +136,10 @@ public class FeedContentController {
     @ApiOperation("sns 피드 삭제")
     public ResponseEntity<BaseResponse<FeedDetailResponse>> deleteFeed(@ApiIgnore Principal principal, @RequestParam Long feedId){
 
-        Long userId = Long.parseLong(principal.getName());
-        Long deletedFeedId = feedService.deleteFeed(userId, feedId);
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
+        Long deletedFeedId = feedService.deleteFeed(memberId, feedId);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -156,8 +162,9 @@ public class FeedContentController {
     @ApiOperation("sns 피드에 등록 가능한 상품 목록 조회")
     public ResponseEntity<BaseResponse<List<AddableProductResponse>>> findAddableProduct(@ApiIgnore Principal principal){
 
-        Long memberId = null;
-        String memberRole = null;
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        String memberRole = principalInfo[1];
 
         List<AddableProductResponse> addableProductList = feedService.findAddableProducts(memberId, memberRole);
 
