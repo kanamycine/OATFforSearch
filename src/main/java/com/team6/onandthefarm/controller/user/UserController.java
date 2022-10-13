@@ -330,7 +330,16 @@ public class UserController {
     @GetMapping("/follow/count")
     @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
     public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
+            @ApiIgnore Principal principal,
             @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
+
+        if(memberFollowCountRequest == null) {
+            String[] principalInfo = principal.getName().split(" ");
+            Long memberId = Long.parseLong(principalInfo[0]);
+            String memberRole = principalInfo[1];
+            memberFollowCountRequest.setMemberId(memberId);
+            memberFollowCountRequest.setMemberRole(memberRole);
+        }
 
         MemberFollowCountResponse followCount = userService.getFollowingCount(memberFollowCountRequest);
 
@@ -346,7 +355,17 @@ public class UserController {
     @GetMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
+            @ApiIgnore Principal principal,
             @RequestBody MemberFollowerListRequest memberFollowerListRequest){
+
+        if(memberFollowerListRequest == null) {
+            String[] principalInfo = principal.getName().split(" ");
+            Long memberId = Long.parseLong(principalInfo[0]);
+            String memberRole = principalInfo[1];
+            memberFollowerListRequest.setMemberId(memberId);
+            memberFollowerListRequest.setMemberRole(memberRole);
+        }
+
         List<MemberFollowerListResponse> followerList = userService.getFollowerList(memberFollowerListRequest);
 
         BaseResponse response = BaseResponse.builder()
@@ -361,7 +380,17 @@ public class UserController {
     @GetMapping("/follow/following-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
+            @ApiIgnore Principal principal,
             @RequestBody MemberFollowingListRequest memberFollowingListRequest){
+
+        if(memberFollowingListRequest == null) {
+            String[] principalInfo = principal.getName().split(" ");
+            Long memberId = Long.parseLong(principalInfo[0]);
+            String memberRole = principalInfo[1];
+            memberFollowingListRequest.setMemberId(memberId);
+            memberFollowingListRequest.setMemberRole(memberRole);
+        }
+
         List<MemberFollowingListResponse> followingList = userService.getFollowingList(memberFollowingListRequest);
 
         BaseResponse response = BaseResponse.builder()
@@ -375,11 +404,23 @@ public class UserController {
 
     @GetMapping("/profile")
     @ApiOperation(value = "멤버의 프로필 조회")
-    public ResponseEntity<BaseResponse<MemberProfileResponse>> getUserProfile(MemberProfileRequest memberProfileRequest){
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    public ResponseEntity<BaseResponse<MemberProfileResponse>> getUserProfile(@ApiIgnore Principal principal,
+                                                                              @RequestBody MemberProfileRequest memberProfileRequest){
 
-        MemberProfileDto memberProfileDto = modelMapper.map(memberProfileRequest, MemberProfileDto.class);
+        MemberProfileDto memberProfileDto = new MemberProfileDto();
+
+        Long memberId = null;
+        if(memberProfileRequest == null) {
+            String[] principalInfo = principal.getName().split(" ");
+            memberId = Long.parseLong(principalInfo[0]);
+            memberProfileDto.setMemberId(memberId);
+            memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
+        }else{
+            ModelMapper modelMapper = new ModelMapper();
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            memberProfileDto = modelMapper.map(memberProfileRequest, MemberProfileDto.class);
+        }
+
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
 
         BaseResponse response = BaseResponse.builder()

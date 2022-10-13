@@ -465,6 +465,7 @@ public class UserServiceImp implements UserService {
 					user = userRepository.findById(followingMemberId).get();
 					MemberFollowerListResponse memberFollowerListResponse = MemberFollowerListResponse.builder()
 							.memberId(user.getUserId())
+							.memberRole("user")
 							.memberName(user.getUserName())
 							.memberImg(user.getUserProfileImg())
 							.build();
@@ -475,6 +476,7 @@ public class UserServiceImp implements UserService {
 					seller = sellerRepository.findById(followingMemberId).get();
 					MemberFollowerListResponse memberFollowerListResponse = MemberFollowerListResponse.builder()
 							.memberId(seller.getSellerId())
+							.memberRole("seller")
 							.memberName(seller.getSellerName())
 							.memberImg(seller.getSellerProfileImg())
 							.build();
@@ -499,6 +501,7 @@ public class UserServiceImp implements UserService {
 				user = userRepository.findById(followingMemberId).get();
 				MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
 						.memberId(user.getUserId())
+						.memberRole("user")
 						.memberName(user.getUserName())
 						.memberImg(user.getUserProfileImg())
 						.build();
@@ -509,6 +512,7 @@ public class UserServiceImp implements UserService {
 				seller = sellerRepository.findById(followingMemberId).get();
 				MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
 						.memberId(seller.getSellerId())
+						.memberRole("seller")
 						.memberName(seller.getSellerName())
 						.memberImg(seller.getSellerProfileImg())
 						.build();
