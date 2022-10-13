@@ -156,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
 		//이미지 추가
 		if(productUpdateFormDto.getAddImageList() != null){
 			for(MultipartFile productImgs : productUpdateFormDto.getAddImageList()){
-				String url = s3Upload.upload(productImgs);
+				String url = s3Upload.productUpload(productImgs);
 
 				ProductImg productImg = ProductImg.builder()
 						.product(product.get())
@@ -168,7 +168,7 @@ public class ProductServiceImpl implements ProductService {
 		//메인 이미지 변경
 		if(productUpdateFormDto.getMainImage() != null){
 			MultipartFile mainImage = productUpdateFormDto.getMainImage().get(0);
-			String url = s3Upload.upload(mainImage);
+			String url = s3Upload.productUpload(mainImage);
 			product.get().setProductMainImgSrc(url);
 		}
 
