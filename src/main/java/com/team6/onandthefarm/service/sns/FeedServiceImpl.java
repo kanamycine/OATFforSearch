@@ -18,6 +18,7 @@ import com.team6.onandthefarm.repository.sns.*;
 import com.team6.onandthefarm.repository.user.FollowingRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.sns.feed.AddableProductResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedDetailResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +78,8 @@ public class FeedServiceImpl implements FeedService {
 
 	private final FeedImageProductRepository feedImageProductRepository;
 
+	private final S3Upload s3Upload;
+
 	private DateUtils dateUtils;
 	Environment env;
 
@@ -94,6 +98,7 @@ public class FeedServiceImpl implements FeedService {
 						   ProductWishRepository productWishRepository,
 						   OrderRepository orderRepository,
 						   OrderProductRepository orderProductRepository,
+						   S3Upload s3Upload,
 						   DateUtils dateUtils,
 						   Environment env) {
 
@@ -110,6 +115,7 @@ public class FeedServiceImpl implements FeedService {
 		this.productWishRepository = productWishRepository;
 		this.orderRepository = orderRepository;
 		this.orderProductRepository = orderProductRepository;
+		this.s3Upload = s3Upload;
 		this.dateUtils = dateUtils;
 		this.env = env;
 	}
@@ -120,7 +126,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return feedId
 	 */
 	@Override
-	public Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto) {
+	public Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto) throws IOException {
 
 		Feed feed = new Feed();
 		feed.setMemberId(memberId);
@@ -148,14 +154,12 @@ public class FeedServiceImpl implements FeedService {
 
 		int imageIndex = 0;
 		for (MultipartFile imageSrc : feedInfoDto.getFeedImgSrcList()) {
-			//imageSrc 처리 코드 필요
-			String imageOriginName = imageSrc.getOriginalFilename();
+			//피드 이미지 추가
+			String url = s3Upload.feedUpload(imageSrc);
 
 			FeedImage feedImage = new FeedImage();
 			feedImage.setFeed(savedFeed);
-			feedImage.setFeedImageSrc(imageOriginName);
-
-			//피드 이미지 추가
+			feedImage.setFeedImageSrc(url);
 			FeedImage saveFeedImage = feedImageRepository.save(feedImage);
 
 			for (ImageProductInfo imageProduct : feedInfoDto.getFeedProductIdList()) {
@@ -292,6 +296,11 @@ public class FeedServiceImpl implements FeedService {
 		return feedDetailResponse;
 	}
 
+	/**
+	 * 피드 수정하는 메서드
+	 * @param memberId
+	 * @return FeedDetailResponse
+	 */
 	@Override
 	public Long modifyFeed(Long memberId, FeedInfoDto feedInfoDto) {
 
@@ -303,15 +312,41 @@ public class FeedServiceImpl implements FeedService {
 
 			return savedFeed.get().getFeedId();
 		}
-		//아래 내용을 어떻게 수정할지는 front와 상의해야 함...
-		feedInfoDto.getFeedTag();
-		feedInfoDto.getDeleteImg();
-		feedInfoDto.getFeedImgSrcList();
-		feedInfoDto.getFeedProductIdList();
+
+		//기존 tag 지우고 새로 저장
+		List<FeedTag> feedTagList = feedTagRepository.findByFeed(savedFeed.get());
+		for(FeedTag feedTag : feedTagList){
+			feedTagRepository.delete(feedTag);
+		}
+		for(String tag : feedInfoDto.getFeedTag()){
+			FeedTag feedTag = FeedTag.builder()
+					.feed(savedFeed.get())
+					.feedTagName(tag).build();
+			feedTagRepository.save(feedTag);
+		}
+
+		//이미지 삭제
+		if(feedInfoDto.getDeleteImg() != null) {
+			for(Long deleteImgId : feedInfoDto.getDeleteImg()){
+				Optional<FeedImage> feedImage = feedImageRepository.findById(deleteImgId);
+
+				List<FeedImageProduct> feedImageProductList = feedImageProductRepository.findByFeedImage(feedImage.get());
+				for(FeedImageProduct feedImageProduct : feedImageProductList){
+					feedImageProductRepository.delete(feedImageProduct);
+				}
+
+				feedImageRepository.delete(feedImage.get());
+			}
+		}
 
 		return savedFeed.get().getFeedId();
 	}
 
+	/**
+	 * 피드 삭제하는 메서드
+	 * @param memberId
+	 * @return FeedDetailResponse
+	 */
 	@Override
 	public Long deleteFeed(Long userId, Long feedId) {
 

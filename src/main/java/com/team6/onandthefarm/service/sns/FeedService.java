@@ -10,11 +10,12 @@ import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
 import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface FeedService {
 
-    Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto);
+    Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto) throws IOException;
 
     List<AddableProductResponse> findAddableProducts(Long memberId, String memberRole);
 
