@@ -74,12 +74,19 @@ public class SellerProductController {
 	@PutMapping(value = "/update")
 	@ApiOperation(value = "상품 수정")
 	public ResponseEntity<BaseResponse<Product>> productUpdateForm(
-			@RequestBody ProductUpdateFormRequest productUpdateFormRequest) throws Exception {
+			@ApiIgnore Principal principal,
+			@RequestPart(value = "images", required = false) List<MultipartFile> photo,
+			@RequestPart(value = "mainImage", required = false) List<MultipartFile> mainPhoto,
+			@RequestPart(value = "data", required = false) ProductUpdateFormRequest productUpdateFormRequest )
+			throws Exception {
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ProductUpdateFormDto productUpdateFormDto = modelMapper.map(productUpdateFormRequest,
 				ProductUpdateFormDto.class);
+		productUpdateFormDto.setAddImageList(photo);
+		productUpdateFormDto.setMainImage(mainPhoto);
 
 		Long productId = productService.updateProduct(productUpdateFormDto);
 

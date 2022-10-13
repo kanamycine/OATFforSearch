@@ -129,11 +129,9 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Long updateProduct(ProductUpdateFormDto productUpdateFormDto){
+	public Long updateProduct(ProductUpdateFormDto productUpdateFormDto) throws IOException {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-		// 이미지 수정 추가 해야함!!!
 
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
 		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
@@ -147,6 +145,32 @@ public class ProductServiceImpl implements ProductService {
 		product.get().setProductStatus(productUpdateFormDto.getProductStatus());
 		product.get().setProductDetailShort(productUpdateFormDto.getProductDetailShort());
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
+
+		//기존 이미지 삭제
+		if(productUpdateFormDto.getDeleteImageIdList() != null){
+			for(Long deleteImgId : productUpdateFormDto.getDeleteImageIdList()) {
+				Optional<ProductImg> productImg = productImgRepository.findById(deleteImgId);
+				productImgRepository.delete(productImg.get());
+			}
+		}
+		//이미지 추가
+		if(productUpdateFormDto.getAddImageList() != null){
+			for(MultipartFile productImgs : productUpdateFormDto.getAddImageList()){
+				String url = s3Upload.upload(productImgs);
+
+				ProductImg productImg = ProductImg.builder()
+						.product(product.get())
+						.productImgSrc(url)
+						.build();
+				productImgRepository.save(productImg);
+			}
+		}
+		//메인 이미지 변경
+		if(productUpdateFormDto.getMainImage() != null){
+			MultipartFile mainImage = productUpdateFormDto.getMainImage().get(0);
+			String url = s3Upload.upload(mainImage);
+			product.get().setProductMainImgSrc(url);
+		}
 
 		return product.get().getProductId();
 	}
@@ -246,9 +270,12 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		List<ProductImg> productImgList = productImgRepository.findByProduct(product);
-		List<String> productImgSrcList = new ArrayList<>();
+		List<ProductImageResponse> productImgSrcList = new ArrayList<>();
 		for(ProductImg productImg : productImgList){
-			productImgSrcList.add(productImg.getProductImgSrc());
+			ProductImageResponse productImageResponse = new ProductImageResponse();
+			productImageResponse.setProductImgId(productImg.getProductImgId());
+			productImageResponse.setProductImgSrc(productImg.getProductImgSrc());
+			productImgSrcList.add(productImageResponse);
 		}
 		productDetailResponse.setProductImageList(productImgSrcList);
 
