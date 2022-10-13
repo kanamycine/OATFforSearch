@@ -133,13 +133,14 @@ public class ProductServiceImpl implements ProductService {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+		// 이미지 수정 추가 해야함!!!
+
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
 		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
 		product.get().setProductName(productUpdateFormDto.getProductName());
 		product.get().setCategory(category.get());
 		product.get().setProductPrice(productUpdateFormDto.getProductPrice());
 		product.get().setProductTotalStock(productUpdateFormDto.getProductTotalStock());
-		//product.get().~~~~ 이미지 추가 해야함
 		product.get().setProductDetail(productUpdateFormDto.getProductDetail());
 		product.get().setProductOriginPlace(productUpdateFormDto.getProductOriginPlace());
 		product.get().setProductDeliveryCompany(productUpdateFormDto.getProductDeliveryCompany());
@@ -243,7 +244,14 @@ public class ProductServiceImpl implements ProductService {
 				productDetailResponse.setProductCartStatus(true);
 			}
 		}
-				// product 상품 설명 이미지 dto List 추가 필요
+
+		List<ProductImg> productImgList = productImgRepository.findByProduct(product);
+		List<String> productImgSrcList = new ArrayList<>();
+		for(ProductImg productImg : productImgList){
+			productImgSrcList.add(productImg.getProductImgSrc());
+		}
+		productDetailResponse.setProductImageList(productImgSrcList);
+
 		return productDetailResponse;
 	}
 

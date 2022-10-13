@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -41,6 +43,8 @@ public class ProductDetailResponse {
 	private boolean productWishStatus;
 
 	private boolean productCartStatus;
+
+	private List<String> productImageList;
 
 	public ProductDetailResponse(Product product) {
 		this.productId = product.getProductId();
