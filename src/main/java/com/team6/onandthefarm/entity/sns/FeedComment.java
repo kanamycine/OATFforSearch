@@ -30,4 +30,6 @@ public class FeedComment {
     private String feedCommentCreateAt;
 
     private String feedCommentModifiedAt;
+
+    private Boolean feedCommentStatus;
 }

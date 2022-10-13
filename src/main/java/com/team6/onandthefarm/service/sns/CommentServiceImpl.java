@@ -94,6 +94,7 @@ public class CommentServiceImpl implements CommentService {
         feedComment.setFeed(feed.get());
         feedComment.setFeedCommentContent(commentInfoDto.getFeedCommentContent());
         feedComment.setFeedCommentCreateAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+        feedComment.setFeedCommentStatus(true);
 
         FeedComment savedFeedComment = feedCommentRepository.save(feedComment);
         return savedFeedComment.getFeedCommnetId();
@@ -113,6 +114,21 @@ public class CommentServiceImpl implements CommentService {
             }
         }
 
+        return null;
+    }
+
+    @Override
+    public Long deleteComment(CommentInfoDto commentInfoDto) {
+
+        Optional<FeedComment> feedComment = feedCommentRepository.findById(commentInfoDto.getFeedCommentId());
+
+        if(feedComment.isPresent()){
+            if(feedComment.get().getMemberId() == commentInfoDto.getMemberId()) {
+                feedComment.get().setFeedCommentStatus(false);
+
+                return feedComment.get().getFeedCommnetId();
+            }
+        }
         return null;
     }
 }
