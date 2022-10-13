@@ -9,6 +9,8 @@ import java.util.List;
 @Data
 public class FeedInfoDto {
 
+    private Long feedId;
+
     private String feedTitle;
 
     private String feedContent;
@@ -18,5 +20,7 @@ public class FeedInfoDto {
     private List<MultipartFile> feedImgSrcList;
 
     private List<ImageProductInfo> feedProductIdList;
+
+    private List<Long> deleteImg;
 
 }
