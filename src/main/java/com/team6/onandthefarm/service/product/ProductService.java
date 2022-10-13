@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.product;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.team6.onandthefarm.entity.product.Product;
 
 public interface ProductService {
-	Long saveProduct(ProductFormDto productFormDto);
+	Long saveProduct(ProductFormDto productFormDto) throws IOException;
 	
     Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
 

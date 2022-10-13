@@ -5,12 +5,14 @@ import com.team6.onandthefarm.dto.seller.SellerMypageDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.product.ProductImg;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
+import com.team6.onandthefarm.repository.product.ProductImgRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
@@ -20,6 +22,7 @@ import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.order.OrderProductGroupByProduct;
 import com.team6.onandthefarm.vo.seller.*;
 import org.modelmapper.ModelMapper;
@@ -29,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -49,7 +53,11 @@ public class SellerServiceImp implements SellerService{
 
     private OrderProductRepository orderProductRepository;
 
+    private ProductImgRepository productImgRepository;
+
     private DateUtils dateUtils;
+
+    private S3Upload s3Upload;
 
     private final JwtTokenUtil jwtTokenUtil;
 
@@ -65,7 +73,9 @@ public class SellerServiceImp implements SellerService{
                             ReviewRepository reviewRepository,
                             ProductRepository productRepository,
                             JwtTokenUtil jwtTokenUtil,
-                            OrderProductRepository orderProductRepository) {
+                            OrderProductRepository orderProductRepository,
+                            ProductImgRepository productImgRepository,
+                            S3Upload s3Upload) {
 
         this.sellerRepository = sellerRepository;
         this.dateUtils=dateUtils;
@@ -76,9 +86,11 @@ public class SellerServiceImp implements SellerService{
         this.productRepository=productRepository;
         this.jwtTokenUtil = jwtTokenUtil;
         this.orderProductRepository=orderProductRepository;
+        this.productImgRepository=productImgRepository;
+        this.s3Upload=s3Upload;
     }
 
-    public boolean updateByUserId(Long userId, SellerDto sellerDto){
+    public boolean updateByUserId(Long userId, SellerDto sellerDto) throws IOException {
         Optional<Seller> sellerEntity = sellerRepository.findById(userId);
 
         sellerEntity.get().setSellerZipcode(sellerDto.getZipcode());
@@ -86,6 +98,9 @@ public class SellerServiceImp implements SellerService{
         sellerEntity.get().setSellerAddressDetail(sellerDto.getAddressDetail());
         sellerEntity.get().setSellerShopName(sellerDto.getShopName());
         sellerEntity.get().setSellerPhone(sellerDto.getPhone());
+
+        String url = s3Upload.upload(sellerDto.getProfile());
+        sellerEntity.get().setSellerProfileImg(url);
 
         return true;
     }

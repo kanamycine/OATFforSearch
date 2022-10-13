@@ -22,6 +22,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
@@ -63,11 +64,15 @@ public class SellerController {
 
     @PutMapping("/mypage/info")
     @ApiOperation(value = "셀러 회원 정보 수정")
-    public ResponseEntity<BaseResponse> updateSeller(@ApiIgnore Principal principal,
-                                                     @RequestBody SellerUpdateRequest sellerUpdateRequest){
+    public ResponseEntity<BaseResponse> updateSeller(
+            @ApiIgnore Principal principal,
+            @RequestPart(value = "images", required = false) MultipartFile profile,
+            @RequestPart(value = "data", required = false) SellerUpdateRequest sellerUpdateRequest)
+            throws Exception{
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
+        sellerDto.setProfile(profile);
         sellerService.updateByUserId(Long.valueOf(principal.getName()),sellerDto);
 
         BaseResponse response = BaseResponse.builder()

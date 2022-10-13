@@ -19,6 +19,7 @@ import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -32,7 +33,7 @@ public interface UserService {
 
     Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
 
-    Long updateUserInfo(UserInfoDto userInfoDto);
+    Long updateUserInfo(UserInfoDto userInfoDto) throws IOException;
 
     List<ProductQnAResponse> findUserQna(Long userId);
 

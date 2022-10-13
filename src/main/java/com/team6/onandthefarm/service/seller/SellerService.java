@@ -9,10 +9,11 @@ import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
 import com.team6.onandthefarm.vo.seller.SellerMypageResponse;
 import com.team6.onandthefarm.vo.seller.SellerProductQnaResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SellerService {
-    boolean updateByUserId(Long userId, SellerDto sellerDto);
+    boolean updateByUserId(Long userId, SellerDto sellerDto) throws IOException;
     SellerInfoResponse findByUserId(Long userId);
     Boolean updatePassword(SellerDto sellerDto);
     boolean sellerSignup(SellerDto sellerDto);

@@ -1,5 +1,6 @@
 package com.team6.onandthefarm.service.product;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -7,21 +8,17 @@ import com.team6.onandthefarm.dto.product.*;
 import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
-import com.team6.onandthefarm.entity.product.ProductQna;
-import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
-import com.team6.onandthefarm.entity.product.Wish;
+import com.team6.onandthefarm.entity.product.*;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
-import com.team6.onandthefarm.repository.product.ProductPagingRepository;
-import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
-import com.team6.onandthefarm.repository.product.ProductQnaRepository;
-import com.team6.onandthefarm.repository.product.ProductWishRepository;
+import com.team6.onandthefarm.repository.product.*;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
+import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.product.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -33,11 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.team6.onandthefarm.entity.category.Category;
-import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.repository.category.CategoryRepository;
-import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -51,12 +47,15 @@ public class ProductServiceImpl implements ProductService {
 	private SellerRepository sellerRepository;
 	private UserRepository userRepository;
 	private ProductPagingRepository productPagingRepository;
+	private ProductImgRepository productImgRepository;
 	private ProductWishRepository productWishRepository;
 	private CartRepository cartRepository;
 	private OrderRepository orderRepository;
 	private OrderProductRepository orderProductRepository;
 	private ReviewRepository reviewRepository;
 	private DateUtils dateUtils;
+
+	private S3Upload s3Upload;
 	private Environment env;
 
 	@Autowired
@@ -73,7 +72,9 @@ public class ProductServiceImpl implements ProductService {
 							  ProductPagingRepository productPagingRepository,
 							  OrderRepository orderRepository,
 							  OrderProductRepository orderProductRepository,
-							  ReviewRepository reviewRepository) {
+							  ReviewRepository reviewRepository,
+							  ProductImgRepository productImgRepository,
+							  S3Upload s3Upload) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.productPagingRepository = productPagingRepository;
@@ -88,10 +89,12 @@ public class ProductServiceImpl implements ProductService {
 		this.orderRepository = orderRepository;
 		this.orderProductRepository = orderProductRepository;
 		this.reviewRepository = reviewRepository;
+		this.s3Upload=s3Upload;
+		this.productImgRepository=productImgRepository;
 	}
 
 	@Override
-	public Long saveProduct(ProductFormDto productFormDto){
+	public Long saveProduct(ProductFormDto productFormDto) throws IOException {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -101,6 +104,16 @@ public class ProductServiceImpl implements ProductService {
 
 		Long categoryId = productFormDto.getProductCategory();
 		Optional<Category> category = categoryRepository.findById(categoryId);
+
+		for(MultipartFile multipartFile : productFormDto.getImages()){
+			String url = s3Upload.upload(multipartFile);
+			ProductImg img = ProductImg.builder()
+					.product(product)
+					.productImgSrc(url)
+					.build();
+			productImgRepository.save(img);
+		}
+
 
 		product.setCategory(category.get());
 		product.setProductRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));

@@ -5,6 +5,7 @@ import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -52,6 +53,8 @@ public class ProductFormDto {
 	private Integer productSoldCount;
 
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
+
+	private List<MultipartFile> images = new ArrayList<>();
 
 	private Long sellerId;
 }
