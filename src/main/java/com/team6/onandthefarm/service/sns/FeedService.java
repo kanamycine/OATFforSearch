@@ -14,6 +14,24 @@ import java.util.List;
 
 public interface FeedService {
 
+    Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto);
+
+    List<AddableProductResponse> findAddableProducts(Long memberId, String memberRole);
+
+    FeedDetailResponse findFeedDetail(Long feedId, Long memberId);
+
+    Long modifyFeed(Long memberId, FeedInfoDto feedInfoDto);
+
+    Long deleteFeed(Long userId, Long feedId);
+
+    Boolean upViewCount(Long feedId);
+
+    Boolean upShareCount(Long feedId);
+
+    Boolean createFeedLike(Long feedId, Long userId);
+
+    Boolean createFeedScrap(Long feedId, Long userId);
+
     List<FeedResponse> findByRecentFeedList(FeedDto feedDto);
 
     List<FeedResponse> findByLikeFeedList(Integer pageNumber);
@@ -21,20 +39,6 @@ public interface FeedService {
     List<FeedResponse> findByFollowFeedList(Long memberId,Integer pageNumber);
 
     List<FeedResponse> findByViewCountFeedList(Integer pageNumber);
-
-    Boolean createFeedLike(Long feedId, Long userId);
-
-    Boolean createFeedScrap(Long feedId, Long userId);
-
-    Long uploadFeed(Long memberId, String memberRole, FeedInfoDto feedInfoDto);
-
-    List<AddableProductResponse> findAddableProducts(Long memberId, String memberRole);
-
-    FeedDetailResponse findFeedDetail(Long feedId, Long memberId);
-
-    Boolean upViewCount(Long feedId);
-
-    Boolean upShareCount(Long feedId);
 
     List<ProfileMainFeedResponse> findByMemberFeedList(ProfileMainFeedDto profileMainFeedDto);
 

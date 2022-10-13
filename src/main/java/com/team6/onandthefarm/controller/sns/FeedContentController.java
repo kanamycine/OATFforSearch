@@ -5,6 +5,7 @@ import com.team6.onandthefarm.dto.sns.FeedInfoDto;
 import com.team6.onandthefarm.service.sns.FeedService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.sns.feed.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -91,6 +92,66 @@ public class FeedContentController {
         return new ResponseEntity(baseResponse, HttpStatus.OK);
     }
 
+    @PutMapping("/modify")
+    @ApiOperation("sns 피드 수정")
+    public ResponseEntity<BaseResponse<FeedDetailResponse>> modifyFeed(@ApiIgnore Principal principal,
+                                                                       @RequestPart FeedModifyRequest feedModifyRequest,
+                                                                       @RequestPart List<MultipartFile> feedImages,
+                                                                       @RequestPart FeedUploadProductRequest feedUploadProductRequest){
+
+        FeedInfoDto feedInfoDto = new FeedInfoDto();
+        feedInfoDto.setFeedId(feedModifyRequest.getFeedId());
+        feedInfoDto.setFeedTitle(feedModifyRequest.getFeedTitle());
+        feedInfoDto.setFeedContent(feedModifyRequest.getFeedContent());
+        feedInfoDto.setFeedTag(feedModifyRequest.getFeedTag());
+        feedInfoDto.setFeedProductIdList(feedUploadProductRequest.getFeedProductIdList());
+        feedInfoDto.setFeedImgSrcList(feedImages);
+        feedInfoDto.setDeleteImg(feedModifyRequest.getDeleteImg());
+
+        Long memberId = Long.parseLong(principal.getName());
+
+        Long feedId = feedService.modifyFeed(memberId, feedInfoDto);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("find feed success")
+                .data(feedId)
+                .build();
+        if(feedId == null){
+            baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("find feed fail")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/delete")
+    @ApiOperation("sns 피드 삭제")
+    public ResponseEntity<BaseResponse<FeedDetailResponse>> deleteFeed(@ApiIgnore Principal principal, @RequestParam Long feedId){
+
+        Long userId = Long.parseLong(principal.getName());
+        Long deletedFeedId = feedService.deleteFeed(userId, feedId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("delete feed success")
+                .data(deletedFeedId)
+                .build();
+        if(deletedFeedId == null){
+            baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("delete feed fail")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+
     @GetMapping("/product")
     @ApiOperation("sns 피드에 등록 가능한 상품 목록 조회")
     public ResponseEntity<BaseResponse<List<AddableProductResponse>>> findAddableProduct(@ApiIgnore Principal principal){
@@ -109,6 +170,27 @@ public class FeedContentController {
             baseResponse = BaseResponse.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .message("find product fail")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/share")
+    @ApiOperation("sns 피드 공유 시 공유 카운트 업데이트하는 메서드")
+    public ResponseEntity<BaseResponse> upShareCount(@RequestParam Long feedId){
+
+        Boolean isUpShareCount = feedService.upShareCount(feedId);
+
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("up share count success")
+                .build();
+        if(!isUpShareCount){
+            baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("up share count fail")
                     .build();
             return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
         }
@@ -228,26 +310,6 @@ public class FeedContentController {
                 .build();
 
         return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
-    }
-    @GetMapping("/share")
-    @ApiOperation("sns 피드 공유 시 공유 카운트 업데이트하는 메서드")
-    public ResponseEntity<BaseResponse> upShareCount(@RequestParam Long feedId){
-
-        Boolean isUpShareCount = feedService.upShareCount(feedId);
-
-        BaseResponse baseResponse = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("up share count success")
-                .build();
-        if(!isUpShareCount){
-            baseResponse = BaseResponse.builder()
-                    .httpStatus(HttpStatus.BAD_REQUEST)
-                    .message("up share count fail")
-                    .build();
-            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity(baseResponse, HttpStatus.OK);
     }
 
 }
