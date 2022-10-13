@@ -33,7 +33,11 @@ public class FeedContentController {
 
     @PostMapping("/upload")
     @ApiOperation("sns 피드 업로드")
-    public ResponseEntity<BaseResponse> uploadFeed(@ApiIgnore Principal principal, @RequestPart FeedUploadRequest feedUploadRequest, @RequestPart List<MultipartFile> feedImages, @RequestPart FeedUploadProductRequest feedUploadProductRequest){
+    public ResponseEntity<BaseResponse> uploadFeed(@ApiIgnore Principal principal,
+                                                   @RequestPart(value = "data", required = false) FeedUploadRequest feedUploadRequest,
+                                                   @RequestPart(value = "images", required = false) List<MultipartFile> feedImages,
+                                                   @RequestPart(value = "productData", required = false) FeedUploadProductRequest feedUploadProductRequest)
+            throws Exception {
 
         FeedInfoDto feedInfoDto = new FeedInfoDto();
         feedInfoDto.setFeedTitle(feedUploadRequest.getFeedTitle());
@@ -98,9 +102,10 @@ public class FeedContentController {
     @PutMapping("/modify")
     @ApiOperation("sns 피드 수정")
     public ResponseEntity<BaseResponse<FeedDetailResponse>> modifyFeed(@ApiIgnore Principal principal,
-                                                                       @RequestPart FeedModifyRequest feedModifyRequest,
-                                                                       @RequestPart List<MultipartFile> feedImages,
-                                                                       @RequestPart FeedUploadProductRequest feedUploadProductRequest){
+                                                                       @RequestPart(value = "data", required = false) FeedModifyRequest feedModifyRequest,
+                                                                       @RequestPart(value = "images", required = false) List<MultipartFile> feedImages,
+                                                                       @RequestPart(value = "productData", required = false) FeedUploadProductRequest feedUploadProductRequest)
+            throws Exception {
 
         FeedInfoDto feedInfoDto = new FeedInfoDto();
         feedInfoDto.setFeedId(feedModifyRequest.getFeedId());
