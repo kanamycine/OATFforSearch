@@ -44,7 +44,7 @@ public class ProductDetailResponse {
 
 	private boolean productCartStatus;
 
-	private List<String> productImageList;
+	private List<ProductImageResponse> productImageList;
 
 	public ProductDetailResponse(Product product) {
 		this.productId = product.getProductId();

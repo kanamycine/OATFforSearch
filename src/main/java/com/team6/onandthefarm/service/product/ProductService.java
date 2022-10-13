@@ -14,7 +14,7 @@ import com.team6.onandthefarm.entity.product.Product;
 public interface ProductService {
 	Long saveProduct(ProductFormDto productFormDto) throws IOException;
 	
-    Long updateProduct(ProductUpdateFormDto productUpdateFormDto);
+    Long updateProduct(ProductUpdateFormDto productUpdateFormDto) throws IOException;
 
     Long deleteProduct(ProductDeleteDto productDeleteDto);
 
