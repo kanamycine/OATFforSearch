@@ -344,7 +344,7 @@ public class FeedServiceImpl implements FeedService {
 
 	/**
 	 * 피드 삭제하는 메서드
-	 * @param memberId
+	 * @param userId
 	 * @return FeedDetailResponse
 	 */
 	@Override
