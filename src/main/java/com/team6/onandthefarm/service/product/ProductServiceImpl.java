@@ -100,14 +100,14 @@ public class ProductServiceImpl implements ProductService {
 
 		Product product = modelMapper.map(productFormDto, Product.class);
 
-		Optional<Seller> seller = sellerRepository.findById(productFormDto.getSellerId());
+		/*Optional<Seller> seller = sellerRepository.findById(productFormDto.getSellerId());
 
 		Long categoryId = productFormDto.getProductCategory();
-		Optional<Category> category = categoryRepository.findById(categoryId);
+		Optional<Category> category = categoryRepository.findById(categoryId);*/
 
 		int cnt = 0;
 		for(MultipartFile multipartFile : productFormDto.getImages()){
-			String url = s3Upload.upload(multipartFile);
+			String url = s3Upload.productUpload(multipartFile);
 			if(cnt==0){
 				product.setProductMainImgSrc(url);
 			}
@@ -120,9 +120,9 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 
-		product.setCategory(category.get());
+		product.setCategory(new Category());
 		product.setProductRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));
-		product.setSeller(seller.get());
+		product.setSeller(new Seller());
 		product.setProductWishCount(0);
 		product.setProductSoldCount(0);
 		return productRepository.save(product).getProductId();

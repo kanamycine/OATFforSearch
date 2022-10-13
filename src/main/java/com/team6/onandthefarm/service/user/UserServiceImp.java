@@ -24,6 +24,7 @@ import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.util.S3Upload;
+import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
 import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
 import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
@@ -56,6 +57,8 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class UserServiceImp implements UserService {
+
+	private final int pageContentNumber = 8;
 
 	private final UserRepository userRepository;
 
@@ -253,7 +256,7 @@ public class UserServiceImp implements UserService {
 	public Long updateUserInfo(UserInfoDto userInfoDto) throws IOException {
 		Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
-		String url = s3Upload.upload(userInfoDto.getProfile());
+		String url = s3Upload.profileUserUpload(userInfoDto.getProfile());
 
 		user.get().setUserName(userInfoDto.getUserName());
 		user.get().setUserPhone(userInfoDto.getUserPhone());
@@ -267,7 +270,7 @@ public class UserServiceImp implements UserService {
 		return user.get().getUserId();
 	}
 
-	public List<ProductQnAResponse> findUserQna(Long userId) {
+	public ProductQnAResultResponse findUserQna(Long userId, Integer pageNum) {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -291,7 +294,38 @@ public class UserServiceImp implements UserService {
 			}
 		}
 
-		return responses;
+		ProductQnAResultResponse resultResponse = new ProductQnAResultResponse();
+
+		responses.sort((o1, o2) -> {
+			int result = o2.getProductQnaCreatedAt().compareTo(o1.getProductQnaCreatedAt());
+			return result;
+		});
+
+		int startIndex = pageNum*pageContentNumber;
+
+		int size = responses.size();
+
+		if(size<startIndex+pageContentNumber){
+			resultResponse.setResponses(responses.subList(startIndex,size));
+			resultResponse.setCurrentPageNum(pageNum);
+			if(size%pageContentNumber!=0){
+				resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+			}
+			else{
+				resultResponse.setTotalPageNum(size/pageContentNumber);
+			}
+			return resultResponse;
+		}
+
+		resultResponse.setResponses(responses.subList(startIndex,startIndex+pageContentNumber));
+		resultResponse.setCurrentPageNum(pageNum);
+		if(size%pageContentNumber!=0){
+			resultResponse.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		else{
+			resultResponse.setTotalPageNum(size/pageContentNumber);
+		}
+		return resultResponse;
 	}
 
 	public UserInfoResponse findUserInfo(Long userId) {

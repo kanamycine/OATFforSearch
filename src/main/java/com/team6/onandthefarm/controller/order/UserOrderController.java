@@ -114,7 +114,7 @@ public class UserOrderController {
 
     @PostMapping("/list")
     @ApiOperation(value = "유저 주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findUserAllOrders(
+    public ResponseEntity<BaseResponse<OrderUserResponseListResponse>> findUserAllOrders(
             @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
 
         String[] principalInfo = principal.getName().split(" ");
@@ -124,7 +124,7 @@ public class UserOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest, OrderUserFindDto.class);
         orderUserFindDto.setUserId(userId);
-        List<OrderUserResponseList> responses  = orderService.findUserOrders(orderUserFindDto);
+        OrderUserResponseListResponse responses  = orderService.findUserOrders(orderUserFindDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -191,7 +191,7 @@ public class UserOrderController {
 
     @PostMapping("/claim/list")
     @ApiOperation(value = "유저 취소/반품 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findUserClaims(
+    public ResponseEntity<BaseResponse<OrderSellerResultResponse>> findUserClaims(
             @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
 
         String[] principalInfo = principal.getName().split(" ");
@@ -201,8 +201,8 @@ public class UserOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderUserFindDto orderUserFindDto = modelMapper.map(orderUserRequest,OrderUserFindDto.class);
         orderUserFindDto.setUserId(userId);
-        List<OrderSellerResponse> responseList = orderService.findUserClaims(orderUserFindDto);
-        BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
+        OrderSellerResultResponse responseList = orderService.findUserClaims(orderUserFindDto);
+        BaseResponse<OrderSellerResultResponse> response = BaseResponse.<OrderSellerResultResponse>builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(responseList)

@@ -44,7 +44,7 @@ public class SellerOrderController {
      */
     @PostMapping("/list")
     @ApiOperation(value = "셀러 주문 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(
+    public ResponseEntity<BaseResponse<OrderSellerResponseListResponse>> findSellerAllOrders(
             @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
 
         String[] principalInfo = principal.getName().split(" ");
@@ -54,9 +54,9 @@ public class SellerOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         orderSellerRequest.setSellerId(sellerId);
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
-        orderSellerFindDto.setSellerId(principal.getName());
+        orderSellerFindDto.setSellerId(sellerId);
 
-        List<OrderSellerResponseList> responses  = orderService.findSellerOrders(orderSellerFindDto);
+        OrderSellerResponseListResponse responses  = orderService.findSellerOrders(orderSellerFindDto);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -93,15 +93,15 @@ public class SellerOrderController {
 
     @PostMapping("/claim/list")
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
-    public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(
+    public ResponseEntity<BaseResponse<OrderSellerResultResponse>> findSellerClaims(
             @ApiIgnore Principal principal,@RequestBody OrderSellerRequest orderSellerRequest){
 
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
         orderSellerRequest.setSellerId(sellerId);
-        List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
-        BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
+        OrderSellerResultResponse responseList = orderService.findSellerClaims(orderSellerRequest);
+        BaseResponse<OrderSellerResultResponse> response = BaseResponse.<OrderSellerResultResponse>builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
                 .data(responseList)

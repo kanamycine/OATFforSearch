@@ -99,7 +99,7 @@ public class SellerServiceImp implements SellerService{
         sellerEntity.get().setSellerShopName(sellerDto.getShopName());
         sellerEntity.get().setSellerPhone(sellerDto.getPhone());
 
-        String url = s3Upload.upload(sellerDto.getProfile());
+        String url = s3Upload.profileSellerUpload(sellerDto.getProfile());
         sellerEntity.get().setSellerProfileImg(url);
 
         return true;
