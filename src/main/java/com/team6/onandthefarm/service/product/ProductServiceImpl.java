@@ -105,13 +105,18 @@ public class ProductServiceImpl implements ProductService {
 		Long categoryId = productFormDto.getProductCategory();
 		Optional<Category> category = categoryRepository.findById(categoryId);
 
+		int cnt = 0;
 		for(MultipartFile multipartFile : productFormDto.getImages()){
 			String url = s3Upload.upload(multipartFile);
+			if(cnt==0){
+				product.setProductMainImgSrc(url);
+			}
 			ProductImg img = ProductImg.builder()
 					.product(product)
 					.productImgSrc(url)
 					.build();
 			productImgRepository.save(img);
+			cnt++;
 		}
 
 
