@@ -45,11 +45,14 @@ public class UserReviewController {
 	@ApiOperation("리뷰 신규 등록")
 	public ResponseEntity<BaseResponse<Review>> reviewForm(@ApiIgnore Principal principal, @RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
 
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewFormDto reviewFormDto = modelMapper.map(reviewFormRequest, ReviewFormDto.class);
-		reviewFormDto.setUserId(Long.parseLong(principal.getName()));
+		reviewFormDto.setUserId(userId);
 
 		Long reviewId = reviewService.saveReview(reviewFormDto);
 
@@ -102,11 +105,15 @@ public class UserReviewController {
 	@PostMapping(value="/like/up")
 	@ApiOperation("리뷰 좋아요 +1")
 	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewLikeFormDto reviewLikeFormDto = modelMapper.map(reviewLikeFormRequest, ReviewLikeFormDto.class);
-		reviewLikeFormDto.setUserId(Long.parseLong(principal.getName()));
+		reviewLikeFormDto.setUserId(userId);
 		Long reviewLikeId = reviewService.upLikeCountReview(reviewLikeFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -122,11 +129,15 @@ public class UserReviewController {
 	@PutMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
 	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ReviewLikeCancelFormDto reviewLikeCancelFormDto = modelMapper.map(reviewLikeCancelFormRequest, ReviewLikeCancelFormDto.class);
-		reviewLikeCancelFormDto.setUserId(Long.parseLong(principal.getName()));
+		reviewLikeCancelFormDto.setUserId(userId);
 		Long reviewLikeId = reviewService.cancelReviewLikeCount(reviewLikeCancelFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -142,7 +153,8 @@ public class UserReviewController {
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 		Long userId = null;
 		if(principal != null) {
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewListByLikeCount(userId, productId, Integer.valueOf(pageNumber));
 
@@ -162,7 +174,8 @@ public class UserReviewController {
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
 		Long userId = null;
 		if(principal != null) {
-			userId = Long.parseLong(principal.getName());
+			String[] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
 		}
 
 		List<ReviewSelectionResponse> reviews = reviewService.getReviewListOrderByNewest(userId, productId, Integer.valueOf(pageNumber));
@@ -180,7 +193,10 @@ public class UserReviewController {
 	@ApiOperation("내가쓴 리스트 리뷰 조회")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getMyReview(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
 
-		List<ReviewSelectionResponse> reviews = reviewService.getMyReview(Long.parseLong(principal.getName()), Integer.valueOf(pageNumber));
+		String[] principalInfo = principal.getName().split(" ");
+		Long userId = Long.parseLong(principalInfo[0]);
+
+		List<ReviewSelectionResponse> reviews = reviewService.getMyReview(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

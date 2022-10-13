@@ -46,9 +46,13 @@ public class SellerOrderController {
     @ApiOperation(value = "셀러 주문 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponseList>>> findSellerAllOrders(
             @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
+
+        String[] principalInfo = principal.getName().split(" ");
+        String sellerId = principalInfo[0];
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        orderSellerRequest.setSellerId(principal.getName());
+        orderSellerRequest.setSellerId(sellerId);
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
         orderSellerFindDto.setSellerId(principal.getName());
 
@@ -66,9 +70,13 @@ public class SellerOrderController {
     @ApiOperation(value = "셀러 주문 상세 조회")
     public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(
             @ApiIgnore Principal principal,@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
+
+        String[] principalInfo = principal.getName().split(" ");
+        String sellerId = principalInfo[0];
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        orderSellerDetailRequest.setSellerId(principal.getName());
+        orderSellerDetailRequest.setSellerId(sellerId);
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
         orderSellerDetailDto.setSellerId(principal.getName());
 
@@ -87,7 +95,11 @@ public class SellerOrderController {
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<List<OrderSellerResponse>>> findSellerClaims(
             @ApiIgnore Principal principal,@RequestBody OrderSellerRequest orderSellerRequest){
-        orderSellerRequest.setSellerId(principal.getName());
+
+        String[] principalInfo = principal.getName().split(" ");
+        String sellerId = principalInfo[0];
+
+        orderSellerRequest.setSellerId(sellerId);
         List<OrderSellerResponse> responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<List<OrderSellerResponse>> response = BaseResponse.<List<OrderSellerResponse>>builder()
                 .httpStatus(HttpStatus.OK)

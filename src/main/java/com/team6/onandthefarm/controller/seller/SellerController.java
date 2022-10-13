@@ -58,7 +58,11 @@ public class SellerController {
     @GetMapping("/mypage/info")
     @ApiOperation(value = "셀러 회원 정보 조회")
     public ResponseEntity<SellerInfoResponse> findBySellerId(@ApiIgnore Principal principal){
-        SellerInfoResponse response = sellerService.findByUserId(Long.valueOf(principal.getName()));
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long sellerId = Long.parseLong(principalInfo[0]);
+
+        SellerInfoResponse response = sellerService.findByUserId(sellerId);
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
@@ -69,11 +73,15 @@ public class SellerController {
             @RequestPart(value = "images", required = false) MultipartFile profile,
             @RequestPart(value = "data", required = false) SellerUpdateRequest sellerUpdateRequest)
             throws Exception{
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long sellerId = Long.parseLong(principalInfo[0]);
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerUpdateRequest,SellerDto.class);
         sellerDto.setProfile(profile);
-        sellerService.updateByUserId(Long.valueOf(principal.getName()),sellerDto);
+        sellerService.updateByUserId(sellerId, sellerDto);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -196,8 +204,12 @@ public class SellerController {
     @ApiOperation(value = "셀러의 전체 질의 조회")
     public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (
             @ApiIgnore Principal principal){
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long sellerId = Long.parseLong(principalInfo[0]);
+
         List<SellerProductQnaResponse> productQnas
-                = sellerService.findSellerQnA(Long.valueOf(principal.getName()));
+                = sellerService.findSellerQnA(sellerId);
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -225,6 +237,10 @@ public class SellerController {
     @ApiOperation(value = "셀러의 메인페이지 조회")
     public ResponseEntity<BaseResponse<SellerMypageResponse>> findSellerMypage(
             @ApiIgnore Principal principal, @RequestParam Map<String,String> map){
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long sellerId = Long.parseLong(principalInfo[0]);
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerMypageRequest sellerMypageRequest = SellerMypageRequest.builder()
@@ -232,7 +248,7 @@ public class SellerController {
                 .endDate(map.get("endDate"))
                 .build();
         SellerMypageDto sellerMypageDto = modelMapper.map(sellerMypageRequest, SellerMypageDto.class);
-        sellerMypageDto.setSellerId(Long.valueOf(principal.getName()));
+        sellerMypageDto.setSellerId(sellerId);
 
         SellerMypageResponse mypageResponse = sellerService.findSellerMypage(sellerMypageDto);
 
