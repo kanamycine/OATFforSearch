@@ -139,12 +139,12 @@ public class FeedContentController {
 
     @PutMapping("/delete")
     @ApiOperation("sns 피드 삭제")
-    public ResponseEntity<BaseResponse<FeedDetailResponse>> deleteFeed(@ApiIgnore Principal principal, @RequestParam Long feedId){
+    public ResponseEntity<BaseResponse<FeedDetailResponse>> deleteFeed(@ApiIgnore Principal principal, @RequestBody FeedDeleteRequest feedDeleteRequest){
 
         String[] principalInfo = principal.getName().split(" ");
         Long memberId = Long.parseLong(principalInfo[0]);
 
-        Long deletedFeedId = feedService.deleteFeed(memberId, feedId);
+        Long deletedFeedId = feedService.deleteFeed(memberId, feedDeleteRequest.getFeedId());
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
