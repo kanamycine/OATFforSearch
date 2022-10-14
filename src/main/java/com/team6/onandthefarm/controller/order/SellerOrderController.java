@@ -71,17 +71,21 @@ public class SellerOrderController {
     }
 
 
-    @PostMapping("/list/detail")
+    @GetMapping("/list/detail")
     @ApiOperation(value = "셀러 주문 상세 조회")
     public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(
-            @ApiIgnore Principal principal,@RequestBody OrderSellerDetailRequest orderSellerDetailRequest){
+            @ApiIgnore Principal principal,@RequestParam Map<String,String> map){
 
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        orderSellerDetailRequest.setSellerId(sellerId);
+
+        OrderSellerDetailRequest orderSellerDetailRequest = OrderSellerDetailRequest.builder()
+                .orderSerial(map.get("orderSerial"))
+                .sellerId(sellerId)
+                .build();
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
         orderSellerDetailDto.setSellerId(sellerId);
 
