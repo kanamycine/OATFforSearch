@@ -39,20 +39,25 @@ public class SellerOrderController {
     /**
      * 셀러의 경우 주문당 여러 제품을 한번에 보여주어야 함
      * orderId : ListProduct정보
-     * @param orderSellerRequest
+     * @param map
      * @return
      */
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiOperation(value = "셀러 주문 내역 조회")
     public ResponseEntity<BaseResponse<OrderSellerResponseListResponse>> findSellerAllOrders(
-            @ApiIgnore Principal principal, @RequestBody OrderSellerRequest orderSellerRequest){
+            @ApiIgnore Principal principal, @RequestParam Map<String,String> map){
 
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        orderSellerRequest.setSellerId(sellerId);
+        OrderSellerRequest orderSellerRequest = OrderSellerRequest.builder()
+                .sellerId(sellerId)
+                .startDate(map.get("startDate"))
+                .endDate(map.get("endDate"))
+                .pageNumber(Integer.valueOf(map.get("pageNumber")))
+                .build();
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
         orderSellerFindDto.setSellerId(sellerId);
 
