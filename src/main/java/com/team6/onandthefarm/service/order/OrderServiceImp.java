@@ -159,12 +159,15 @@ public class OrderServiceImp implements OrderService{
     /**
      * 주문 생성 메서드
      * 주문 생성 시 product 판매 수 늘리기 코드 짜기
+     * 장바구니의 is_activate가 false라면 주문후 cart삭제(status를 false로 바꿈)
      * @param orderDto
      */
     public Boolean createOrder(OrderDto orderDto){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         boolean stockCheck = checkStock(orderDto);
+        boolean cartFlag = false; // 카트 주문인 경우 true / 단건 주문인 경우 false
+
         if(!stockCheck){ // 재고 체크
             return Boolean.FALSE;
         }
@@ -216,6 +219,7 @@ public class OrderServiceImp implements OrderService{
             Optional<Product> product = productRepository.findById(order.getProductId());
             product.get().setProductTotalStock(product.get().getProductTotalStock()-order.getProductQty());
             product.get().setProductSoldCount(product.get().getProductSoldCount()+1);
+
         }
         orderRepository.findById(ordersEntity.getOrdersId()).get().setOrdersTotalPrice(totalPrice); // 총 주문액 set
         createPayment(ordersEntity.getOrdersSerial()); // 결제 생성
@@ -369,6 +373,7 @@ public class OrderServiceImp implements OrderService{
             orderUserResponseList.setOrderProductDeliveryWaybillNumber(order.getOrdersDeliveryWaybillNumber());
             orderUserResponseList.setOrderProductDeliveryCompany(order.getOrdersDeliveryCompany());
             orderUserResponseList.setOrderProductDeliveryDate(order.getOrdersDeliveryDate());
+            orderUserResponseList.setOrderStatus(order.getOrdersStatus());
             response.add(orderUserResponseList);
         }
 

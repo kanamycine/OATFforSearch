@@ -22,4 +22,6 @@ public class OrderUserResponseList {
     private String orderProductDeliveryDate;
 
     private String ordersSerial;
+
+    private String orderStatus;
 }
