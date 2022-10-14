@@ -43,6 +43,7 @@ public class ProductDetailResponse {
 	private boolean productWishStatus;
 
 	private boolean productCartStatus;
+	private Integer productViewCount;
 
 	private List<ProductImageResponse> productImageList;
 
@@ -71,6 +72,7 @@ public class ProductDetailResponse {
 		this.productStatus = product.getProductStatus();
 		this.productWishCount = product.getProductWishCount();
 		this.productSoldCount = product.getProductSoldCount();
+		this.productViewCount = product.getProductViewCount();
 		this.productWishStatus = false;
 		this.productCartStatus = false;
 	}

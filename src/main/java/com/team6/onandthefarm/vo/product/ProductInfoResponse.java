@@ -29,5 +29,6 @@ public class ProductInfoResponse {
 	private String productDetailShort;
 	private Integer productWishCount;
 	private Integer productSoldCount;
+	private Integer productViewCount;
 	private List<ProductImgDto> productImgDtoList = new ArrayList<>();
 }

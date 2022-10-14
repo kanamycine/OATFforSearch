@@ -240,6 +240,5 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	//셀러 기준 질의 조회 구현 요망!
 
 }

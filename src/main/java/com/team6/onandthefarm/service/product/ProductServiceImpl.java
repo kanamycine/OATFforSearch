@@ -128,6 +128,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setSeller(seller.get());
 		product.setProductWishCount(0);
 		product.setProductSoldCount(0);
+		product.setProductViewCount(0);
 		return productRepository.save(product).getProductId();
 	}
 
@@ -259,7 +260,10 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductDetailResponse findProductDetail(Long productId, Long userId) {
 		Product product = productRepository.findById(productId).get();
+		product.setProductViewCount(product.getProductViewCount()+1);
+
 		ProductDetailResponse productDetailResponse = new ProductDetailResponse(product);
+		productDetailResponse.setProductViewCount(productDetailResponse.getProductViewCount()+1);
 		if(userId != null){
 			Optional<Wish> savedWish = productWishRepository.findWishByUserAndProduct(userId, productId);
 			if(savedWish.isPresent()){
