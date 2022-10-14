@@ -91,15 +91,19 @@ public class SellerOrderController {
     }
 
 
-    @PostMapping("/claim/list")
+    @GetMapping("/claim/list")
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<OrderSellerResultResponse>> findSellerClaims(
-            @ApiIgnore Principal principal,@RequestBody OrderSellerRequest orderSellerRequest){
+            @ApiIgnore Principal principal,@RequestParam Map<String,String> map){
 
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
-
-        orderSellerRequest.setSellerId(sellerId);
+        OrderSellerRequest orderSellerRequest = OrderSellerRequest.builder()
+                .sellerId(sellerId)
+                .startDate(map.get("startDate"))
+                .endDate(map.get("endDate"))
+                .pageNumber(Integer.valueOf(map.get("pageNumber")))
+                .build();
         OrderSellerResultResponse responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<OrderSellerResultResponse> response = BaseResponse.<OrderSellerResultResponse>builder()
                 .httpStatus(HttpStatus.OK)
