@@ -39,6 +39,7 @@ public class ProductSelectionResponse {
 	private Integer productWishCount;
 	private Integer productSoldCount;
 	private Integer productViewCount;
+	private Integer productReviewCount;
 	private Boolean productCartStatus;
 	private Boolean productWishStatus;
 	private Double reviewRate;

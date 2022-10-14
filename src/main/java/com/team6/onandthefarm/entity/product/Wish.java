@@ -27,4 +27,6 @@ public class Wish {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
+    private Boolean wishStatus;
 }
