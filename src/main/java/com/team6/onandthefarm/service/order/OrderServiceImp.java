@@ -616,7 +616,7 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
-     * 반품/취소 내역 조회해주는 메서드
+     * 셀러 반품/취소 내역 조회해주는 메서드
      * 날짜 조정하는 코드 넣기
      * @param orderSellerRequest
      * @return
@@ -692,30 +692,38 @@ public class OrderServiceImp implements OrderService{
         return resultResponse;
     }
 
-    public OrderSellerResultResponse findUserClaims(OrderUserFindDto orderUserFindDto){
-        List<OrderSellerResponse> responses = new ArrayList<>();
+    /**
+     * 유저 반품/취소 내역 조회
+     * @param orderUserFindDto
+     * @return
+     */
+    public OrderRefundResultResponse findUserClaims(OrderUserFindDto orderUserFindDto){
+        List<OrderRefundResponse> responses = new ArrayList<>();
 
         List<Refund> refunds = refundRepository.findByUserId(Long.valueOf(orderUserFindDto.getUserId()));
 
         for(Refund refund : refunds){
             Optional<OrderProduct> orderProduct
                     = orderProductRepository.findById(refund.getOrderProductId());
-            OrderSellerResponse response = OrderSellerResponse.builder()
-                    .orderProductMainImg(orderProduct.get().getOrderProductMainImg())
-                    .orderProductName(orderProduct.get().getOrderProductName())
-                    .orderProductQty(orderProduct.get().getOrderProductQty())
-                    .orderTotalPrice(orderProduct.get().getOrderProductPrice()
-                            *orderProduct.get().getOrderProductQty())
-                    .ordersDate(orderProduct.get().getOrders().getOrdersDate())
-                    .orderProductStatus(orderProduct.get().getOrderProductStatus())
+            OrderRefundResponse response = OrderRefundResponse.builder()
+                    .cancelDetail(refund.getRefundContent())
+                    .productPrice(orderProduct.get().getOrderProductPrice())
+                    .productQty(orderProduct.get().getOrderProductQty())
+                    .productTotalPrice(
+                            orderProduct.get().getOrderProductPrice() * orderProduct.get().getOrderProductQty())
+                    .productStatus(orderProduct.get().getOrderProductStatus())
+                    .productName(orderProduct.get().getOrderProductName())
+                    .productImage(orderProduct.get().getOrderProductMainImg())
+                    .orderDate(orderProduct.get().getOrderProductDate())
+                    .orderSerial(orderProduct.get().getOrders().getOrdersSerial())
                     .build();
             responses.add(response);
         }
 
-        OrderSellerResultResponse resultResponse = new OrderSellerResultResponse();
+        OrderRefundResultResponse resultResponse = new OrderRefundResultResponse();
 
         responses.sort((o1, o2) -> {
-            int result = o2.getOrdersDate().compareTo(o1.getOrdersDate());
+            int result = o2.getOrderDate().compareTo(o1.getOrderDate());
             return result;
         });
 
@@ -747,7 +755,7 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
-     * 취소/반품 상세 내역 조회
+     * 셀러 취소/반품 상세 내역 조회
      * @param orderProductId
      * @return
      */

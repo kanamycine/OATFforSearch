@@ -33,7 +33,7 @@ public interface FeedService {
 
     Boolean createFeedScrap(Long feedId, Long userId);
 
-    List<FeedResponse> findByRecentFeedList(FeedDto feedDto);
+    List<FeedResponse> findByRecentFeedList(Integer pageNumer);
 
     List<FeedResponse> findByLikeFeedList(Integer pageNumber);
 

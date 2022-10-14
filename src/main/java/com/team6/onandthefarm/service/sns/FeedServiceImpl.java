@@ -420,10 +420,10 @@ public class FeedServiceImpl implements FeedService {
 
 	/**
 	 * feed 메인페이지 최신순 조회
-	 * @param feedDto
+	 * @param pageNumer
 	 * @return
 	 */
-	public List<FeedResponse> findByRecentFeedList(FeedDto feedDto) {
+	public List<FeedResponse> findByRecentFeedList(Integer pageNumer) {
 		List<Feed> feedList = new ArrayList<>();
 		feedRepository.findAll().forEach(feedList::add);
 		feedList.sort((o1, o2) -> {
@@ -431,7 +431,7 @@ public class FeedServiceImpl implements FeedService {
 			return result;
 		});
 
-		int startIndex = feedDto.getPageNumber() * pageContentNumber;
+		int startIndex = pageNumer * pageContentNumber;
 
 		int size = feedList.size();
 

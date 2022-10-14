@@ -15,7 +15,7 @@ public interface OrderService {
     OrderUserDetailResponse findSellerOrderDetail(OrderSellerDetailDto orderSellerDetailDto);
     void createPayment(String orderSerial);
     OrderSellerResultResponse findSellerClaims(OrderSellerRequest orderSellerRequest);
-    OrderSellerResultResponse findUserClaims(OrderUserFindDto orderUserFindDto);
+    OrderRefundResultResponse findUserClaims(OrderUserFindDto orderUserFindDto);
     Boolean createCancel(RefundDto refundDto);
     Boolean createRefund(RefundDto refundDto);
     RefundDetailResponse findRefundDetail(Long orderProductId);
