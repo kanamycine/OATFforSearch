@@ -2,7 +2,6 @@ package com.team6.onandthefarm.service.product;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.team6.onandthefarm.dto.product.*;
 import com.team6.onandthefarm.entity.cart.Cart;
@@ -24,6 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -35,8 +35,11 @@ import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional
+@Slf4j
 
 public class ProductServiceImpl implements ProductService {
 
@@ -286,68 +289,100 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Long userId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
-		List<Product> productList = productPagingRepository.findAllProductOrderByNewest(pageRequest);
-		return setProductSelectResponse(productList, userId);
+		Page<Product> productList = productPagingRepository.findAllProductOrderByNewest(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductsListByHighPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 
-		List<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
-		return setProductSelectResponse(productList, userId);
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductsListByLowPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 
-		List<Product> productList =  productPagingRepository.findProductListByLowPrice(pageRequest);
-		return setProductSelectResponse(productList, userId);
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
-		List<Product> productList = productPagingRepository.findProductBySoldCount(pageRequest);
-		return setProductSelectResponse(productList, userId);
+
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
-		List<Product> productList = productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
-		return setProductSelectResponse(productList, userId);
+
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
-		List<Product> productList = productPagingRepository.findProductsByCategoryNewest(pageRequest,category);
-		return setProductSelectResponse(productList, userId);
+
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
-		List<Product> productList = productPagingRepository.findProductByCategoryHighest(pageRequest,category);
-		return setProductSelectResponse(productList, userId);
+
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
-		List<Product> productList = productPagingRepository.findProductByCategoryLowest(pageRequest,category);
-		return setProductSelectResponse(productList, userId);
+
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}
 
 	@Override
 	public List<ProductSelectionResponse> getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
-		List<Product> productList = productPagingRepository.findProductByCategorySoldCount(pageRequest,category);
-		return setProductSelectResponse(productList, userId);
-	}
 
+		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+	}
 
 	@Override
 	public List<ProductQnAResponse> findProductQnAList(Long productId){
@@ -407,12 +442,14 @@ public class ProductServiceImpl implements ProductService {
 	 * @param productList, userId
 	 * @return List<ProductSelectionResponse>
 	 */
-	private List<ProductSelectionResponse> setProductSelectResponse(List<Product> productList, Long userId){
-
+	private List<ProductSelectionResponse> setProductSelectResponse(Page<Product> productList, Long userId, Integer totalPage, Integer nowPage, Long totalElements){
 		List<ProductSelectionResponse> productResponseList = new ArrayList<>();
 
 		for(Product p : productList) {
 			ProductSelectionResponse pResponse = new ProductSelectionResponse(p);
+			pResponse.setTotalPage(totalPage);
+			pResponse.setNowPage(nowPage);
+			pResponse.setTotalElement(totalElements);
 
 			List<Review> reviewList = reviewRepository.findReviewByProduct(p);
 			if(reviewList.size() > 0) {
