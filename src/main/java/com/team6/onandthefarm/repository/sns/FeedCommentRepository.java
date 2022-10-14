@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface FeedCommentRepository extends CrudRepository<FeedComment,Long> {
 
-    @Query("select c from FeedComment c where c.feed.feedId=:feedId")
+    @Query("select c from FeedComment c where c.feed.feedId=:feedId and c.feedCommentStatus=true")
     List<FeedComment> findByFeedId(@Param("feedId") Long feedId);
 }
