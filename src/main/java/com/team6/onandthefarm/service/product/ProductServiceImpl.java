@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
 
 		Optional<Seller> seller = sellerRepository.findById(productFormDto.getSellerId());
 
-		Long categoryId = productFormDto.getProductCategory();
+		Long categoryId = productFormDto.getCategoryId();
 		Optional<Category> category = categoryRepository.findById(categoryId);
 
 		int cnt = 0;
@@ -138,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
-		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
+		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getCategoryId());
 		product.get().setProductName(productUpdateFormDto.getProductName());
 		product.get().setCategory(category.get());
 		product.get().setProductPrice(productUpdateFormDto.getProductPrice());
@@ -210,6 +210,7 @@ public class ProductServiceImpl implements ProductService {
 		Wish wish = modelMapper.map(productWishFormDto, Wish.class);
 		wish.setUser(user.get());
 		wish.setProduct(product.get());
+		wish.setWishStatus(true);
 		product.get().setProductWishCount(product.get().getProductWishCount() + 1);
 
 		Long wishId = productWishRepository.save(wish).getWishId();
@@ -224,7 +225,7 @@ public class ProductServiceImpl implements ProductService {
 
 		for(Long wishId : productWishCancelDto.getWishId()) {
 			Wish wish = productWishRepository.findById(wishId).get();
-			productWishRepository.delete(wish);
+			wish.setWishStatus(false);
 
 			Product product = productRepository.findById(wish.getProduct().getProductId()).get();
 			product.setProductWishCount(product.getProductWishCount() - 1);
@@ -456,6 +457,7 @@ public class ProductServiceImpl implements ProductService {
 			pResponse.setTotalElement(totalElements);
 
 			List<Review> reviewList = reviewRepository.findReviewByProduct(p);
+			pResponse.setProductReviewCount(reviewList.size());
 			if(reviewList.size() > 0) {
 				Integer reviewSum = 0;
 				for (Review review : reviewList) {

@@ -3,7 +3,6 @@ package com.team6.onandthefarm.controller.cart;
 import com.team6.onandthefarm.dto.cart.CartDeleteDto;
 import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
-import com.team6.onandthefarm.dto.product.ProductFormDto;
 import com.team6.onandthefarm.service.cart.CartService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.cart.CartDeleteRequest;

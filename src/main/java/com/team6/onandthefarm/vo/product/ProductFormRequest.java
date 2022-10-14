@@ -22,7 +22,7 @@ import lombok.Setter;
 public class ProductFormRequest {
 	private String productName;
 
-	private String productCategory;
+	private Long categoryId;
 
 	private Integer productPrice;
 

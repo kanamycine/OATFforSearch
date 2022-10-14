@@ -19,15 +19,15 @@ import lombok.Setter;
 public class ProductUpdateFormRequest {
 	private Long productId;
 	private String productName;
-	private Long productCategoryId;
+	private Long categoryId;
 	private Integer productPrice;
 	private Integer productTotalStock;
 	private String productMainImgSrc;
 	private String productDetail;
+	private String productDetailShort;
 	private String productOriginPlace;
 	private String productDeliveryCompany;
 	private String productStatus;
-	private String productDetailShort;
 	private Integer productWishCount;
 	private Integer productSoldCount;
 	private List<Long> deleteImageIdList;
