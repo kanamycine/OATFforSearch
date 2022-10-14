@@ -22,4 +22,5 @@ public interface OrderService {
     Boolean conformRefund(Long orderProductId);
     Boolean deliveryStart(OrderDeliveryDto orderDeliveryDto);
     Boolean deliveryConform(String orderSerial);
+    OrdersConditionResponse findOrdersCondition(Long sellerId);
 }

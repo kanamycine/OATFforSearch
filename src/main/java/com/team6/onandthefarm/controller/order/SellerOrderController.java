@@ -160,5 +160,22 @@ public class SellerOrderController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
+    @GetMapping("/condition")
+    @ApiOperation(value = "셀러페이지의 통계를 위한 상품/주문/배송/qna 현황")
+    public ResponseEntity<BaseResponse<OrdersConditionResponse>> findOrdersConditions(@ApiIgnore Principal principal){
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long sellerId = Long.parseLong(principalInfo[0]);
+
+        OrdersConditionResponse ordersConditionResponse = orderService.findOrdersCondition(sellerId);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(ordersConditionResponse)
+                .build();
+        return new ResponseEntity(response,HttpStatus.OK);
+    }
+
 
 }
