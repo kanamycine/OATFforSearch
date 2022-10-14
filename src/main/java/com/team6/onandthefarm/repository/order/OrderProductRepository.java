@@ -13,7 +13,7 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct,Long
 
     List<OrderProduct> findByOrdersAndSellerIdAndOrderProductStatus(Orders orders, Long sellerId, String status);
 
-    List<OrderProduct> findBySellerIdAndOrderProductStatus(Long sellerId, String orderStatus);
+    List<OrderProduct> findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long sellerId, String orderStatus,String startDate,String endDate);
 
     List<OrderProduct> findBySellerId(Long sellerId);
 

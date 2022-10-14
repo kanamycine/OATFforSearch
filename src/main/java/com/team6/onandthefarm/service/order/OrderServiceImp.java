@@ -628,9 +628,9 @@ public class OrderServiceImp implements OrderService{
         /*
             sellerId로 orderProduct에서 제품 하나씩 찾는다. canceled(os1) refundRequest(os2) 인 상태의 제품들을
          */
-        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"canceled");
-        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"refundRequest");
-        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatus(Long.valueOf(orderSellerRequest.getSellerId()),"refundCompleted");
+        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"canceled",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
+        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundRequest",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
+        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundCompleted",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
         List<OrderProduct> orderProducts = new ArrayList<>();
         for(OrderProduct orderProduct : orderProductsSO1){
             orderProducts.add(orderProduct);
