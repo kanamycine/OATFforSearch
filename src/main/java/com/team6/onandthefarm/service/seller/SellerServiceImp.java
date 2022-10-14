@@ -272,16 +272,24 @@ public class SellerServiceImp implements SellerService{
         String nextDate = startDate;
 
         List<Integer> dayPrices = new ArrayList<>();
+        Set<Long> orderList = new HashSet<>(); // 기간 총 주문을 담은 set
+        List<Integer> dayOrderCounts = new ArrayList<>();
 
         while(true){
             int dayPrice = 0;
+            int dayOrderCount = 0;
             List<OrderProduct> orderProductList =
                     orderProductRepository.findBySellerIdAndOrderProductDateStartingWith(
                     sellerMypageDto.getSellerId(),nextDate);
             for(OrderProduct orderProduct : orderProductList){
+                if(!orderList.contains(orderProduct.getOrders().getOrdersId())){
+                    orderList.add(orderProduct.getOrders().getOrdersId());
+                    dayOrderCount++;
+                }
                 dayPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
             }
             dayPrices.add(dayPrice);
+            dayOrderCounts.add(dayOrderCount);
             nextDate = dateUtils.nextDate(nextDate);
             if(nextDate.equals(endDate)){
                 break;
@@ -289,21 +297,27 @@ public class SellerServiceImp implements SellerService{
         }
 
         int dayPrice = 0;
+        int dayOrderCount = 0;
         List<OrderProduct> orderProductList =
                 orderProductRepository.findBySellerIdAndOrderProductDateStartingWith(
                         sellerMypageDto.getSellerId(),nextDate);
         for(OrderProduct orderProduct : orderProductList){
+            if(!orderList.contains(orderProduct.getOrders().getOrdersId())){
+                orderList.add(orderProduct.getOrders().getOrdersId());
+                dayOrderCount++;
+            }
             dayPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
         }
         dayPrices.add(dayPrice);
-
+        dayOrderCounts.add(dayOrderCount);
         for(Integer price : dayPrices){
             totalPrice += price;
         }
 
         response.setDayPrices(dayPrices);
         response.setTotalPrice(totalPrice);
-
+        response.setTotalOrderCount(orderList.size());
+        response.setDayOrderCount(dayOrderCounts);
         return response;
     }
 

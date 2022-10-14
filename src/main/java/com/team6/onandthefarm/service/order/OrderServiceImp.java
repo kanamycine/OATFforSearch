@@ -346,24 +346,29 @@ public class OrderServiceImp implements OrderService{
 
             OrderUserResponseList orderUserResponseList = new OrderUserResponseList();
             List<OrderProduct> userOrders = orderProductRepository.findByOrders(order);
-            List<OrderSellerResponse> orderSellerResponses = new ArrayList<>();
+            List<OrderUserResponse> orderUserResponses = new ArrayList<>();
 
             for(OrderProduct orderProduct : userOrders){
-                OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
+                OrderUserResponse orderUserResponse = OrderUserResponse.builder()
                         .orderProductStatus(orderProduct.getOrderProductStatus())
-                        .ordersSerial(order.getOrdersSerial())
                         .orderProductPrice(orderProduct.getOrderProductPrice())
                         .orderProductQty(orderProduct.getOrderProductQty())
                         .orderProductName(orderProduct.getOrderProductName())
                         .orderProductMainImg(orderProduct.getOrderProductMainImg())
+                        .productId(orderProduct.getProductId())
+                        .orderProductId(orderProduct.getOrderProductId())
                         .build();
                 totalPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
-                orderSellerResponses.add(orderSellerResponse);
+                orderUserResponses.add(orderUserResponse);
             }
 
-            orderUserResponseList.setOrderSellerResponses(orderSellerResponses);
+            orderUserResponseList.setOrderUserResponses(orderUserResponses);
             orderUserResponseList.setOrderTotalPrice(totalPrice);
+            orderUserResponseList.setOrdersSerial(order.getOrdersSerial());
             orderUserResponseList.setOrderDate(order.getOrdersDate());
+            orderUserResponseList.setOrderProductDeliveryWaybillNumber(order.getOrdersDeliveryWaybillNumber());
+            orderUserResponseList.setOrderProductDeliveryCompany(order.getOrdersDeliveryCompany());
+            orderUserResponseList.setOrderProductDeliveryDate(order.getOrdersDeliveryDate());
             response.add(orderUserResponseList);
         }
 
@@ -464,6 +469,9 @@ public class OrderServiceImp implements OrderService{
                         .orderRequest(orders.getOrdersRequest())
                         .orderStatus(orders.getOrdersStatus())
                         .orderProducts(new ArrayList<>())
+                        .orderProductDeliveryCompany(orders.getOrdersDeliveryCompany())
+                        .orderProductDeliveryDate(orders.getOrdersDeliveryDate())
+                        .orderProductDeliveryWaybillNumber(orders.getOrdersDeliveryWaybillNumber())
                         .build();
 
         for(OrderProduct orderProduct : orderProducts){
@@ -473,6 +481,8 @@ public class OrderServiceImp implements OrderService{
                     .productImg(orderProduct.getOrderProductMainImg())
                     .productQty(orderProduct.getOrderProductQty())
                     .orderProductId(orderProduct.getOrderProductId())
+                    .productId(orderProduct.getProductId())
+                    .orderProductStatus(orderProduct.getOrderProductStatus())
                     .build();
             totalPrice+=orderFindOneResponse.getProductPrice()*orderFindOneResponse.getProductQty();
             orderUserDetailResponse.getOrderProducts().add(orderFindOneResponse);
