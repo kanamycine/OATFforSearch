@@ -256,7 +256,10 @@ public class UserServiceImp implements UserService {
 	public Long updateUserInfo(UserInfoDto userInfoDto) throws IOException {
 		Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
-		String url = s3Upload.profileUserUpload(userInfoDto.getProfile());
+		if(userInfoDto.getProfile()!=null){
+			String url = s3Upload.profileUserUpload(userInfoDto.getProfile());
+			user.get().setUserProfileImg(url);
+		}
 
 		user.get().setUserName(userInfoDto.getUserName());
 		user.get().setUserPhone(userInfoDto.getUserPhone());
@@ -265,7 +268,7 @@ public class UserServiceImp implements UserService {
 		user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
 		user.get().setUserBirthday(userInfoDto.getUserBirthday());
 		user.get().setUserSex(userInfoDto.getUserSex());
-		user.get().setUserProfileImg(url);
+
 
 		return user.get().getUserId();
 	}
