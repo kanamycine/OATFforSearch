@@ -167,6 +167,9 @@ public class OrderServiceImp implements OrderService{
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         boolean stockCheck = checkStock(orderDto);
         boolean cartFlag = false; // 카트 주문인 경우 true / 단건 주문인 경우 false
+        if(orderDto.getProductList().size()>2){
+            cartFlag=true;
+        }
 
         if(!stockCheck){ // 재고 체크
             return Boolean.FALSE;
@@ -219,7 +222,15 @@ public class OrderServiceImp implements OrderService{
             Optional<Product> product = productRepository.findById(order.getProductId());
             product.get().setProductTotalStock(product.get().getProductTotalStock()-order.getProductQty());
             product.get().setProductSoldCount(product.get().getProductSoldCount()+1);
-
+            if(cartFlag==true){ // 카트 주문일 경우
+                User userTmp = userRepository.findById(orderDto.getUserId()).get();
+                List<Cart> carts = cartRepository.findByUser(userTmp);
+                for(Cart cart : carts){
+                    if(!cart.getCartIsActivated()){ // 카트유지가 false라면 삭제
+                        cart.setCartStatus(false);
+                    }
+                }
+            }
         }
         orderRepository.findById(ordersEntity.getOrdersId()).get().setOrdersTotalPrice(totalPrice); // 총 주문액 set
         createPayment(ordersEntity.getOrdersSerial()); // 결제 생성
