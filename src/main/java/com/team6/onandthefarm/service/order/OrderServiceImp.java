@@ -247,6 +247,8 @@ public class OrderServiceImp implements OrderService{
                 matching.get(orderProduct.getSellerId()).add(orderProduct.getOrders().getOrdersId());
             }
         }
+        if(matching.size()==0)
+            return OrderSellerResponseListResponse.builder().responses(new ArrayList<>()).currentPageNum(0).totalPageNum(0).build();
         for(Long orderId : matching.get(Long.valueOf(orderSellerFindDto.getSellerId()))){
             List<OrderSellerResponse> orderResponse = new ArrayList<>();
             int totalPrice = 0;
