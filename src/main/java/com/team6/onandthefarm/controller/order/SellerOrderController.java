@@ -78,7 +78,7 @@ public class SellerOrderController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         orderSellerDetailRequest.setSellerId(sellerId);
         OrderSellerDetailDto orderSellerDetailDto = modelMapper.map(orderSellerDetailRequest , OrderSellerDetailDto.class);
-        orderSellerDetailDto.setSellerId(principal.getName());
+        orderSellerDetailDto.setSellerId(sellerId);
 
         OrderUserDetailResponse detailResponse = orderService.findSellerOrderDetail(orderSellerDetailDto);
 
