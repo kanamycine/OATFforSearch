@@ -203,7 +203,7 @@ public class SellerServiceImp implements SellerService{
             response.setProductImg(product.getProductMainImgSrc());
             response.setProductName(product.getProductName());
             response.setUserName(user.getUserName());
-            response.setUserProfileImg(null); // 추가 해야 함
+            response.setUserProfileImg(user.getUserProfileImg());
             if(productQna.getProductQnaStatus().equals("completed")){
                 String answer = productQnaAnswerRepository
                         .findByProductQna(productQna)
