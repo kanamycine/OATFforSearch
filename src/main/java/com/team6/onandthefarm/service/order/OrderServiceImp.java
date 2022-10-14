@@ -7,9 +7,11 @@ import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.order.Payment;
 import com.team6.onandthefarm.entity.order.Refund;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.order.*;
+import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
@@ -51,6 +53,8 @@ public class OrderServiceImp implements OrderService{
 
     private ProductRepository productRepository;
 
+    private ProductQnaRepository productQnaRepository;
+
     private UserRepository userRepository;
 
     private CartRepository cartRepository;
@@ -67,6 +71,7 @@ public class OrderServiceImp implements OrderService{
                            PaymentRepository paymentRepository,
                            RefundRepository refundRepository,
                            ProductRepository productRepository,
+                           ProductQnaRepository productQnaRepository,
                            UserRepository userRepository,
                            CartRepository cartRepository) {
         this.orderRepository = orderRepository;
@@ -76,6 +81,7 @@ public class OrderServiceImp implements OrderService{
         this.paymentRepository = paymentRepository;
         this.refundRepository = refundRepository;
         this.productRepository=productRepository;
+        this.productQnaRepository = productQnaRepository;
         this.userRepository=userRepository;
         this.cartRepository=cartRepository;
     }
@@ -798,6 +804,28 @@ public class OrderServiceImp implements OrderService{
             orderProduct.setOrderProductStatus("deliveryCompleted");
         }
         return Boolean.TRUE;
+    }
+
+    @Override
+    public OrdersConditionResponse findOrdersCondition(Long sellerId) {
+
+        List<Orders> beforeDelivery = orderRepository.findBeforeDeliveryOrders(sellerId);
+        List<Orders> requestRefund = orderRepository.findRequestRefundOrders(sellerId);
+        List<Orders> cancelOrders = orderRepository.findCancelOrdersOrders(sellerId);
+        List<Orders> delivering = orderRepository.findDeliveringOrders(sellerId);
+        List<Product> notSelling = productRepository.findNotSellingProduct(sellerId);
+        List<ProductQna> beforeAnswer = productQnaRepository.findBeforeAnswerProductQna(sellerId);
+
+        OrdersConditionResponse ordersConditionResponse = OrdersConditionResponse.builder()
+                .beforeDelivery(beforeDelivery.size())
+                .requestRefund(requestRefund.size())
+                .cancelOrders(cancelOrders.size())
+                .delivering(delivering.size())
+                .notSelling(notSelling.size())
+                .beforeAnswer(beforeAnswer.size())
+                .build();
+
+        return ordersConditionResponse;
     }
 
 }
