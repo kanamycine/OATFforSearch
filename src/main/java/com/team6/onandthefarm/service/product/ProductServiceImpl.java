@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
 
 		Optional<Seller> seller = sellerRepository.findById(productFormDto.getSellerId());
 
-		Long categoryId = productFormDto.getProductCategory();
+		Long categoryId = productFormDto.getCategoryId();
 		Optional<Category> category = categoryRepository.findById(categoryId);
 
 		int cnt = 0;
@@ -138,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		Optional<Product> product = productRepository.findById(productUpdateFormDto.getProductId());
-		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getProductCategoryId());
+		Optional<Category> category = categoryRepository.findById(productUpdateFormDto.getCategoryId());
 		product.get().setProductName(productUpdateFormDto.getProductName());
 		product.get().setCategory(category.get());
 		product.get().setProductPrice(productUpdateFormDto.getProductPrice());
