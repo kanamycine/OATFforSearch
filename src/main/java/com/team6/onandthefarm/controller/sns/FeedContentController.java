@@ -278,7 +278,7 @@ public class FeedContentController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PostMapping("/like")
+    @GetMapping("/like")
     @ApiOperation(value = "피드 좋아요 메서드")
     public ResponseEntity<BaseResponse> createFeedLike(@RequestParam Map<String,Long> request){
         Long userId = request.get("userId");
@@ -289,7 +289,7 @@ public class FeedContentController {
         return responseResult(result);
     }
 
-    @PostMapping("/scarp")
+    @GetMapping("/scarp")
     @ApiOperation(value = "피드 스크랩 메서드")
     public ResponseEntity<BaseResponse> createFeedScrap(@RequestParam Map<String,Long> request){
         Long userId = request.get("userId");
