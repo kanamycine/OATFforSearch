@@ -160,12 +160,20 @@ public class UserOrderController {
         RefundDto refundDto = modelMapper.map(refundRequest, RefundDto.class);
         refundDto.setUserId(userId);
         Boolean result = orderService.createCancel(refundDto);
+        if(result.booleanValue()){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.OK)
+                    .message("OK")
+                    .data(result)
+                    .build();
+            return new ResponseEntity(response,HttpStatus.OK);
+        }
         BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .message("BAD_REQUEST")
                 .data(result)
                 .build();
-        return new ResponseEntity(response,HttpStatus.OK);
+        return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/claim/refund")

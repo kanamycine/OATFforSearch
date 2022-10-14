@@ -536,6 +536,7 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean createCancel(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
+        if(!orderProduct.get().getOrderProductStatus().equals("activated")) return Boolean.FALSE;
         orderProduct.get().setOrderProductStatus("canceled"); // 취소상태
 
         // 모든 주문상품의 상태가 취소처리되면 주문상태 또한 취소상태로 바꾸는 부분
@@ -579,6 +580,7 @@ public class OrderServiceImp implements OrderService{
      */
     public Boolean createRefund(RefundDto refundDto){
         Optional<OrderProduct> orderProduct = orderProductRepository.findById(refundDto.getOrderProductId());
+        if(!orderProduct.get().getOrderProductStatus().equals("deliveryCompleted")) return Boolean.FALSE;
         orderProduct.get().setOrderProductStatus("refundRequest"); // 반품신청상태
 
         // 모든 주문상품의 상태가 환불처리되면 주문상태 또한 환불상태로 바꾸는 부분
