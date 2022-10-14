@@ -57,6 +57,8 @@ public class Product{
 
     private Integer productSoldCount;
 
+    private Integer productViewCount;
+
     public Long updateProduct(Category category, String productName, Integer productPrice,
             Integer productTotalStock, String productMainImgSrc, String productDetail,
             String productDetailShort, String productOriginPlace, String productDeliveryCompany,

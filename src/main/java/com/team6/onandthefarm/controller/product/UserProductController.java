@@ -87,7 +87,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/{product-id}")
 	@ApiOperation(value = "상품 단건 조회")
-	public ResponseEntity<ProductInfoResponse> findProductDetail(@ApiIgnore Principal principal, @PathVariable("product-id") Long productId) {
+	public ResponseEntity<ProductDetailResponse> findProductDetail(@ApiIgnore Principal principal, @PathVariable("product-id") Long productId) {
 
 		Long userId = null;
 		if (principal != null){
