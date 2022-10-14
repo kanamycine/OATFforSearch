@@ -133,9 +133,10 @@ public class UserController {
                 .userBirthday(userInfoRequest.getUserBirthday())
                 .userName(userInfoRequest.getUserName())
                 .userSex(userInfoRequest.getUserSex())
-                .profile(profile.get(0))
                 .build();
-
+        if(profile!=null){
+            userInfoDto.setProfile(profile.get(0));
+        }
         Long savedUserId = userService.updateUserInfo(userInfoDto);
         if (savedUserId != -1L) {
             response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
