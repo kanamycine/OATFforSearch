@@ -26,7 +26,7 @@ public class Seller {
     private String sellerShopName;
     private String sellerBusinessNumber;
     private String sellerRegisterDate;
-    private Boolean sellerIsActived;
+    private Boolean sellerIsActivated;
     private String role;
     private Integer sellerFollowingCount;
     private Integer sellerFollowerCount;
