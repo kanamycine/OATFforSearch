@@ -36,4 +36,7 @@ public interface OrderRepository extends CrudRepository<Orders,Long> {
     @Query("select o from Orders o where o.ordersSellerId=:sellerId and o.ordersStatus='deliveryProgress'")
     List<Orders> findDeliveringOrders(@Param("sellerId") Long sellerId);
 
+    @Query("select o from Orders o where o.ordersSellerId=:sellerId and o.ordersStatus='deliveryCompleted'")
+    List<Orders> findDeliverCompleteOrders(@Param("sellerId") Long sellerId);
+
 }

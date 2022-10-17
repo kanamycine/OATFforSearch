@@ -18,5 +18,6 @@ public class OrdersConditionResponse {
     private Integer delivering;
     private Integer notSelling;
     private Integer beforeAnswer;
-
+    private Integer sellingProducts;
+    private Integer deliverCompletes;
 }
