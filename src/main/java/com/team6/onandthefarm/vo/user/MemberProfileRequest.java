@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class MemberProfileRequest {
 	private Long memberId;
-	private Long memberRole;
+	private String memberRole;
 }
