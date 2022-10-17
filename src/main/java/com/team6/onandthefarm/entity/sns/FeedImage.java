@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Builder
 @Slf4j
@@ -21,5 +22,6 @@ public class FeedImage {
     @JoinColumn(name = "feedId")
     private Feed feed;
 
+    @Column(length=1000)
     private String feedImageSrc;
 }
