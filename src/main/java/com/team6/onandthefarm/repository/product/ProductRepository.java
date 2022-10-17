@@ -31,5 +31,8 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
 	@Query("select p from Product p where p.seller.sellerId=:sellerId and p.productStatus<>'selling'")
 	List<Product> findNotSellingProduct(@Param("sellerId") Long sellerId);
+
+	@Query("select p from Product p where p.seller.sellerId=:sellerId and p.productStatus='selling'")
+	List<Product> findSellingProduct(@Param("sellerId") Long sellerId);
 }
 

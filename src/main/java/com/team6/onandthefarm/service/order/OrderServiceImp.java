@@ -839,7 +839,9 @@ public class OrderServiceImp implements OrderService{
         List<Orders> requestRefund = orderRepository.findRequestRefundOrders(sellerId);
         List<Orders> cancelOrders = orderRepository.findCancelOrdersOrders(sellerId);
         List<Orders> delivering = orderRepository.findDeliveringOrders(sellerId);
+        List<Orders> deliverComplete = orderRepository.findDeliverCompleteOrders(sellerId);
         List<Product> notSelling = productRepository.findNotSellingProduct(sellerId);
+        List<Product> selling = productRepository.findSellingProduct(sellerId);
         List<ProductQna> beforeAnswer = productQnaRepository.findBeforeAnswerProductQna(sellerId);
 
         OrdersConditionResponse ordersConditionResponse = OrdersConditionResponse.builder()
@@ -849,6 +851,8 @@ public class OrderServiceImp implements OrderService{
                 .delivering(delivering.size())
                 .notSelling(notSelling.size())
                 .beforeAnswer(beforeAnswer.size())
+                .sellingProducts(selling.size())
+                .deliverCompletes(deliverComplete.size())
                 .build();
 
         return ordersConditionResponse;
