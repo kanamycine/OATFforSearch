@@ -562,7 +562,7 @@ public class UserServiceImp implements UserService {
 
 	public MemberProfileResponse getMemberProfile(MemberProfileDto memberProfileDto){
 		Long memberId = memberProfileDto.getMemberId();
-		Long memberRole = memberProfileDto.getMemberRole();
+		String memberRole = memberProfileDto.getMemberRole();
 
 		MemberProfileResponse memberProfileResponse = null;
 		if(memberRole.equals("user")){

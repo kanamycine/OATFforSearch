@@ -330,13 +330,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/follow/count")
+    @PostMapping("/follow/count")
     @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
     public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
             @ApiIgnore Principal principal,
             @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
 
-        if(memberFollowCountRequest == null) {
+        if(memberFollowCountRequest.getMemberId() == null) {
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
@@ -355,13 +355,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/follow/follower-list")
+    @PostMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
             @ApiIgnore Principal principal,
             @RequestBody MemberFollowerListRequest memberFollowerListRequest){
 
-        if(memberFollowerListRequest == null) {
+        if(memberFollowerListRequest.getMemberId() == null) {
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
@@ -380,13 +380,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/follow/following-list")
+    @PostMapping("/follow/following-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
             @ApiIgnore Principal principal,
             @RequestBody MemberFollowingListRequest memberFollowingListRequest){
 
-        if(memberFollowingListRequest == null) {
+        if(memberFollowingListRequest.getMemberId() == null) {
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
@@ -405,23 +405,24 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     @ApiOperation(value = "멤버의 프로필 조회")
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getUserProfile(@ApiIgnore Principal principal,
                                                                               @RequestBody MemberProfileRequest memberProfileRequest){
 
         MemberProfileDto memberProfileDto = new MemberProfileDto();
 
-        Long memberId = null;
-        if(memberProfileRequest == null) {
+        Long loginId = null;
+        String loginRole = null;
+        if(memberProfileRequest.getMemberId() == null) {
             String[] principalInfo = principal.getName().split(" ");
-            memberId = Long.parseLong(principalInfo[0]);
-            memberProfileDto.setMemberId(memberId);
-            memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
+            loginId = Long.parseLong(principalInfo[0]);
+            loginRole = principalInfo[1];
+            memberProfileDto.setMemberId(loginId);
+            memberProfileDto.setMemberRole(loginRole);
         }else{
-            ModelMapper modelMapper = new ModelMapper();
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            memberProfileDto = modelMapper.map(memberProfileRequest, MemberProfileDto.class);
+            memberProfileDto.setMemberId(memberProfileRequest.getMemberId());
+            memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
         }
 
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
