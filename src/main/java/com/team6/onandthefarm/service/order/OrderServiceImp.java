@@ -254,7 +254,11 @@ public class OrderServiceImp implements OrderService{
 
         List<OrderSellerResponseList> responseList = new ArrayList<>();
 
-        List<OrderProduct> orderProductList = orderProductRepository.findBySellerId(Long.valueOf(orderSellerFindDto.getSellerId()));
+        List<OrderProduct> orderProductList
+                = orderProductRepository.findBySellerIdAndOrderProductDateBetween(
+                        Long.valueOf(orderSellerFindDto.getSellerId()),
+                        orderSellerFindDto.getStartDate(),
+                        orderSellerFindDto.getEndDate());
 
         /*
                 sellerId : orderId
