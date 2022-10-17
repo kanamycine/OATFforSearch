@@ -159,7 +159,7 @@ public class SellerServiceImp implements SellerService{
                 .sellerZipcode(sellerDto.getZipcode())
                 .sellerRegisterDate(date)
                 .sellerShopName(sellerDto.getShopName())
-                .sellerIsActived(Boolean.TRUE)
+                .sellerIsActivated(Boolean.TRUE)
                 .role("ROLE_ADMIN")
                 .sellerFollowerCount(0)
                 .sellerFollowingCount(0)
