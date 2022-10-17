@@ -2,9 +2,7 @@ package com.team6.onandthefarm.entity.sns;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Builder
 @Slf4j
@@ -25,6 +23,7 @@ public class Feed {
 
     private String feedTitle;
 
+    @Column(length=1000)
     private String feedContent;
 
     private Integer feedViewCount;
@@ -41,7 +40,6 @@ public class Feed {
 
     private Integer feedScrapCount;
 
-    @Column(length=1000)
     private Integer feedCommentCount;
 
 }
