@@ -2,7 +2,6 @@ package com.team6.onandthefarm.entity.sns;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
 import javax.persistence.*;
 
 @Builder
