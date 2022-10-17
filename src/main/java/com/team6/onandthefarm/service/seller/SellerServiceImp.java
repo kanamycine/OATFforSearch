@@ -163,6 +163,7 @@ public class SellerServiceImp implements SellerService{
                 .role("ROLE_ADMIN")
                 .sellerFollowerCount(0)
                 .sellerFollowingCount(0)
+                .sellerProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/seller/basic_profile.png")
                 .build();
 
         seller.setSellerRegisterDate(date);
