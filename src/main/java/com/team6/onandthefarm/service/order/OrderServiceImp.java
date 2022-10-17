@@ -194,7 +194,7 @@ public class OrderServiceImp implements OrderService{
                 .ordersAddress(orderDto.getOrderAddress())
                 .ordersRequest(orderDto.getOrderRequest())
                 .ordersRecipientName(orderDto.getOrderRecipientName())
-                .ordersSerial(String.valueOf(new Date()))
+                .ordersSerial(String.valueOf((new Date()).getTime()))
                 .ordersDate(dateUtils.transDate(env.getProperty("dateutils.format")))
                 .ordersStatus("activated")
                 .user(user.get())
