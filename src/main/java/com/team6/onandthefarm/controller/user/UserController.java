@@ -426,6 +426,12 @@ public class UserController {
         }
 
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
+        if(memberProfileRequest.getMemberId() == null) {
+            memberProfileResponse.setIsModifiable(true);
+        }
+        else{
+            memberProfileResponse.setIsModifiable(false);
+        }
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)

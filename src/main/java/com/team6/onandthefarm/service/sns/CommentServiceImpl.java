@@ -58,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
             CommentDetailResponse commentDetail = CommentDetailResponse.builder()
                     .memberId(feedComment.getMemberId())
                     .memberRole(feedComment.getMemberRole())
-                    .feedCommnetId(feedComment.getFeedCommnetId())
+                    .feedCommentId(feedComment.getFeedCommnetId())
                     .feedCommentContent(feedComment.getFeedCommentContent())
                     .feedCommentCreateAt(feedComment.getFeedCommentCreateAt())
                     .feedCommentModifiedAt(feedComment.getFeedCommentModifiedAt())
@@ -71,10 +71,12 @@ public class CommentServiceImpl implements CommentService {
             if(feedComment.getMemberRole().equals("user")){
                 Optional<User> user = userRepository.findById(feedComment.getMemberId());
                 commentDetail.setMemberName(user.get().getUserName());
+                commentDetail.setMemberProfileImg(user.get().getUserProfileImg());
             }
             else if(feedComment.getMemberRole().equals("seller")){
                 Optional<Seller> seller = sellerRepository.findById(feedComment.getMemberId());
                 commentDetail.setMemberName(seller.get().getSellerName());
+                commentDetail.setMemberProfileImg(seller.get().getSellerProfileImg());
             }
 
             commentDetailList.add(commentDetail);

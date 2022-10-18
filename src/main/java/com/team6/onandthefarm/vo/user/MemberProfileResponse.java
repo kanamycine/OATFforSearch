@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class MemberProfileResponse {
 	private String memberName;
 	private String memberProfileImage;
+	private Boolean isModifiable;
 }
