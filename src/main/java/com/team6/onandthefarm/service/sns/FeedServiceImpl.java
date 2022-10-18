@@ -291,6 +291,20 @@ public class FeedServiceImpl implements FeedService {
 			if(savedFeed.get().getMemberId() == memberId){
 				feedDetailResponse.setIsModifiable(true);
 			}
+
+			if(savedFeed.get().getMemberRole().equals("user")){
+				Optional<User> savedUser = userRepository.findById(savedFeed.get().getMemberId());
+				feedDetailResponse.setMemberId(savedFeed.get().getMemberId());
+				feedDetailResponse.setMemberRole(savedFeed.get().getMemberRole());
+				feedDetailResponse.setMemberProfileImg(savedUser.get().getUserProfileImg());
+			}
+			else{
+				Optional<Seller> savedSeller = sellerRepository.findById(savedFeed.get().getMemberId());
+				feedDetailResponse.setMemberId(savedFeed.get().getMemberId());
+				feedDetailResponse.setMemberRole(savedFeed.get().getMemberRole());
+				feedDetailResponse.setMemberProfileImg(savedSeller.get().getSellerProfileImg());
+			}
+
 		}
 
 		return feedDetailResponse;

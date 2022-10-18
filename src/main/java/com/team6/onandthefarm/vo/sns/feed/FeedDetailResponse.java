@@ -14,6 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 public class FeedDetailResponse {
 
+    private Long memberId;
+
+    private String memberRole;
+
+    private String memberProfileImg;
+
     private Long feedId;
 
     private String feedTitle;

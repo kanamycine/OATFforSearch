@@ -16,7 +16,9 @@ public class CommentDetailResponse {
     
     private String memberName;
 
-    private Long feedCommnetId;
+    private String memberProfileImg;
+
+    private Long feedCommentId;
 
     private String feedCommentContent;
 
