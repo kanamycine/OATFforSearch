@@ -276,22 +276,52 @@ public class FeedContentController {
 
     @GetMapping("/like")
     @ApiOperation(value = "피드 좋아요 메서드")
-    public ResponseEntity<BaseResponse> createFeedLike(@RequestParam Map<String,Long> request){
-        Long userId = request.get("userId");
+    public ResponseEntity<BaseResponse> createFeedLike(
+            @ApiIgnore Principal principal,@RequestParam Map<String,Long> request){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
         Long feedId = request.get("feedId");
 
-        Boolean result = feedService.createFeedLike(feedId,userId);
+        Boolean result = feedService.createFeedLike(feedId,memberId);
+
+        return responseResult(result);
+    }
+
+    @GetMapping("/unlike")
+    @ApiOperation(value = "피드 좋아요 취소 메서드")
+    public ResponseEntity<BaseResponse> deleteFeedLike(
+            @ApiIgnore Principal principal,@RequestParam Map<String,Long> request){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        Long feedId = request.get("feedId");
+
+        Boolean result = feedService.deleteFeedLike(feedId,memberId);
 
         return responseResult(result);
     }
 
     @GetMapping("/scarp")
     @ApiOperation(value = "피드 스크랩 메서드")
-    public ResponseEntity<BaseResponse> createFeedScrap(@RequestParam Map<String,Long> request){
-        Long userId = request.get("userId");
+    public ResponseEntity<BaseResponse> createFeedScrap(
+            @ApiIgnore Principal principal,@RequestParam Map<String,Long> request){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
         Long feedId = request.get("feedId");
 
-        Boolean result = feedService.createFeedScrap(feedId,userId);
+        Boolean result = feedService.createFeedScrap(feedId,memberId);
+
+        return responseResult(result);
+    }
+
+    @GetMapping("/unscarp")
+    @ApiOperation(value = "피드 스크랩 취소 메서드")
+    public ResponseEntity<BaseResponse> deleteFeedScrap(
+            @ApiIgnore Principal principal,@RequestParam Map<String,Long> request){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+        Long feedId = request.get("feedId");
+
+        Boolean result = feedService.deleteFeedScrap(feedId,memberId);
 
         return responseResult(result);
     }

@@ -31,7 +31,11 @@ public interface FeedService {
 
     Boolean createFeedLike(Long feedId, Long userId);
 
+    Boolean deleteFeedLike(Long feedId, Long memberId);
+
     Boolean createFeedScrap(Long feedId, Long userId);
+
+    Boolean deleteFeedScrap(Long feedId, Long memberId);
 
     List<FeedResponse> findByRecentFeedList(Integer pageNumer);
 
