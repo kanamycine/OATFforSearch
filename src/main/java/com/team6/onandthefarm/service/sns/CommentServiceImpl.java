@@ -62,6 +62,7 @@ public class CommentServiceImpl implements CommentService {
                     .feedCommentContent(feedComment.getFeedCommentContent())
                     .feedCommentCreateAt(feedComment.getFeedCommentCreateAt())
                     .feedCommentModifiedAt(feedComment.getFeedCommentModifiedAt())
+                    .isModifiable(false)
                     .build();
 
             if(feedComment.getMemberId() == memberId){
