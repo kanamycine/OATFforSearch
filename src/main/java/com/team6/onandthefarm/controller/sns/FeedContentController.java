@@ -212,8 +212,8 @@ public class FeedContentController {
 
     @GetMapping("/list")
     @ApiOperation(value = "메인 피드 최신순 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@RequestParam Integer pageNumer){
-        List<FeedResponse> responses = feedService.findByRecentFeedList(pageNumer);
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@RequestParam Integer pageNumber){
+        List<FeedResponse> responses = feedService.findByRecentFeedList(pageNumber);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)

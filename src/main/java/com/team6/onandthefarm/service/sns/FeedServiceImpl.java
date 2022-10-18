@@ -512,7 +512,7 @@ public class FeedServiceImpl implements FeedService {
 						.feedShareCount(feed.getFeedShareCount())
 						.feedViewCount(feed.getFeedViewCount())
 						.memberId(feed.getMemberId())
-						.memberRole(Integer.valueOf(feed.getMemberRole()))
+						.memberRole(feed.getMemberRole())
             			.feedContent(feed.getFeedContent())
 						.build();
 
@@ -540,7 +540,7 @@ public class FeedServiceImpl implements FeedService {
 					.feedShareCount(feed.getFeedShareCount())
 					.feedViewCount(feed.getFeedViewCount())
 					.memberId(feed.getMemberId())
-					.memberRole(Integer.valueOf(feed.getMemberRole()))
+					.memberRole(feed.getMemberRole())
           .feedContent(feed.getFeedContent())
 					.build();
 
