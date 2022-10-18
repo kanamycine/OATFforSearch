@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class ProfileMainScrapResponse {
 	private Long feedId;
-	private FeedImage feedImg;
+	private Long feedImageId;
+	private String feedImageSrc;
 	private String memberName;
 }

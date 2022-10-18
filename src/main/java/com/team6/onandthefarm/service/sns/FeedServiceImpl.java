@@ -606,7 +606,8 @@ public class FeedServiceImpl implements FeedService {
 			FeedImage feedThumbnailImage = feedImageRepository.findByFeed(feed).get(0);
 			ProfileMainFeedResponse profileMainFeedResponse = ProfileMainFeedResponse.builder()
 					.feedId(feed.getFeedId())
-					.feedImg(feedThumbnailImage)
+					.feedImageId(feedThumbnailImage.getFeedImageId())
+					.feedImageSrc(feedThumbnailImage.getFeedImageSrc())
 					.build();
 			responseList.add(profileMainFeedResponse);
 		}
@@ -619,9 +620,11 @@ public class FeedServiceImpl implements FeedService {
 		List<ProfileMainScrapResponse> responseList = new ArrayList<>();
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberId);
 		for (Scrap scrap : scrapList) {
+			FeedImage feedImage = feedImageRepository.findByFeed(scrap.getFeed()).get(0);
 			ProfileMainScrapResponse profileMainScrapResponse = ProfileMainScrapResponse.builder()
 					.feedId(scrap.getFeed().getFeedId())
-					.feedImg(feedImageRepository.findByFeed(scrap.getFeed()).get(0))
+					.feedImageId(feedImage.getFeedImageId())
+					.feedImageSrc(feedImage.getFeedImageSrc())
 					.build();
 
 			Optional<Feed> savedFeed = feedRepository.findById(scrap.getFeed().getFeedId());
