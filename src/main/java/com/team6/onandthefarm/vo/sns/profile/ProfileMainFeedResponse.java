@@ -8,5 +8,7 @@ import lombok.Data;
 @Builder
 public class ProfileMainFeedResponse {
 	private Long feedId;
-	private FeedImage feedImg;
+	private Long feedImageId;
+	private String feedImageSrc;
+	private String memberName;
 }
