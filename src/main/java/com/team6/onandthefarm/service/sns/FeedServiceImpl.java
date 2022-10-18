@@ -394,7 +394,7 @@ public class FeedServiceImpl implements FeedService {
 
 		Optional<Feed> feed = feedRepository.findById(feedId);
 		FeedLike feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(feedLike!=null){ // 좋아요가 없는 경우 BAD REQUEST
+		if(feedLike==null){ // 좋아요가 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
 		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
@@ -422,8 +422,9 @@ public class FeedServiceImpl implements FeedService {
 			if (result == null) {
 				return Boolean.FALSE;
 			}
+			return Boolean.TRUE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 	public Boolean createFeedScrap(Long feedId, Long memberId) {
@@ -439,14 +440,15 @@ public class FeedServiceImpl implements FeedService {
 			if (result == null) {
 				return Boolean.FALSE;
 			}
+			return Boolean.TRUE;
 		}
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 	}
 
 	public Boolean deleteFeedScrap(Long feedId, Long memberId) {
 		Optional<Feed> feed = feedRepository.findById(feedId);
 		Scrap scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(scrap!=null){ // 스크랩이 없는 경우 BAD REQUEST
+		if(scrap==null){ // 스크랩이 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
 		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
