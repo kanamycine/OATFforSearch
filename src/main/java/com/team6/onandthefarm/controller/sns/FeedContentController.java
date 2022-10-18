@@ -212,8 +212,13 @@ public class FeedContentController {
 
     @GetMapping("/tag")
     @ApiOperation("tag 별로 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFeedTag(@RequestParam String feedTagName, @RequestParam Integer pageNumber){
-        List<FeedResponse> responses = feedService.findByFeedTag(feedTagName, pageNumber);
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFeedTag(@ApiIgnore Principal principal,
+                                                                          @RequestParam String feedTagName,
+                                                                          @RequestParam Integer pageNumber){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
+        List<FeedResponse> responses = feedService.findByFeedTag(feedTagName, pageNumber, memberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -226,8 +231,12 @@ public class FeedContentController {
 
     @GetMapping("/list")
     @ApiOperation(value = "메인 피드 최신순 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@RequestParam Integer pageNumber){
-        List<FeedResponse> responses = feedService.findByRecentFeedList(pageNumber);
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@ApiIgnore Principal principal,
+                                                                                 @RequestParam Integer pageNumber){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
+        List<FeedResponse> responses = feedService.findByRecentFeedList(pageNumber, memberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -240,10 +249,14 @@ public class FeedContentController {
 
     @GetMapping("/list/like")
     @ApiOperation(value = "메인 피드 좋아요순 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByLikeFeedList(@RequestParam Map<String,String> request){
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByLikeFeedList(@ApiIgnore Principal principal,
+                                                                               @RequestParam Map<String,String> request){
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
         Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
 
-        List<FeedResponse> responses = feedService.findByLikeFeedList(pageNumber);
+        List<FeedResponse> responses = feedService.findByLikeFeedList(pageNumber, memberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -275,10 +288,15 @@ public class FeedContentController {
     @GetMapping("/list/view-count")
     @ApiOperation(value = "메인 피드 조회수순 조회")
     public ResponseEntity<BaseResponse<List<FeedResponse>>> findByViewCountFeedList(
+            @ApiIgnore Principal principal,
             @RequestParam Map<String,String> request){
+
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
+
         Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
 
-        List<FeedResponse> responses = feedService.findByViewCountFeedList(pageNumber);
+        List<FeedResponse> responses = feedService.findByViewCountFeedList(pageNumber, memberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)

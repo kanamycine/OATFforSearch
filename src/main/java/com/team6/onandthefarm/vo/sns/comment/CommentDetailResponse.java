@@ -28,7 +28,4 @@ public class CommentDetailResponse {
 
     private Boolean isModifiable;
 
-    public CommentDetailResponse(){
-        this.isModifiable = false;
-    }
 }

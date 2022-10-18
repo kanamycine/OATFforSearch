@@ -242,12 +242,13 @@ public class FeedServiceImpl implements FeedService {
 	@Override
 	public FeedDetailResponse findFeedDetail(Long feedId, Long memberId) {
 
-		FeedDetailResponse feedDetailResponse = null;
+		FeedDetailResponse feedDetailResponse = new FeedDetailResponse();
 
 		Optional<Feed> savedFeed = feedRepository.findByIdAndStatus(feedId);
 		if (savedFeed.isPresent()) {
 			Feed feedEntity = savedFeed.get();
 
+			// feed image 및 image 별 product
 			List<ImageInfo> imageInfoList = new ArrayList<>();
 			List<ImageProductInfo> imageProductInfoList = new ArrayList<>();
 
@@ -270,6 +271,7 @@ public class FeedServiceImpl implements FeedService {
 				}
 			}
 
+			// feed 별 tag
 			List<FeedTag> feedTagList = feedTagRepository.findByFeed(feedEntity);
 
 			feedDetailResponse = FeedDetailResponse.builder()
@@ -288,20 +290,34 @@ public class FeedServiceImpl implements FeedService {
 					.feedTag(feedTagList)
 					.build();
 
+			// feed 작성자와 로그인한 사용자가 같은지 여부
 			if(savedFeed.get().getMemberId() == memberId){
 				feedDetailResponse.setIsModifiable(true);
 			}
 
+			// feed에 대한 스크랩, 좋아요 여부
+			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(savedFeed.get(), memberId);
+			if(feedLike.isPresent()){
+				feedDetailResponse.setFeedLikeStatus(true);
+			}
+			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(savedFeed.get(), memberId);
+			if(scrap.isPresent()){
+				feedDetailResponse.setScrapStatus(true);
+			}
+
+			// feed 작성자의 이름과 프로필 이미지
 			if(savedFeed.get().getMemberRole().equals("user")){
 				Optional<User> savedUser = userRepository.findById(savedFeed.get().getMemberId());
 				feedDetailResponse.setMemberId(savedFeed.get().getMemberId());
 				feedDetailResponse.setMemberRole(savedFeed.get().getMemberRole());
+				feedDetailResponse.setMemberName(savedUser.get().getUserName());
 				feedDetailResponse.setMemberProfileImg(savedUser.get().getUserProfileImg());
 			}
 			else{
 				Optional<Seller> savedSeller = sellerRepository.findById(savedFeed.get().getMemberId());
 				feedDetailResponse.setMemberId(savedFeed.get().getMemberId());
 				feedDetailResponse.setMemberRole(savedFeed.get().getMemberRole());
+				feedDetailResponse.setMemberName(savedSeller.get().getSellerName());
 				feedDetailResponse.setMemberProfileImg(savedSeller.get().getSellerProfileImg());
 			}
 
@@ -409,7 +425,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return List<FeedResponse>
 	 */
 	@Override
-	public List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber) {
+	public List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber, Long memberId) {
 		List<FeedTag> feedTagList = feedTagRepository.findByFeedTagName(feedTagName);
 		List<Feed> feedList = new ArrayList<>();
 		for(FeedTag feedTag : feedTagList){
@@ -421,7 +437,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, memberId);
 	}
 
 	/**
@@ -430,15 +446,16 @@ public class FeedServiceImpl implements FeedService {
 	 * @param memberId
 	 * @return
 	 */
+	@Override
 	public Boolean deleteFeedLike(Long feedId, Long memberId) {
 
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		FeedLike feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(feedLike==null){ // 좋아요가 없는 경우 BAD REQUEST
+		Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(!feedLike.isPresent()){ // 좋아요가 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
 		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
-		feedLikeRepository.delete(feedLike);
+		feedLikeRepository.delete(feedLike.get());
 		return Boolean.TRUE;
 	}
 
@@ -448,11 +465,12 @@ public class FeedServiceImpl implements FeedService {
 	 * @param memberId
 	 * @return
 	 */
+	@Override
 	public Boolean createFeedLike(Long feedId, Long memberId) {
 
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		FeedLike feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(feedLike==null){ // 좋아요가 없는 경우만 좋아요 하게 함
+		Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(!feedLike.isPresent()){ // 좋아요가 없는 경우만 좋아요 하게 함
 			feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() + 1);
 			FeedLike newFeedLike = FeedLike.builder()
 					.feed(feed.get())
@@ -467,10 +485,11 @@ public class FeedServiceImpl implements FeedService {
 		return Boolean.FALSE;
 	}
 
+	@Override
 	public Boolean createFeedScrap(Long feedId, Long memberId) {
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		Scrap scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(scrap==null){ // 스크랩이 없는 경우만 좋아요 하게 함
+		Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(!scrap.isPresent()){ // 스크랩이 없는 경우만 좋아요 하게 함
 			feed.get().setFeedScrapCount(feed.get().getFeedScrapCount() + 1);
 			Scrap newScrap = Scrap.builder()
 					.feed(feed.get())
@@ -485,14 +504,15 @@ public class FeedServiceImpl implements FeedService {
 		return Boolean.FALSE;
 	}
 
+	@Override
 	public Boolean deleteFeedScrap(Long feedId, Long memberId) {
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		Scrap scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
-		if(scrap==null){ // 스크랩이 없는 경우 BAD REQUEST
+		Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(!scrap.isPresent()){ // 스크랩이 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
 		feed.get().setFeedLikeCount(feed.get().getFeedScrapCount() - 1);
-		scrapRepository.delete(scrap);
+		scrapRepository.delete(scrap.get());
 		return Boolean.TRUE;
 	}
 
@@ -501,7 +521,8 @@ public class FeedServiceImpl implements FeedService {
 	 * @param pageNumer
 	 * @return
 	 */
-	public List<FeedResponse> findByRecentFeedList(Integer pageNumer) {
+	@Override
+	public List<FeedResponse> findByRecentFeedList(Integer pageNumer, Long memberId) {
 		List<Feed> feedList = new ArrayList<>();
 		feedRepository.findAll().forEach(feedList::add);
 		feedList.sort((o1, o2) -> {
@@ -513,7 +534,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, memberId);
 	}
 
 	/**
@@ -521,14 +542,15 @@ public class FeedServiceImpl implements FeedService {
 	 * @param pageNumber
 	 * @return
 	 */
-	public List<FeedResponse> findByLikeFeedList(Integer pageNumber) {
+	@Override
+	public List<FeedResponse> findByLikeFeedList(Integer pageNumber, Long memberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedLikeCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, memberId);
 	}
 
 	/**
@@ -537,6 +559,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @param pageNumber
 	 * @return
 	 */
+	@Override
 	public List<FeedResponse> findByFollowFeedList(Long memberId, Integer pageNumber) {
 		List<Feed> feedList = new ArrayList<>();
 
@@ -551,7 +574,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, memberId);
 	}
 
 	/**
@@ -559,14 +582,15 @@ public class FeedServiceImpl implements FeedService {
 	 * @param pageNumber
 	 * @return
 	 */
-	public List<FeedResponse> findByViewCountFeedList(Integer pageNumber) {
+	@Override
+	public List<FeedResponse> findByViewCountFeedList(Integer pageNumber, Long memberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedViewCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, memberId);
 	}
 
 	/**
@@ -576,7 +600,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @param feedList
 	 * @return
 	 */
-	public List<FeedResponse> getResponses(int size, int startIndex, List<Feed> feedList) {
+	public List<FeedResponse> getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
 		List<FeedResponse> responseList = new ArrayList<>();
 		if (size < startIndex + pageContentNumber) {
 			for (Feed feed : feedList.subList(startIndex, size)) {
@@ -594,12 +618,29 @@ public class FeedServiceImpl implements FeedService {
 							.feedContent(feed.getFeedContent())
 							.build();
 
+					// feed 작성자와 로그인한 사용자가 같은지 여부
+					if(feed.getMemberId() == memberId){
+						response.setIsModifiable(true);
+					}
+
+					// feed에 대한 스크랩, 좋아요 여부
+					Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, memberId);
+					if(feedLike.isPresent()){
+						response.setFeedLikeStatus(true);
+					}
+					Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, memberId);
+					if(scrap.isPresent()){
+						response.setScrapStatus(true);
+					}
+
 					if (feed.getMemberRole().equals("user")) { // 유저
 						Optional<User> user = userRepository.findById(feed.getMemberId());
 						response.setMemberName(user.get().getUserName());
+						response.setMemberProfileImg(user.get().getUserProfileImg());
 					} else if (feed.getMemberRole().equals("seller")) { // 셀러
 						Optional<Seller> seller = sellerRepository.findById(feed.getMemberId());
 						response.setMemberName(seller.get().getSellerName());
+						response.setMemberProfileImg(seller.get().getSellerProfileImg());
 					}
 					List<FeedImage> feedImage = feedImageRepository.findByFeed(feed);
 					response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
@@ -620,15 +661,17 @@ public class FeedServiceImpl implements FeedService {
 					.feedViewCount(feed.getFeedViewCount())
 					.memberId(feed.getMemberId())
 					.memberRole(feed.getMemberRole())
-          .feedContent(feed.getFeedContent())
+          			.feedContent(feed.getFeedContent())
 					.build();
 
 			if (feed.getMemberRole().equals("user")) { // 유저
 				Optional<User> user = userRepository.findById(feed.getMemberId());
 				response.setMemberName(user.get().getUserName());
+				response.setMemberProfileImg(user.get().getUserProfileImg());
 			} else if (feed.getMemberRole().equals("seller")) { // 셀러
 				Optional<Seller> seller = sellerRepository.findById(feed.getMemberId());
 				response.setMemberName(seller.get().getSellerName());
+				response.setMemberProfileImg(seller.get().getSellerProfileImg());
 			}
 			List<FeedImage> feedImage = feedImageRepository.findByFeed(feed);
 			response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
@@ -701,6 +744,7 @@ public class FeedServiceImpl implements FeedService {
 		return responseList;
 	}
 
+	@Override
 	public List<FeedResponse> findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
 		List<Feed> feedList = feedRepository.findFeedListByMemberId(profileFeedDto.getMemberId());
 
@@ -708,8 +752,10 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
 	}
+
+	@Override
 	public List<FeedResponse> findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
 
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(profileFeedDto.getMemberId());
@@ -722,7 +768,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList);
+		return getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
 	}
 
 	@Override

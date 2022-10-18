@@ -7,10 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ScrapRepository extends CrudRepository<Scrap,Long> {
 	@Query("select s from Scrap s where s.memberId =:memberId")
 	List<Scrap> findScrapListByMemberId(@Param("memberId") Long memberId);
 
-	Scrap findByFeedAndMemberId(Feed feed, Long memberId);
+	Optional<Scrap> findByFeedAndMemberId(Feed feed, Long memberId);
 }

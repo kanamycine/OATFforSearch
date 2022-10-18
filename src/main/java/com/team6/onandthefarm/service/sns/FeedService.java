@@ -29,7 +29,7 @@ public interface FeedService {
 
     Boolean upShareCount(Long feedId);
 
-    List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber);
+    List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber, Long memberId);
 
     Boolean createFeedLike(Long feedId, Long userId);
 
@@ -39,13 +39,13 @@ public interface FeedService {
 
     Boolean deleteFeedScrap(Long feedId, Long memberId);
 
-    List<FeedResponse> findByRecentFeedList(Integer pageNumer);
+    List<FeedResponse> findByRecentFeedList(Integer pageNumer, Long memberId);
 
-    List<FeedResponse> findByLikeFeedList(Integer pageNumber);
+    List<FeedResponse> findByLikeFeedList(Integer pageNumber, Long memberId);
 
     List<FeedResponse> findByFollowFeedList(Long memberId,Integer pageNumber);
 
-    List<FeedResponse> findByViewCountFeedList(Integer pageNumber);
+    List<FeedResponse> findByViewCountFeedList(Integer pageNumber, Long memberId);
 
     List<ProfileMainFeedResponse> findByMemberFeedList(ProfileMainFeedDto profileMainFeedDto);
 
