@@ -538,31 +538,32 @@ public class FeedServiceImpl implements FeedService {
 		List<FeedResponse> responseList = new ArrayList<>();
 		if (size < startIndex + pageContentNumber) {
 			for (Feed feed : feedList.subList(startIndex, size)) {
+				if(feed != null) {
+					FeedResponse response = FeedResponse.builder()
+							.feedTitle(feed.getFeedTitle())
+							.feedId(feed.getFeedId())
+							.feedCommentCount(feed.getFeedCommentCount())
+							.feedLikeCount(feed.getFeedLikeCount())
+							.feedScrapCount(feed.getFeedScrapCount())
+							.feedShareCount(feed.getFeedShareCount())
+							.feedViewCount(feed.getFeedViewCount())
+							.memberId(feed.getMemberId())
+							.memberRole(feed.getMemberRole())
+							.feedContent(feed.getFeedContent())
+							.build();
 
-				FeedResponse response = FeedResponse.builder()
-						.feedTitle(feed.getFeedTitle())
-						.feedId(feed.getFeedId())
-						.feedCommentCount(feed.getFeedCommentCount())
-						.feedLikeCount(feed.getFeedLikeCount())
-						.feedScrapCount(feed.getFeedScrapCount())
-						.feedShareCount(feed.getFeedShareCount())
-						.feedViewCount(feed.getFeedViewCount())
-						.memberId(feed.getMemberId())
-						.memberRole(feed.getMemberRole())
-            			.feedContent(feed.getFeedContent())
-						.build();
+					if (feed.getMemberRole().equals("user")) { // 유저
+						Optional<User> user = userRepository.findById(feed.getMemberId());
+						response.setMemberName(user.get().getUserName());
+					} else if (feed.getMemberRole().equals("seller")) { // 셀러
+						Optional<Seller> seller = sellerRepository.findById(feed.getMemberId());
+						response.setMemberName(seller.get().getSellerName());
+					}
+					List<FeedImage> feedImage = feedImageRepository.findByFeed(feed);
+					response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
 
-				if (feed.getMemberRole().equals("user")) { // 유저
-					Optional<User> user = userRepository.findById(feed.getMemberId());
-					response.setMemberName(user.get().getUserName());
-				} else if (feed.getMemberRole().equals("seller")) { // 셀러
-					Optional<Seller> seller = sellerRepository.findById(feed.getMemberId());
-					response.setMemberName(seller.get().getSellerName());
+					responseList.add(response);
 				}
-				List<FeedImage> feedImage = feedImageRepository.findByFeed(feed);
-				response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
-				
-				responseList.add(response);
 			}
 			return responseList;
 		}
