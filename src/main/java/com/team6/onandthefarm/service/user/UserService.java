@@ -50,7 +50,7 @@ public interface UserService {
 
     Long cancelFollowList(MemberFollowingDto memberFollowingDto);
 
-    MemberFollowCountResponse getFollowingCount(MemberFollowCountRequest memberFollowCountRequest);
+//    MemberFollowCountResponse getFollowingCount(MemberFollowCountRequest memberFollowCountRequest);
 
     List<MemberFollowerListResponse> getFollowerList(MemberFollowerListRequest memberFollowerListRequest);
 

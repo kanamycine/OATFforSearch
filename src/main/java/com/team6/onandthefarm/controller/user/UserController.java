@@ -330,30 +330,30 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/follow/count")
-    @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
-    public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
-            @ApiIgnore Principal principal,
-            @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
-
-        if(memberFollowCountRequest.getMemberId() == null) {
-            String[] principalInfo = principal.getName().split(" ");
-            Long memberId = Long.parseLong(principalInfo[0]);
-            String memberRole = principalInfo[1];
-            memberFollowCountRequest.setMemberId(memberId);
-            memberFollowCountRequest.setMemberRole(memberRole);
-        }
-
-        MemberFollowCountResponse followCount = userService.getFollowingCount(memberFollowCountRequest);
-
-        BaseResponse response = BaseResponse.builder()
-                .httpStatus(HttpStatus.OK)
-                .message("OK")
-                .data(followCount)
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @PostMapping("/follow/count")
+//    @ApiOperation(value = "멤버의 팔로잉/팔로워 수 조회")
+//    public ResponseEntity<BaseResponse<MemberFollowCountResponse>> getFollowCount(
+//            @ApiIgnore Principal principal,
+//            @RequestBody MemberFollowCountRequest memberFollowCountRequest) {
+//
+//        if(memberFollowCountRequest.getMemberId() == null) {
+//            String[] principalInfo = principal.getName().split(" ");
+//            Long memberId = Long.parseLong(principalInfo[0]);
+//            String memberRole = principalInfo[1];
+//            memberFollowCountRequest.setMemberId(memberId);
+//            memberFollowCountRequest.setMemberRole(memberRole);
+//        }
+//
+//        MemberFollowCountResponse followCount = userService.getFollowingCount(memberFollowCountRequest);
+//
+//        BaseResponse response = BaseResponse.builder()
+//                .httpStatus(HttpStatus.OK)
+//                .message("OK")
+//                .data(followCount)
+//                .build();
+//
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @PostMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
