@@ -18,6 +18,8 @@ public class FeedDetailResponse {
 
     private String memberRole;
 
+    private String memberName;
+
     private String memberProfileImg;
 
     private Long feedId;
@@ -46,9 +48,15 @@ public class FeedDetailResponse {
 
     private List<FeedTag> feedTag;
 
+    private Boolean feedLikeStatus;
+
+    private Boolean scrapStatus;
+
     private Boolean isModifiable;
 
     public FeedDetailResponse(){
+        this.feedLikeStatus = false;
+        this.scrapStatus = false;
         this.isModifiable = false;
     }
 

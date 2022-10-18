@@ -5,7 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class FeedResponse {
     private Long feedId;
@@ -15,6 +14,8 @@ public class FeedResponse {
     private String memberRole;
 
     private String memberName;
+
+    private String memberProfileImg;
 
     private String feedImageSrc;
 
@@ -31,5 +32,17 @@ public class FeedResponse {
     private Integer feedCommentCount;
 
     private String feedContent;
+
+    private Boolean feedLikeStatus;
+
+    private Boolean scrapStatus;
+
+    private Boolean isModifiable;
+
+    public FeedResponse(){
+        this.feedLikeStatus = false;
+        this.scrapStatus = false;
+        this.isModifiable = false;
+    }
 
 }
