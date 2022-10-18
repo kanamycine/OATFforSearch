@@ -388,6 +388,11 @@ public class FeedServiceImpl implements FeedService {
 		return false;
 	}
 
+	/**
+	 * 피드 공유수 증가하는 메서드
+	 * @param feedId
+	 * @return Boolean
+	 */
 	@Override
 	public Boolean upShareCount(Long feedId) {
 		Optional<Feed> savedFeed = feedRepository.findById(feedId);
@@ -396,6 +401,27 @@ public class FeedServiceImpl implements FeedService {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 태그 별로 피드 조회하는 메서드
+	 * @param feedTagName, pageNumber
+	 * @return List<FeedResponse>
+	 */
+	@Override
+	public List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber) {
+		List<FeedTag> feedTagList = feedTagRepository.findByFeedTagName(feedTagName);
+		List<Feed> feedList = new ArrayList<>();
+		for(FeedTag feedTag : feedTagList){
+			Optional<Feed> feed = feedRepository.findById(feedTag.getFeed().getFeedId());
+			feedList.add(feed.get());
+		}
+
+		int startIndex = pageNumber * pageContentNumber;
+
+		int size = feedList.size();
+
+		return getResponses(size, startIndex, feedList);
 	}
 
 	/**
@@ -465,7 +491,7 @@ public class FeedServiceImpl implements FeedService {
 		if(scrap==null){ // 스크랩이 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
-		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
+		feed.get().setFeedLikeCount(feed.get().getFeedScrapCount() - 1);
 		scrapRepository.delete(scrap);
 		return Boolean.TRUE;
 	}
