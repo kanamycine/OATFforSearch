@@ -385,36 +385,72 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	/**
-	 * 피드 좋아요 메서드
+	 * 피드 좋아요 취소 메서드
 	 * @param feedId
-	 * @param userId
+	 * @param memberId
 	 * @return
 	 */
-	public Boolean createFeedLike(Long feedId, Long userId) {
+	public Boolean deleteFeedLike(Long feedId, Long memberId) {
+
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() + 1);
-		FeedLike feedLike = FeedLike.builder()
-				.feed(feed.get())
-				.memberId(userId)
-				.build();
-		FeedLike result = feedLikeRepository.save(feedLike);
-		if (result == null) {
+		FeedLike feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(feedLike!=null){ // 좋아요가 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
+		}
+		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
+		feedLikeRepository.delete(feedLike);
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * 피드 좋아요 메서드
+	 * @param feedId
+	 * @param memberId
+	 * @return
+	 */
+	public Boolean createFeedLike(Long feedId, Long memberId) {
+
+		Optional<Feed> feed = feedRepository.findById(feedId);
+		FeedLike feedLike = feedLikeRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(feedLike==null){ // 좋아요가 없는 경우만 좋아요 하게 함
+			feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() + 1);
+			FeedLike newFeedLike = FeedLike.builder()
+					.feed(feed.get())
+					.memberId(memberId)
+					.build();
+			FeedLike result = feedLikeRepository.save(newFeedLike);
+			if (result == null) {
+				return Boolean.FALSE;
+			}
 		}
 		return Boolean.TRUE;
 	}
 
-	public Boolean createFeedScrap(Long feedId, Long userId) {
+	public Boolean createFeedScrap(Long feedId, Long memberId) {
 		Optional<Feed> feed = feedRepository.findById(feedId);
-		feed.get().setFeedScrapCount(feed.get().getFeedScrapCount() + 1);
-		Scrap scrap = Scrap.builder()
-				.feed(feed.get())
-				.memberId(userId)
-				.build();
-		Scrap result = scrapRepository.save(scrap);
-		if (result == null) {
+		Scrap scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(scrap==null){ // 스크랩이 없는 경우만 좋아요 하게 함
+			feed.get().setFeedScrapCount(feed.get().getFeedScrapCount() + 1);
+			Scrap newScrap = Scrap.builder()
+					.feed(feed.get())
+					.memberId(memberId)
+					.build();
+			Scrap result = scrapRepository.save(newScrap);
+			if (result == null) {
+				return Boolean.FALSE;
+			}
+		}
+		return Boolean.TRUE;
+	}
+
+	public Boolean deleteFeedScrap(Long feedId, Long memberId) {
+		Optional<Feed> feed = feedRepository.findById(feedId);
+		Scrap scrap = scrapRepository.findByFeedAndMemberId(feed.get(),memberId);
+		if(scrap!=null){ // 스크랩이 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
+		feed.get().setFeedLikeCount(feed.get().getFeedLikeCount() - 1);
+		scrapRepository.delete(scrap);
 		return Boolean.TRUE;
 	}
 
