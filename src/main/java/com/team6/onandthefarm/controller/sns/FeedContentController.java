@@ -226,8 +226,8 @@ public class FeedContentController {
 
     @GetMapping("/list/like")
     @ApiOperation(value = "메인 피드 좋아요순 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByLikeFeedList(@RequestParam Map<String,Integer> request){
-        Integer pageNumber = request.get("pageNumber");
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByLikeFeedList(@RequestParam Map<String,String> request){
+        Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
 
         List<FeedResponse> responses = feedService.findByLikeFeedList(pageNumber);
 
@@ -242,10 +242,11 @@ public class FeedContentController {
 
     @GetMapping("/list/follow")
     @ApiOperation(value = "메인 피드 팔로우 조회")
-    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFollowFeedList(
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFollowFeedList(@ApiIgnore Principal principal,
             @RequestParam Map<String,String> request){
         Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
-        Long memberId = Long.valueOf(request.get("memberId"));
+        String[] principalInfo = principal.getName().split(" ");
+        Long memberId = Long.parseLong(principalInfo[0]);
         List<FeedResponse> responses = feedService.findByFollowFeedList(memberId,pageNumber);
 
         BaseResponse response = BaseResponse.builder()
