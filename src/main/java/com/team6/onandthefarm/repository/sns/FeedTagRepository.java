@@ -9,4 +9,6 @@ import java.util.List;
 public interface FeedTagRepository extends JpaRepository<FeedTag, Long> {
 
     List<FeedTag> findByFeed(Feed feed);
+
+    List<FeedTag> findByFeedTagName(String feedTagName);
 }

@@ -29,6 +29,8 @@ public interface FeedService {
 
     Boolean upShareCount(Long feedId);
 
+    List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber);
+
     Boolean createFeedLike(Long feedId, Long userId);
 
     Boolean deleteFeedLike(Long feedId, Long memberId);

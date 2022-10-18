@@ -210,6 +210,20 @@ public class FeedContentController {
         return new ResponseEntity(baseResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/tag")
+    @ApiOperation("tag 별로 조회")
+    public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFeedTag(@RequestParam String feedTagName, @RequestParam Integer pageNumber){
+        List<FeedResponse> responses = feedService.findByFeedTag(feedTagName, pageNumber);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("OK")
+                .data(responses)
+                .build();
+
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
     @GetMapping("/list")
     @ApiOperation(value = "메인 피드 최신순 조회")
     public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@RequestParam Integer pageNumber){
