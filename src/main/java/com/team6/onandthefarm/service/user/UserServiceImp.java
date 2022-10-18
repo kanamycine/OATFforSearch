@@ -244,6 +244,7 @@ public class UserServiceImp implements UserService {
 		user.get().setUserFollowerCount(0);
 		user.get().setUserFollowingCount(0);
 		user.get().setUserProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png");
+		user.get().setUserRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return user.get().getUserId();
 	}
@@ -534,8 +535,8 @@ public class UserServiceImp implements UserService {
 		List<Following> followingList = followingRepository.findFollowerIdByFollowingId(memberId);
 
 		for (Following following : followingList) {
-			Long followingMemberId = following.getFollowingMemberId();
-			String followingMemberRole = following.getFollowingMemberRole();
+			Long followingMemberId = following.getFollowerMemberId();
+			String followingMemberRole = following.getFollowerMemberRole();
 			if(followingMemberRole.equals("user")){
 				user = userRepository.findById(followingMemberId).get();
 				MemberFollowingListResponse memberFollowingListResponse = MemberFollowingListResponse.builder()
