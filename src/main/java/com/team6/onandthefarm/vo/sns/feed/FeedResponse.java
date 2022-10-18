@@ -12,7 +12,7 @@ public class FeedResponse {
 
     private Long memberId;
 
-    private Integer memberRole;
+    private String memberRole;
 
     private String memberName;
 
