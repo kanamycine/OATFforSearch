@@ -255,8 +255,9 @@ public class OrderServiceImp implements OrderService{
         List<OrderSellerResponseList> responseList = new ArrayList<>();
 
         List<OrderProduct> orderProductList
-                = orderProductRepository.findBySellerIdAndOrderProductDateBetween(
+                = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(
                         Long.valueOf(orderSellerFindDto.getSellerId()),
+                        orderSellerFindDto.getOrdersStatus(),
                         orderSellerFindDto.getStartDate(),
                         orderSellerFindDto.getEndDate());
 
@@ -317,10 +318,12 @@ public class OrderServiceImp implements OrderService{
          */
 
         OrderSellerResponseListResponse resultResponse = new OrderSellerResponseListResponse();
-        responseList.sort((o1, o2) -> {
-            int result = o2.getOrderDate().compareTo(o1.getOrderDate());
-            return result;
-        });
+        if(!orderSellerFindDto.getOrdersStatus().equals("activated")) {
+            responseList.sort((o1, o2) -> {
+                int result = o2.getOrderDate().compareTo(o1.getOrderDate());
+                return result;
+            });
+        }
 
         int startIndex = orderSellerFindDto.getPageNumber()*pageContentNumber;
 
@@ -751,7 +754,7 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
-     * 셀러 취소/반품 상세 내역 조회
+     * 셀러 반품 상세 내역 조회
      * @param orderProductId
      * @return
      */
