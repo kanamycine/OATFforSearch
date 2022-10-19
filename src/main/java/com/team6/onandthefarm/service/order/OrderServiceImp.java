@@ -627,23 +627,23 @@ public class OrderServiceImp implements OrderService{
         /*
             sellerId로 orderProduct에서 제품 하나씩 찾는다. canceled(os1) refundRequest(os2) 인 상태의 제품들을
          */
-        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"canceled",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
-        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundRequest",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
-        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundCompleted",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
-        List<OrderProduct> orderProducts = new ArrayList<>();
-        for(OrderProduct orderProduct : orderProductsSO1){
-            orderProducts.add(orderProduct);
-        }
-        for(OrderProduct orderProduct : orderProductsSO2){
-            orderProducts.add(orderProduct);
-        }
-        for(OrderProduct orderProduct : orderProductsSO3){
-            orderProducts.add(orderProduct);
-        }
+        List<OrderProduct> orderProductsSO1 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),orderSellerRequest.getOrdersStatus(),orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
+//        List<OrderProduct> orderProductsSO2 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundRequest",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
+//        List<OrderProduct> orderProductsSO3 = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long.valueOf(orderSellerRequest.getSellerId()),"refundCompleted",orderSellerRequest.getStartDate(),orderSellerRequest.getEndDate());
+//        List<OrderProduct> orderProducts = new ArrayList<>();
+//        for(OrderProduct orderProduct : orderProductsSO1){
+//            orderProducts.add(orderProduct);
+//        }
+//        for(OrderProduct orderProduct : orderProductsSO2){
+//            orderProducts.add(orderProduct);
+//        }
+//        for(OrderProduct orderProduct : orderProductsSO3){
+//            orderProducts.add(orderProduct);
+//        }
 
 
         List<OrderSellerResponse> responseList = new ArrayList<>();
-        for(OrderProduct orderProduct : orderProducts){
+        for(OrderProduct orderProduct : orderProductsSO1){
             OrderSellerResponse orderSellerResponse = modelMapper.map(orderProduct,OrderSellerResponse.class);
             Optional<Orders> orders = orderRepository.findById(orderProduct.getOrders().getOrdersId());
             Optional<User> user = userRepository.findById(orders.get().getUser().getUserId());

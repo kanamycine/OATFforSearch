@@ -113,6 +113,7 @@ public class SellerOrderController {
                 .startDate(map.get("startDate"))
                 .endDate(map.get("endDate"))
                 .pageNumber(Integer.valueOf(map.get("pageNumber")))
+                .ordersStatus(map.get("ordersStatus"))
                 .build();
         OrderSellerResultResponse responseList = orderService.findSellerClaims(orderSellerRequest);
         BaseResponse<OrderSellerResultResponse> response = BaseResponse.<OrderSellerResultResponse>builder()
