@@ -4,10 +4,14 @@ import com.team6.onandthefarm.dto.sns.ProfileFeedDto;
 import com.team6.onandthefarm.dto.sns.ProfileMainFeedDto;
 import com.team6.onandthefarm.dto.sns.ProfileMainScrapDto;
 import com.team6.onandthefarm.dto.sns.ProfileMainWishDto;
+import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.service.sns.FeedService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
 import com.team6.onandthefarm.vo.sns.profile.*;
+import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
+import com.team6.onandthefarm.vo.user.MemberProfileRequest;
+import com.team6.onandthefarm.vo.user.MemberProfileResponse;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -202,5 +206,36 @@ public class ProfileController {
 				.build();
 
 		return new ResponseEntity(response,HttpStatus.OK);
+	}
+
+	@PostMapping("/profile/count")
+	@ApiOperation(value = "멤버의 스크랩 수, 좋아요 수 조회")
+	public ResponseEntity<BaseResponse<MemberProfileCountResponse>> getScrapLikeCount(@ApiIgnore Principal principal,
+																					  @RequestBody MemberProfileRequest memberProfileRequest){
+
+		MemberProfileDto memberProfileDto = new MemberProfileDto();
+
+		Long loginId = null;
+		String loginRole = null;
+		if(memberProfileRequest.getMemberId() == null) {
+			String[] principalInfo = principal.getName().split(" ");
+			loginId = Long.parseLong(principalInfo[0]);
+			loginRole = principalInfo[1];
+			memberProfileDto.setMemberId(loginId);
+			memberProfileDto.setMemberRole(loginRole);
+		}else{
+			memberProfileDto.setMemberId(memberProfileRequest.getMemberId());
+			memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
+		}
+
+		MemberProfileCountResponse memberProfileCountResponse = feedService.getScrapLikeCount(memberProfileDto);
+
+		BaseResponse response = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("OK")
+				.data(memberProfileCountResponse)
+				.build();
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

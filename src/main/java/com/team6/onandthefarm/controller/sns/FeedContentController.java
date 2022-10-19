@@ -210,7 +210,7 @@ public class FeedContentController {
         return new ResponseEntity(baseResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/tag")
+    @GetMapping("/list/tag")
     @ApiOperation("tag 별로 조회")
     public ResponseEntity<BaseResponse<List<FeedResponse>>> findByFeedTag(@ApiIgnore Principal principal,
                                                                           @RequestParam String feedTagName,

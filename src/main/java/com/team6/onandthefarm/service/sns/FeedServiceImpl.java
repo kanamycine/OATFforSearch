@@ -1,6 +1,7 @@
 package com.team6.onandthefarm.service.sns;
 
 import com.team6.onandthefarm.dto.sns.*;
+import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.product.Product;
@@ -28,6 +29,7 @@ import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
 import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
+import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
@@ -769,6 +771,20 @@ public class FeedServiceImpl implements FeedService {
 		int size = feedList.size();
 
 		return getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
+	}
+
+	@Override
+	public MemberProfileCountResponse getScrapLikeCount(MemberProfileDto memberProfileDto) {
+
+		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberProfileDto.getMemberId());
+		List<FeedLike> likeList = feedLikeRepository.findFeedLikeListByMemberId(memberProfileDto.getMemberId());
+
+		MemberProfileCountResponse memberProfileCountResponse = MemberProfileCountResponse.builder()
+				.scrapCount(scrapList.size())
+				.likeCount(likeList.size())
+				.build();
+
+		return memberProfileCountResponse;
 	}
 
 	@Override

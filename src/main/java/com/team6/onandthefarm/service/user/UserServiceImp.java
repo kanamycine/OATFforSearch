@@ -460,36 +460,6 @@ public class UserServiceImp implements UserService {
 		return followingId;
 	}
 
-//	@Override
-//	public MemberFollowCountResponse getFollowingCount(MemberFollowCountRequest memberFollowCountRequest) {
-//		User user;
-//		Seller seller;
-//		MemberFollowCountResponse memberFollowCountResponse = null;
-//		Long memberId = memberFollowCountRequest.getMemberId();
-//		String memberRole = memberFollowCountRequest.getMemberRole();
-//
-//		if (memberRole.equals("user")) {
-//			user = userRepository.findById(memberId).get();
-//
-//			memberFollowCountResponse = MemberFollowCountResponse.builder().
-//					memberId(user.getUserId())
-//					.followingCount(user.getUserFollowingCount())
-//					.followerCount(user.getUserFollowerCount()).
-//					build();
-//
-//		} else if (memberRole.equals("seller")) {
-//			seller = sellerRepository.findById(memberId).get();
-//
-//			memberFollowCountResponse = MemberFollowCountResponse.builder().
-//					memberId(seller.getSellerId())
-//					.followingCount(seller.getSellerFollowingCount())
-//					.followerCount(seller.getSellerFollowerCount()).
-//					build();
-//		}
-//
-//		return memberFollowCountResponse;
-//	}
-
 	@Override
 	public List<MemberFollowerListResponse> getFollowerList(MemberFollowerListRequest memberFollowerListRequest){
 		User user;
