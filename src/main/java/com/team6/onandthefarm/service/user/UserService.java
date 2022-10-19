@@ -32,6 +32,8 @@ public interface UserService {
 
     Boolean logout(Long userId);
 
+    Boolean loginPhoneConfirm(String phone);
+
     Long registerUserInfo(UserInfoDto userInfoDto);
 
     Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);

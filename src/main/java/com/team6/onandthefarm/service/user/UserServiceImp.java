@@ -231,6 +231,17 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
+	public Boolean loginPhoneConfirm(String phone){
+		Optional<User> user = userRepository.findByUserPhone(phone);
+
+		if(user.isPresent()){
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
 	public Long registerUserInfo(UserInfoDto userInfoDto) {
 		Optional<User> user = userRepository.findById(userInfoDto.getUserId());
 
