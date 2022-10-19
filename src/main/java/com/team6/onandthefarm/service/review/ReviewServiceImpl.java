@@ -167,8 +167,9 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
 					.userName(review.getUser().getUserName())
+					.userProfileImg(review.getUser().getUserProfileImg())
 					.isMyReview(false)
-					.isAvailableUp(false)
+					.isAvailableUp(true)
 					.build();
 
 			if(review.getUser().getUserId() == userId){
@@ -197,8 +198,9 @@ public class ReviewServiceImpl implements ReviewService{
 					.reviewLikeCount(review.getReviewLikeCount())
 					.reviewRate(review.getReviewRate())
 					.userName(review.getUser().getUserName())
+					.userProfileImg(review.getUser().getUserProfileImg())
 					.isMyReview(false)
-					.isAvailableUp(false)
+					.isAvailableUp(true)
 					.build();
 
 			if(review.getUser().getUserId() == userId){
@@ -233,6 +235,7 @@ public class ReviewServiceImpl implements ReviewService{
 					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
 					.productName(review.getProduct().getProductName())
 					.userName(review.getUser().getUserName())
+					.userProfileImg(review.getUser().getUserProfileImg())
 					.build();
 			reviewResponse.add(reviewSelectionResponse);
 		}
@@ -259,7 +262,13 @@ public class ReviewServiceImpl implements ReviewService{
 					.productMainImgSrc(review.getProduct().getProductMainImgSrc())
 					.productName(review.getProduct().getProductName())
 					.userName(review.getUser().getUserName())
+					.userProfileImg(review.getUser().getUserProfileImg())
+					.isAvailableUp(true)
 					.build();
+			Optional<ReviewLike> reviewLike = reviewLikeRepository.findReviewLikeByUser(userId, review.getReviewId());
+			if(reviewLike.isPresent()){
+				reviewSelectionResponse.setIsAvailableUp(false);
+			}
 			reviewResponse.add(reviewSelectionResponse);
 		}
 		return reviewResponse;

@@ -24,6 +24,6 @@ public class ProductQnAResponse {
 
     private String userName;
 
-    private String userProfile;
+    private String userProfileImg;
 
 }
