@@ -57,6 +57,7 @@ public class SellerOrderController {
                 .startDate(map.get("startDate"))
                 .endDate(map.get("endDate"))
                 .pageNumber(Integer.valueOf(map.get("pageNumber")))
+                .ordersStatus(map.get("ordersStatus"))
                 .build();
         OrderSellerFindDto orderSellerFindDto = modelMapper.map(orderSellerRequest, OrderSellerFindDto.class);
         orderSellerFindDto.setSellerId(sellerId);
@@ -123,7 +124,7 @@ public class SellerOrderController {
     }
 
     @GetMapping("/claim/list/{orderProduct-no}")
-    @ApiOperation(value = "취소/반품 상세 조회")
+    @ApiOperation(value = "반품 상세 조회")
     public ResponseEntity<BaseResponse<RefundDetailResponse>> findSellerClaimDetail(@PathVariable(name = "orderProduct-no") String orderProductId){
         RefundDetailResponse refundDetailResponse = orderService.findRefundDetail(Long.valueOf(orderProductId));
         BaseResponse response = BaseResponse.builder()

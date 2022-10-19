@@ -255,8 +255,9 @@ public class OrderServiceImp implements OrderService{
         List<OrderSellerResponseList> responseList = new ArrayList<>();
 
         List<OrderProduct> orderProductList
-                = orderProductRepository.findBySellerIdAndOrderProductDateBetween(
+                = orderProductRepository.findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(
                         Long.valueOf(orderSellerFindDto.getSellerId()),
+                        orderSellerFindDto.getOrdersStatus(),
                         orderSellerFindDto.getStartDate(),
                         orderSellerFindDto.getEndDate());
 
@@ -317,10 +318,12 @@ public class OrderServiceImp implements OrderService{
          */
 
         OrderSellerResponseListResponse resultResponse = new OrderSellerResponseListResponse();
-        responseList.sort((o1, o2) -> {
-            int result = o2.getOrderDate().compareTo(o1.getOrderDate());
-            return result;
-        });
+        if(!orderSellerFindDto.getOrdersStatus().equals("activated")) {
+            responseList.sort((o1, o2) -> {
+                int result = o2.getOrderDate().compareTo(o1.getOrderDate());
+                return result;
+            });
+        }
 
         int startIndex = orderSellerFindDto.getPageNumber()*pageContentNumber;
 
@@ -560,16 +563,8 @@ public class OrderServiceImp implements OrderService{
             savedOrders.get().setOrdersStatus("canceled");
         }
 
-        /**
-         * 재고 추가하는 코드 작성
-         */
-        Refund refund = Refund.builder()
-                .refundContent(refundDto.getRefundDetail())
-                .orderProductId(refundDto.getOrderProductId())
-                .refundImage(refundDto.getRefundImage())
-                .userId(refundDto.getUserId())
-                .build();
-        refundRepository.save(refund);
+        Optional<Product> product = productRepository.findById(orderProduct.get().getProductId());
+        product.get().setProductTotalStock(product.get().getProductTotalStock()+orderProduct.get().getOrderProductQty());
 
         if(orderProduct.get().getOrderProductStatus().equals("canceled")){
             return true;
@@ -759,7 +754,7 @@ public class OrderServiceImp implements OrderService{
     }
 
     /**
-     * 셀러 취소/반품 상세 내역 조회
+     * 셀러 반품 상세 내역 조회
      * @param orderProductId
      * @return
      */
