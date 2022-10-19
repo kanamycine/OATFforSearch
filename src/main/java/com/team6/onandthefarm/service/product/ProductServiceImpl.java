@@ -407,7 +407,7 @@ public class ProductServiceImpl implements ProductService {
 					.productQnaId(productQna.getProductQnaId())
 					.productQnaModifiedAt(productQna.getProductQnaModifiedAt())
 					.userName(user.getUserName())
-					.userProfile(user.getUserProfileImg())
+					.userProfileImg(user.getUserProfileImg())
 					.build();
 			if(productQna.getProductQnaStatus().equals("waiting")){
 				responses.add(response);

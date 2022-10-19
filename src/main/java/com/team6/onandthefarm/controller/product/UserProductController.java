@@ -306,7 +306,7 @@ public class UserProductController {
 
 	@GetMapping("/QnA/{product-no}")
 	@ApiOperation(value = "상품에 대한 질의 조회")
-	public ResponseEntity<BaseResponse<Map<ProductQna, ProductQnaAnswer>>> findProductQnAList(
+	public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findProductQnAList(
 			@PathVariable("product-no") Long productId) {
 
 		List<ProductQnAResponse> products
