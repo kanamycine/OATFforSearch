@@ -13,10 +13,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="PRODUCT_QNA_ANSWER_SEQ_GENERATOR",
+        sequenceName = "PRODUCT_QNA_ANSWER_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class ProductQnaAnswer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "PRODUCT_QNA_ANSWER_SEQ_GENERATOR")
     private Long productQnaAnswerId;
 
     @OneToOne(fetch = FetchType.LAZY)

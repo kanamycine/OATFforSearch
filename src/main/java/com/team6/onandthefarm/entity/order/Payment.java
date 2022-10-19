@@ -12,9 +12,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="PAYMENT_SEQ_GENERATOR",
+        sequenceName = "PAYMENT_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "PAYMENT_SEQ_GENERATOR")
     private Long paymentId;
 
     @OneToOne(fetch = FetchType.LAZY)

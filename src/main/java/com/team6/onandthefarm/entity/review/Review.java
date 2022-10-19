@@ -15,9 +15,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="REVIEW_SEQ_GENERATOR",
+        sequenceName = "REVIEW_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Review {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "REVIEW_SEQ_GENERATOR")
     private Long reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)

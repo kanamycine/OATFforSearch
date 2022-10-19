@@ -1,9 +1,6 @@
 package com.team6.onandthefarm.entity.user;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+		name="FOLLOWING_SEQ_GENERATOR",
+		sequenceName = "FOLLOWING_SEQ",
+		initialValue = 100000, allocationSize = 1
+)
 public class Following {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,
+			generator = "FOLLOWING_SEQ_GENERATOR")
 	private Long followingId;
 
 	private Long followingMemberId;

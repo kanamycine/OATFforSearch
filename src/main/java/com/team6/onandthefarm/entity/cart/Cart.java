@@ -14,10 +14,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="CART_SEQ_GENERATOR",
+        sequenceName = "CART_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "CART_SEQ_GENERATOR")
     private Long cartId;
 
     @OneToOne(fetch = FetchType.LAZY)

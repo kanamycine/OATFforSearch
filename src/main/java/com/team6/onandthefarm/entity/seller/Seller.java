@@ -12,9 +12,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="SELLER_SEQ_GENERATOR",
+        sequenceName = "SELLER_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Seller {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "SELLER_SEQ_GENERATOR")
     private Long sellerId;
     private String sellerEmail;
     private String sellerPassword;

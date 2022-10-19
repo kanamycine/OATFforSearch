@@ -14,10 +14,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="WISH_SEQ_GENERATOR",
+        sequenceName = "WISH_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Wish {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "WISH_SEQ_GENERATOR")
     private Long wishId;
 
     @ManyToOne(fetch = FetchType.LAZY)
