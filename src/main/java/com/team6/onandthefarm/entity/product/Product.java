@@ -17,10 +17,16 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
+@SequenceGenerator(
+        name="PRODUCT_SEQ_GENERATOR",
+        sequenceName = "PRODUCT_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Product{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "PRODUCT_SEQ_GENERATOR")
     private Long productId;
 
     @ManyToOne(fetch = FetchType.LAZY)

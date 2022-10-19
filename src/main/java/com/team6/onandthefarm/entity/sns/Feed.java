@@ -11,10 +11,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-
+@SequenceGenerator(
+        name="FEED_SEQ_GENERATOR",
+        sequenceName = "FEED_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class Feed {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "FEED_SEQ_GENERATOR")
     private Long feedId;
 
     private Long memberId;

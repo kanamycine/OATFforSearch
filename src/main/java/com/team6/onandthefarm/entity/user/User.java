@@ -12,10 +12,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="USER_SEQ_GENERATOR",
+        sequenceName = "USER_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "USER_SEQ_GENERATOR")
     private Long userId;
 
     private String userEmail;

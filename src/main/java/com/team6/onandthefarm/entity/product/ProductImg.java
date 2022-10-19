@@ -13,10 +13,16 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@SequenceGenerator(
+        name="PRODUCT_IMG_SEQ_GENERATOR",
+        sequenceName = "PRODUCT_IMG_SEQ",
+        initialValue = 100000, allocationSize = 1
+)
 public class ProductImg {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "PRODUCT_IMG_SEQ_GENERATOR")
     private Long productImgId;
 
     @ManyToOne(fetch = FetchType.LAZY)
