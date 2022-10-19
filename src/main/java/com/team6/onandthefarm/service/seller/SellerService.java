@@ -18,6 +18,8 @@ public interface SellerService {
     Boolean updatePassword(SellerDto sellerDto);
     boolean sellerSignup(SellerDto sellerDto);
     boolean sellerIdCheck(String sellerEmail);
+
+    Boolean searchSellerId(String sellerEmail, String phone);
     List<SellerProductQnaResponse> findSellerQnA(Long sellerId);
     Boolean createQnaAnswer(SellerQnaDto sellerQnaDto);
     Token login(SellerDto sellerDto);
