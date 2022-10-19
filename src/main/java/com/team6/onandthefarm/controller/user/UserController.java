@@ -81,6 +81,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/login/phone")
+    @ApiOperation(value = "유저 핸드폰 중복확인")
+    public ResponseEntity<BaseResponse> loginPhoneConfirm(@RequestParam String phone) {
+
+        Boolean result = userService.loginPhoneConfirm(phone);
+
+        if(result.booleanValue()){
+            BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.BAD_REQUEST).message("실패").build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
     @PostMapping("/register")
     @ApiOperation(value = "소셜 로그인 후 유저의 추가 정보 저장")
     public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal,
