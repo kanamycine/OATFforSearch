@@ -7,6 +7,7 @@ import com.team6.onandthefarm.dto.review.ReviewFormDto;
 import com.team6.onandthefarm.dto.review.ReviewLikeCancelFormDto;
 import com.team6.onandthefarm.dto.review.ReviewLikeFormDto;
 import com.team6.onandthefarm.dto.review.ReviewUpdateFormDto;
+import com.team6.onandthefarm.vo.review.ReviewInfoResponse;
 import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
 
 public interface ReviewService {
@@ -15,6 +16,7 @@ public interface ReviewService {
 	Long deleteReview(ReviewDeleteDto reviewDeleteDto);
 	Long upLikeCountReview(ReviewLikeFormDto reviewLikeFormDto);
 	Long cancelReviewLikeCount(ReviewLikeCancelFormDto reviewLikeCancelFormDto);
+	ReviewInfoResponse getReviewInfo(Long productId);
 	List<ReviewSelectionResponse> getReviewListByLikeCount(Long userId, Long productId, Integer pageNumber);
 	List<ReviewSelectionResponse> getReviewListOrderByNewest(Long userId, Long productId, Integer pageNumber);
 	List<ReviewSelectionResponse> getReviewBySellerNewest(Long sellerId, Integer pageNumber);

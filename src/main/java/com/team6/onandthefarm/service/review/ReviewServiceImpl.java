@@ -8,6 +8,7 @@ import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
+import com.team6.onandthefarm.vo.review.ReviewInfoResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +148,39 @@ public class ReviewServiceImpl implements ReviewService{
 		review.get().setReviewLikeCount(review.get().getReviewLikeCount() - 1);
 
 		return reviewLikeId;
+	}
+
+	@Override
+	public ReviewInfoResponse getReviewInfo(Long productId) {
+
+		Optional<Product> product = productRepository.findById(productId);
+
+		int totalCountOfReview = 0;
+		int sumOfReview = 0;
+		Integer[] reviewRates = new Integer[6];
+		for(int i=1; i<=5; i++) {
+			List<Review> reviewListByReviewRate = reviewRepository.findReviewByProductAndReviewRate(product.get(), i);
+			reviewRates[i] = reviewListByReviewRate.size();
+			totalCountOfReview += reviewListByReviewRate.size();
+
+			sumOfReview += (reviewListByReviewRate.size() * i);
+		}
+
+		Double avgOfReview = 0.0;
+		if(totalCountOfReview > 0){
+			avgOfReview = ((double)sumOfReview/totalCountOfReview);
+		}
+		ReviewInfoResponse reviewInfoResponse = ReviewInfoResponse.builder()
+				.reviewCount(totalCountOfReview)
+				.reviewRate(avgOfReview)
+				.reviewFiveCount(reviewRates[5])
+				.reviewFourCount(reviewRates[4])
+				.reviewThreeCount(reviewRates[3])
+				.reviewTwoCount(reviewRates[2])
+				.reviewOneCount(reviewRates[1])
+				.build();
+
+		return reviewInfoResponse;
 	}
 
 

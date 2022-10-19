@@ -287,6 +287,17 @@ public class ProductServiceImpl implements ProductService {
 		}
 		productDetailResponse.setProductImageList(productImgSrcList);
 
+		List<Review> reviewList = reviewRepository.findReviewByProduct(product);
+		productDetailResponse.setReviewCount(reviewList.size());
+		productDetailResponse.setReviewRate(0.0);
+		if(reviewList.size() > 0) {
+			Integer reviewSum = 0;
+			for (Review review : reviewList) {
+				reviewSum += review.getReviewRate();
+			}
+			productDetailResponse.setReviewRate((double) (reviewSum / reviewList.size()));
+		}
+
 		return productDetailResponse;
 	}
 
@@ -458,6 +469,7 @@ public class ProductServiceImpl implements ProductService {
 
 			List<Review> reviewList = reviewRepository.findReviewByProduct(p);
 			pResponse.setProductReviewCount(reviewList.size());
+			pResponse.setReviewRate(0.0);
 			if(reviewList.size() > 0) {
 				Integer reviewSum = 0;
 				for (Review review : reviewList) {

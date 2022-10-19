@@ -45,6 +45,10 @@ public class ProductDetailResponse {
 	private boolean productCartStatus;
 	private Integer productViewCount;
 
+	private Integer reviewCount;
+
+	private Double reviewRate;
+
 	private List<ProductImageResponse> productImageList;
 
 	public ProductDetailResponse(Product product) {

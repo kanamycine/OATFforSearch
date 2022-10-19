@@ -3,17 +3,12 @@ package com.team6.onandthefarm.controller.review;
 import java.security.Principal;
 import java.util.List;
 
+import com.team6.onandthefarm.vo.review.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.team6.onandthefarm.dto.review.ReviewDeleteDto;
 import com.team6.onandthefarm.dto.review.ReviewFormDto;
@@ -24,12 +19,6 @@ import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.review.ReviewLike;
 import com.team6.onandthefarm.service.review.ReviewService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.review.ReviewDeleteRequest;
-import com.team6.onandthefarm.vo.review.ReviewFormRequest;
-import com.team6.onandthefarm.vo.review.ReviewLikeCancelFormRequest;
-import com.team6.onandthefarm.vo.review.ReviewLikeFormRequest;
-import com.team6.onandthefarm.vo.review.ReviewSelectionResponse;
-import com.team6.onandthefarm.vo.review.ReviewUpdateFormRequest;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -145,6 +134,21 @@ public class UserReviewController {
 				.message("Cancel reviewLike counts completed")
 				.data(reviewLikeId)
 				.build();
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping("/info")
+	@ApiOperation("상품별로 리뷰에 관한 정보 조회")
+	public ResponseEntity<BaseResponse<ReviewInfoResponse>> getReviewInfo(@RequestParam Long productId){
+
+		ReviewInfoResponse reviewInfoResponse = reviewService.getReviewInfo(productId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("get review info completed")
+				.data(reviewInfoResponse)
+				.build();
+
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
