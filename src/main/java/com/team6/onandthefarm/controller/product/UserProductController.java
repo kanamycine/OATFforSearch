@@ -306,16 +306,21 @@ public class UserProductController {
 
 	@GetMapping("/QnA/{product-no}")
 	@ApiOperation(value = "상품에 대한 질의 조회")
-	public ResponseEntity<BaseResponse<List<ProductQnAResponse>>> findProductQnAList(
+	public ResponseEntity<BaseResponse<ProductQnAInfoResponse>> findProductQnAList(
 			@PathVariable("product-no") Long productId) {
 
 		List<ProductQnAResponse> products
 				= productService.findProductQnAList(productId);
 
+		ProductQnAInfoResponse productQnAInfoResponse = ProductQnAInfoResponse.builder()
+				.productQnAResponseList(products)
+				.qnACount(products.size())
+				.build();
+
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("OK")
-				.data(products)
+				.data(productQnAInfoResponse)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
