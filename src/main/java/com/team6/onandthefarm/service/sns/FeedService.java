@@ -2,6 +2,7 @@ package com.team6.onandthefarm.service.sns;
 
 
 import com.team6.onandthefarm.dto.sns.*;
+import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.vo.sns.feed.AddableProductResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedDetailResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
@@ -9,6 +10,7 @@ import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
 import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
+import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,5 +60,7 @@ public interface FeedService {
     List<FeedResponse> findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto);
 
     List<FeedResponse> findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto);
+
+    MemberProfileCountResponse getScrapLikeCount(MemberProfileDto memberProfileDto);
 
 }
