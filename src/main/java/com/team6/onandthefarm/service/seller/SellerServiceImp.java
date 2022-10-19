@@ -141,6 +141,14 @@ public class SellerServiceImp implements SellerService{
         return Boolean.FALSE;
     }
 
+    public Boolean searchSellerId(String sellerEmail, String phone){
+        Seller seller = sellerRepository.findBySellerEmailAndAndSellerPhone(sellerEmail,phone);
+        if(seller==null){
+            return Boolean.FALSE;
+        }
+        return Boolean.TRUE;
+    }
+
     /**
      *
      * @param sellerDto
