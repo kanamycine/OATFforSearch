@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface FeedRepository extends JpaRepository<Feed, Long> {
     Feed findByMemberId(Long memberId);
 
-    @Query("select f from Feed f where f.memberId =:memberId")
+    @Query("select f from Feed f where f.memberId =:memberId and f.feedStatus=true")
     List<Feed> findFeedListByMemberId(@Param("memberId") Long memberId);
 
     @Query("select f from Feed f where f.feedId=:feedId and f.feedStatus=true")

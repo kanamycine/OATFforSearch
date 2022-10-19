@@ -9,5 +9,4 @@ import lombok.*;
 @AllArgsConstructor
 public class ProfileFeedRequest {
     private Long memberId;
-    private Integer pageNumber;
 }
