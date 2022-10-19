@@ -560,16 +560,8 @@ public class OrderServiceImp implements OrderService{
             savedOrders.get().setOrdersStatus("canceled");
         }
 
-        /**
-         * 재고 추가하는 코드 작성
-         */
-        Refund refund = Refund.builder()
-                .refundContent(refundDto.getRefundDetail())
-                .orderProductId(refundDto.getOrderProductId())
-                .refundImage(refundDto.getRefundImage())
-                .userId(refundDto.getUserId())
-                .build();
-        refundRepository.save(refund);
+        Optional<Product> product = productRepository.findById(orderProduct.get().getProductId());
+        product.get().setProductTotalStock(product.get().getProductTotalStock()+orderProduct.get().getOrderProductQty());
 
         if(orderProduct.get().getOrderProductStatus().equals("canceled")){
             return true;
