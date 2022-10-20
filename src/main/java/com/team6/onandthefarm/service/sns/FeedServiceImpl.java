@@ -617,6 +617,9 @@ public class FeedServiceImpl implements FeedService {
 	 */
 	public List<FeedResponse> getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
 		List<FeedResponse> responseList = new ArrayList<>();
+		if(size < startIndex){
+			return responseList;
+		}
 		if (size < startIndex + pageContentNumber) {
 			for (Feed feed : feedList.subList(startIndex, size)) {
 				if (feed != null) {
