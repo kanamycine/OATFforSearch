@@ -113,12 +113,13 @@ public class ProductServiceImpl implements ProductService {
 			String url = s3Upload.productUpload(multipartFile);
 			if(cnt==0){
 				product.setProductMainImgSrc(url);
+			}else {
+				ProductImg img = ProductImg.builder()
+						.product(product)
+						.productImgSrc(url)
+						.build();
+				productImgRepository.save(img);
 			}
-			ProductImg img = ProductImg.builder()
-					.product(product)
-					.productImgSrc(url)
-					.build();
-			productImgRepository.save(img);
 			cnt++;
 		}
 
@@ -295,7 +296,7 @@ public class ProductServiceImpl implements ProductService {
 			for (Review review : reviewList) {
 				reviewSum += review.getReviewRate();
 			}
-			productDetailResponse.setReviewRate((double) (reviewSum / reviewList.size()));
+			productDetailResponse.setReviewRate((double) reviewSum / reviewList.size());
 		}
 
 		return productDetailResponse;
@@ -475,7 +476,7 @@ public class ProductServiceImpl implements ProductService {
 				for (Review review : reviewList) {
 					reviewSum += review.getReviewRate();
 				}
-				pResponse.setReviewRate((double) (reviewSum / reviewList.size()));
+				pResponse.setReviewRate((double) reviewSum / reviewList.size());
 			}
 
 			if(userId != null){
