@@ -47,6 +47,14 @@ public class SellerOrderController {
     public ResponseEntity<BaseResponse<OrderSellerResponseListResponse>> findSellerAllOrders(
             @ApiIgnore Principal principal, @RequestParam Map<String,String> map){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
@@ -77,6 +85,14 @@ public class SellerOrderController {
     public ResponseEntity<BaseResponse<OrderUserDetailResponse>> findSellerOrderDetail(
             @ApiIgnore Principal principal,@RequestParam Map<String,String> map){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
@@ -105,6 +121,14 @@ public class SellerOrderController {
     @ApiOperation(value = "셀러 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<OrderSellerResultResponse>> findSellerClaims(
             @ApiIgnore Principal principal,@RequestParam Map<String,String> map){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
@@ -178,6 +202,14 @@ public class SellerOrderController {
     @GetMapping("/condition")
     @ApiOperation(value = "셀러페이지의 통계를 위한 상품/주문/배송/qna 현황")
     public ResponseEntity<BaseResponse<OrdersConditionResponse>> findOrdersConditions(@ApiIgnore Principal principal){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);

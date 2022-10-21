@@ -26,6 +26,14 @@ public class SellerReviewController {
 	@GetMapping("/list/by-seller/{page-no}")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewBySellerNewest(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
 
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
+
 		String[] principalInfo = principal.getName().split(" ");
 		Long sellerId = Long.parseLong(principalInfo[0]);
 

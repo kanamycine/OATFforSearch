@@ -72,6 +72,14 @@ public class UserController {
     @ApiOperation(value = "유저 로그아웃")
     public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal) {
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -100,6 +108,14 @@ public class UserController {
     @ApiOperation(value = "소셜 로그인 후 유저의 추가 정보 저장")
     public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal,
             @RequestBody UserInfoRequest userInfoRequest) {
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
@@ -134,6 +150,14 @@ public class UserController {
             @RequestPart(value = "data", required = false) UserInfoRequest userInfoRequest)
             throws Exception{
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -165,6 +189,14 @@ public class UserController {
     @ApiOperation(value = "유저 정보 조회")
     public ResponseEntity<BaseResponse<UserInfoResponse>> findUserInfo(@ApiIgnore Principal principal) {
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -180,6 +212,14 @@ public class UserController {
     @GetMapping("/mypage/wish")
     @ApiOperation(value = "사용자 별 위시리스트 조회")
     public ResponseEntity<BaseResponse<List<ProductWishResponse>>> getWishList(@ApiIgnore Principal principal) {
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
@@ -200,6 +240,14 @@ public class UserController {
     public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(
             @ApiIgnore Principal principal) {
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -218,6 +266,14 @@ public class UserController {
     @ApiOperation(value = "유저 질의 생성")
     public ResponseEntity<BaseResponse> createQnA(@ApiIgnore Principal principal,
             @RequestBody UserQnaRequest userQnaRequest) {
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -242,6 +298,14 @@ public class UserController {
     public ResponseEntity<BaseResponse<ProductQnAResultResponse>> findUserQnA(
             @ApiIgnore Principal principal, @PathVariable("page-num") String pageNum) {
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -261,6 +325,14 @@ public class UserController {
     @ApiOperation(value = "유저 질의 수정")
     public ResponseEntity<BaseResponse<Boolean>> updateUserQnA(
             @ApiIgnore Principal principal, @RequestBody UserQnaUpdateRequest userQnaUpdateRequest) {
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);

@@ -41,6 +41,14 @@ public class UserOrderController {
     public ResponseEntity<BaseResponse<OrderSheetResponse>> findOneOrder(
             @ApiIgnore Principal principal, @RequestBody OrderSheetRequest orderSheetRequest){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -63,6 +71,14 @@ public class UserOrderController {
     @ApiOperation(value = "다건 주문서 조회")
     public ResponseEntity<List<OrderFindOneResponse>> findOrders(@ApiIgnore Principal principal){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -81,6 +97,14 @@ public class UserOrderController {
     @ApiOperation(value = "주문 생성")
     public ResponseEntity<BaseResponse> createOrder(
             @ApiIgnore Principal principal,@RequestBody OrderRequest orderRequest){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
@@ -117,6 +141,14 @@ public class UserOrderController {
     public ResponseEntity<BaseResponse<OrderUserResponseListResponse>> findUserAllOrders(
             @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         String userId = principalInfo[0];
 
@@ -152,6 +184,14 @@ public class UserOrderController {
     public ResponseEntity<BaseResponse<Boolean>> createCancel(
             @ApiIgnore Principal principal, @RequestBody RefundRequest refundRequest){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -181,6 +221,14 @@ public class UserOrderController {
     public ResponseEntity<BaseResponse<Boolean>> createRefund(
             @ApiIgnore Principal principal, @RequestBody RefundRequest refundRequest){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
@@ -201,6 +249,14 @@ public class UserOrderController {
     @ApiOperation(value = "유저 취소/반품 내역 조회")
     public ResponseEntity<BaseResponse<OrderRefundResultResponse>> findUserClaims(
             @ApiIgnore Principal principal, @RequestBody OrderUserRequest orderUserRequest){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         String userId = principalInfo[0];

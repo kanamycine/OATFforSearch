@@ -5,6 +5,7 @@ import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.vo.order.OrderProductGroupByProduct;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -24,4 +25,10 @@ public interface OrderProductRepository extends CrudRepository<OrderProduct,Long
     List<OrderProduct> findByProductId(Long productId);
 
     List<OrderProduct> findOrderProductsByOrders(Orders orders);
+
+    @Query("select o from OrderProduct o where o.sellerId=:sellerId and o.orderProductStatus='refundRequest'")
+    List<OrderProduct> findRequestRefundOrderProduct(@Param("sellerId") Long sellerId);
+
+    @Query("select o from OrderProduct o where o.sellerId=:sellerId and o.orderProductStatus='canceled'")
+    List<OrderProduct> findCancelOrdersOrderProduct(@Param("sellerId") Long sellerId);
 }

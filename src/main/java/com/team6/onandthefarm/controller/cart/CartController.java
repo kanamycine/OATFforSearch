@@ -42,6 +42,14 @@ public class CartController {
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
 
         Long userId = Long.parseLong(principalInfo[0]);
@@ -72,6 +80,14 @@ public class CartController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         CartDto cartDto = modelMapper.map(cartRequest, CartDto.class);
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
 
@@ -136,6 +152,14 @@ public class CartController {
     @GetMapping
     @ApiOperation(value = "장바구니 조회")
     public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(@ApiIgnore Principal principal){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
 

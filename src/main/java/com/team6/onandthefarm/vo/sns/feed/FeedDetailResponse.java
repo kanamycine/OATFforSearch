@@ -6,12 +6,14 @@ import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class FeedDetailResponse {
 
     private Long memberId;
@@ -53,11 +55,5 @@ public class FeedDetailResponse {
     private Boolean scrapStatus;
 
     private Boolean isModifiable;
-
-    public FeedDetailResponse(){
-        this.feedLikeStatus = false;
-        this.scrapStatus = false;
-        this.isModifiable = false;
-    }
 
 }

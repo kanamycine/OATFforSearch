@@ -30,6 +30,7 @@ import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
 import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
 import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@Slf4j
 public class FeedServiceImpl implements FeedService {
 
 	private final int pageContentNumber = 8;
@@ -194,24 +196,29 @@ public class FeedServiceImpl implements FeedService {
 
 		if (memberRole.equals("user")) {
 			List<Orders> ordersList = orderRepository.findWithOrderAndOrdersStatus(memberId);
+			List<Long> productIdList = new ArrayList<>();
 			for (Orders orders : ordersList) {
 				//orderproduct받아와서 해당 productID로 조회하기
 				List<OrderProduct> orderProductList = orderProductRepository.findByOrders(orders);
 				for (OrderProduct orderProduct : orderProductList) {
-					Optional<Product> savedProduct = productRepository.findById(orderProduct.getProductId());
-					Product product = savedProduct.get();
+					if(!productIdList.contains(orderProduct.getProductId())) {
+						productIdList.add(orderProduct.getProductId());
 
-					Optional<Seller> savedSeller = sellerRepository.findById(product.getSeller().getSellerId());
+						Optional<Product> savedProduct = productRepository.findById(orderProduct.getProductId());
+						Product product = savedProduct.get();
 
-					AddableProductResponse addableProductResponse = AddableProductResponse.builder()
-							.productId(product.getProductId())
-							.productName(product.getProductName())
-							.productPrice(product.getProductPrice())
-							.productMainImgSrc(product.getProductMainImgSrc())
-							.sellerShopName(savedSeller.get().getSellerShopName())
-							.build();
+						Optional<Seller> savedSeller = sellerRepository.findById(product.getSeller().getSellerId());
 
-					addableProductList.add(addableProductResponse);
+						AddableProductResponse addableProductResponse = AddableProductResponse.builder()
+								.productId(product.getProductId())
+								.productName(product.getProductName())
+								.productPrice(product.getProductPrice())
+								.productMainImgSrc(product.getProductMainImgSrc())
+								.sellerShopName(savedSeller.get().getSellerShopName())
+								.build();
+
+						addableProductList.add(addableProductResponse);
+					}
 				}
 			}
 		} else if (memberRole.equals("seller")) {
@@ -291,6 +298,9 @@ public class FeedServiceImpl implements FeedService {
 					.feedImageList(imageInfoList)
 					.feedImageProductList(imageProductInfoList)
 					.feedTag(feedTagList)
+					.isModifiable(false)
+					.feedLikeStatus(false)
+					.scrapStatus(false)
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부
@@ -634,6 +644,7 @@ public class FeedServiceImpl implements FeedService {
 							.memberId(feed.getMemberId())
 							.memberRole(feed.getMemberRole())
 							.feedContent(feed.getFeedContent())
+							.isModifiable(false)
 							.build();
 
 					// feed 작성자와 로그인한 사용자가 같은지 여부
@@ -720,6 +731,7 @@ public class FeedServiceImpl implements FeedService {
 					.memberId(feed.getMemberId())
 					.memberRole(feed.getMemberRole())
 					.feedContent(feed.getFeedContent())
+					.isModifiable(false)
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부

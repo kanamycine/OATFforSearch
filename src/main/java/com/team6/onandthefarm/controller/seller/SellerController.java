@@ -59,6 +59,14 @@ public class SellerController {
     @ApiOperation(value = "셀러 회원 정보 조회")
     public ResponseEntity<SellerInfoResponse> findBySellerId(@ApiIgnore Principal principal){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
 
@@ -73,6 +81,14 @@ public class SellerController {
             @RequestPart(value = "images", required = false) List<MultipartFile> profile,
             @RequestPart(value = "data", required = false) SellerUpdateRequest sellerUpdateRequest)
             throws Exception{
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
@@ -245,6 +261,14 @@ public class SellerController {
     public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (
             @ApiIgnore Principal principal){
 
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
+
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
 
@@ -277,6 +301,14 @@ public class SellerController {
     @ApiOperation(value = "셀러의 메인페이지 조회")
     public ResponseEntity<BaseResponse<SellerMypageResponse>> findSellerMypage(
             @ApiIgnore Principal principal, @RequestParam Map<String,String> map){
+
+        if(principal == null){
+            BaseResponse baseResponse = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("no authorization")
+                    .build();
+            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+        }
 
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
