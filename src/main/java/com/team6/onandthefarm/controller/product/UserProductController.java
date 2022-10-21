@@ -33,6 +33,14 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse> addProductToWishList(@ApiIgnore Principal principal,
 			@RequestBody ProductWishFormRequest productWishFormRequest) throws Exception {
 
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
+
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
 
@@ -65,6 +73,14 @@ public class UserProductController {
 	@ApiOperation("위시리스트 삭제")
 	public ResponseEntity<BaseResponse> deleteProductToWishList(@ApiIgnore Principal principal,
 			@RequestBody ProductWishCancelRequest productWishCancelRequest) throws Exception {
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
@@ -246,6 +262,7 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryHighest(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
+
 		Long userId = null;
 		if (principal != null){
 			String[] principalInfo = principal.getName().split(" ");
@@ -267,6 +284,7 @@ public class UserProductController {
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryLowest(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
+
 		Long userId = null;
 		if (principal != null){
 			String[] principalInfo = principal.getName().split(" ");

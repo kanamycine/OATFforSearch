@@ -826,7 +826,9 @@ public class OrderServiceImp implements OrderService{
 
         List<OrderProduct> orderProducts = orderProductRepository.findByOrders(orders);
         for(OrderProduct orderProduct : orderProducts){
-            orderProduct.setOrderProductStatus("deliveryCompleted");
+            if(orderProduct.getOrderProductStatus().equals("deliveryProgress")) {
+                orderProduct.setOrderProductStatus("deliveryCompleted");
+            }
         }
         return Boolean.TRUE;
     }
@@ -835,8 +837,8 @@ public class OrderServiceImp implements OrderService{
     public OrdersConditionResponse findOrdersCondition(Long sellerId) {
 
         List<Orders> beforeDelivery = orderRepository.findBeforeDeliveryOrders(sellerId);
-        List<Orders> requestRefund = orderRepository.findRequestRefundOrders(sellerId);
-        List<Orders> cancelOrders = orderRepository.findCancelOrdersOrders(sellerId);
+        List<OrderProduct> requestRefund = orderProductRepository.findRequestRefundOrderProduct(sellerId);
+        List<OrderProduct> cancelOrders = orderProductRepository.findCancelOrdersOrderProduct(sellerId);
         List<Orders> delivering = orderRepository.findDeliveringOrders(sellerId);
         List<Orders> deliverComplete = orderRepository.findDeliverCompleteOrders(sellerId);
         List<Product> notSelling = productRepository.findNotSellingProduct(sellerId);

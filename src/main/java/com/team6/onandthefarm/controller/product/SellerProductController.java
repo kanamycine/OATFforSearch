@@ -50,6 +50,14 @@ public class SellerProductController {
 			@RequestPart(value = "data", required = false) ProductFormRequest productFormRequest
 			) throws Exception {
 
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
+
 		String[] principalInfo = principal.getName().split(" ");
 		Long sellerId = Long.parseLong(principalInfo[0]);
 
@@ -79,6 +87,14 @@ public class SellerProductController {
 			@RequestPart(value = "mainImage", required = false) List<MultipartFile> mainPhoto,
 			@RequestPart(value = "data", required = false) ProductUpdateFormRequest productUpdateFormRequest )
 			throws Exception {
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -224,6 +240,14 @@ public class SellerProductController {
 	@GetMapping(value = "/list/orderby/seller/{page-no}")
 	@ApiOperation(value = "농부별 자신이 등록한 상품 최신순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getNewestProductList(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long sellerId = Long.parseLong(principalInfo[0]);

@@ -32,7 +32,16 @@ public class UserReviewController {
 
 	@PostMapping("/new")
 	@ApiOperation("리뷰 신규 등록")
-	public ResponseEntity<BaseResponse<Review>> reviewForm(@ApiIgnore Principal principal, @RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<Review>> reviewForm(@ApiIgnore Principal principal,
+														   @RequestBody ReviewFormRequest reviewFormRequest) throws Exception{
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
@@ -57,6 +66,7 @@ public class UserReviewController {
 	@PutMapping(value="/update")
 	@ApiOperation("리뷰 수정")
 	public ResponseEntity<BaseResponse<Review>> reviewUpdateForm(@RequestBody ReviewUpdateFormRequest reviewUpdateFormRequest) throws Exception{
+
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
@@ -93,7 +103,16 @@ public class UserReviewController {
 	// review like
 	@PostMapping(value="/like/up")
 	@ApiOperation("리뷰 좋아요 +1")
-	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<ReviewLike>> upReviewLikeCount(@ApiIgnore Principal principal,
+																	  @RequestBody ReviewLikeFormRequest reviewLikeFormRequest) throws Exception{
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
@@ -117,7 +136,16 @@ public class UserReviewController {
 	//review like cancel
 	@PutMapping(value="/like/cancel")
 	@ApiOperation("리뷰 좋아요 취소 -1")
-	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal, @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
+	public ResponseEntity<BaseResponse<ReviewLike>> cancelReviewLikeCount(@ApiIgnore Principal principal,
+																		  @RequestBody ReviewLikeCancelFormRequest reviewLikeCancelFormRequest) throws Exception{
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
@@ -154,7 +182,10 @@ public class UserReviewController {
 
 	@GetMapping("/list/orderby/likecount/{productId}/{page-no}")
 	@ApiOperation("리뷰 좋아요순 조회")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewListByLikeCount(@ApiIgnore Principal principal,
+																								@PathVariable("productId") Long productId,
+																								@PathVariable("page-no") String pageNumber){
+
 		Long userId = null;
 		if(principal != null) {
 			String[] principalInfo = principal.getName().split(" ");
@@ -175,7 +206,10 @@ public class UserReviewController {
 
 	@GetMapping("/list/orderby/newest/{productId}/{page-no}")
 	@ApiOperation("상품상세 리뷰조회 최신순")
-	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@ApiIgnore Principal principal, @PathVariable("productId") Long productId, @PathVariable("page-no") String pageNumber){
+	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getReviewOrderByNewest(@ApiIgnore Principal principal,
+																							  @PathVariable("productId") Long productId,
+																							  @PathVariable("page-no") String pageNumber){
+
 		Long userId = null;
 		if(principal != null) {
 			String[] principalInfo = principal.getName().split(" ");
@@ -196,6 +230,14 @@ public class UserReviewController {
 	@GetMapping("/list/my-review/{page-no}")
 	@ApiOperation("내가쓴 리스트 리뷰 조회")
 	public ResponseEntity<BaseResponse<List<ReviewSelectionResponse>>> getMyReview(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber){
+
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
 
 		String[] principalInfo = principal.getName().split(" ");
 		Long userId = Long.parseLong(principalInfo[0]);
