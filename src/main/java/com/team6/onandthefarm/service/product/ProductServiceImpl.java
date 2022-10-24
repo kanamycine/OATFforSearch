@@ -151,6 +151,11 @@ public class ProductServiceImpl implements ProductService {
 		product.get().setProductDetailShort(productUpdateFormDto.getProductDetailShort());
 		product.get().setProductUpdateDate(dateUtils.transDate(env.getProperty("dateutils.format")));
 
+		Optional<Product> changedProduct = productRepository.findById(productUpdateFormDto.getProductId());
+		if(changedProduct.get().getProductStatus().equals("soldout")){
+			changedProduct.get().setProductTotalStock(0);
+		}
+
 		//기존 이미지 삭제
 		if(productUpdateFormDto.getDeleteImageIdList() != null){
 			for(Long deleteImgId : productUpdateFormDto.getDeleteImageIdList()) {
