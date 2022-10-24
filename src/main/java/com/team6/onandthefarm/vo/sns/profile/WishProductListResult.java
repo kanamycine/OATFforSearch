@@ -1,5 +1,6 @@
-package com.team6.onandthefarm.vo.sns.feed;
+package com.team6.onandthefarm.vo.sns.profile;
 
+import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
 import lombok.*;
 
 import java.util.List;
@@ -9,8 +10,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeedResponseResult {
-    private List<FeedResponse> feedResponseList;
+public class WishProductListResult {
+
+    private List<WishProductListResponse> wishProductListResponse;
 
     private Integer currentPageNum;
 

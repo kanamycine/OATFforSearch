@@ -8,15 +8,7 @@ import com.team6.onandthefarm.dto.user.UserInfoDto;
 import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
-import com.team6.onandthefarm.vo.user.MemberFollowCountRequest;
-import com.team6.onandthefarm.vo.user.MemberFollowCountResponse;
-import com.team6.onandthefarm.vo.user.MemberFollowerListRequest;
-import com.team6.onandthefarm.vo.user.MemberFollowerListResponse;
-import com.team6.onandthefarm.vo.user.MemberFollowingListRequest;
-import com.team6.onandthefarm.vo.user.MemberFollowingListResponse;
-import com.team6.onandthefarm.vo.user.MemberProfileResponse;
-import com.team6.onandthefarm.vo.user.UserInfoResponse;
-import com.team6.onandthefarm.vo.user.UserTokenResponse;
+import com.team6.onandthefarm.vo.user.*;
 import com.team6.onandthefarm.vo.product.ProductQnAResponse;
 
 
@@ -50,9 +42,9 @@ public interface UserService {
 
     Long cancelFollowList(MemberFollowingDto memberFollowingDto);
 
-    List<MemberFollowerListResponse> getFollowerList(MemberFollowerListRequest memberFollowerListRequest);
+    MemberFollowResult getFollowerList(MemberFollowerListRequest memberFollowerListRequest);
 
-    List<MemberFollowingListResponse> getFollowingList(MemberFollowingListRequest memberFollowingListRequest);
+    MemberFollowResult getFollowingList(MemberFollowingListRequest memberFollowingListRequest);
 
     MemberProfileResponse getMemberProfile(MemberProfileDto memberProfileDto);
 }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class MemberFollowerListRequest {
 	private Long memberId;
 	private String memberRole;
+	private Integer pageNumber;
 }

@@ -8,6 +8,7 @@ import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.service.sns.FeedService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
+import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
 import com.team6.onandthefarm.vo.sns.profile.*;
 import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 import com.team6.onandthefarm.vo.user.MemberProfileRequest;
@@ -121,10 +122,11 @@ public class ProfileController {
 
 	@GetMapping("/profile/feed")
 	@ApiOperation(value = "프로필 피드 전체 조회")
-	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileFeedResponse(@ApiIgnore Principal principal,
+	public ResponseEntity<BaseResponse<FeedResponseResult>> getProfileFeedResponse(@ApiIgnore Principal principal,
 																				   @RequestParam Map<String, String> request) {
 
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
+		profileFeedDto.setPageNumber(Integer.parseInt(request.get("pageNumber")));
 
 		Long memberId = null;
 		if(request.containsKey("memberId")) {
@@ -136,7 +138,7 @@ public class ProfileController {
 			profileFeedDto.setMemberId(memberId);
 		}
 
-		List<FeedResponse> responses = feedService.findByRecentFeedListAndMemberId(profileFeedDto);
+		FeedResponseResult responses = feedService.findByRecentFeedListAndMemberId(profileFeedDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -149,10 +151,11 @@ public class ProfileController {
 
 	@GetMapping("/profile/scrap")
 	@ApiOperation(value = "프로필 스크랩 전체 조회")
-	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileScrapFeedResponse(@ApiIgnore Principal principal,
+	public ResponseEntity<BaseResponse<FeedResponseResult>> getProfileScrapFeedResponse(@ApiIgnore Principal principal,
 																						@RequestParam Map<String, String> request) {
 
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
+		profileFeedDto.setPageNumber(Integer.parseInt(request.get("pageNumber")));
 
 		Long memberId = null;
 		if(request.containsKey("memberId")) {
@@ -164,7 +167,7 @@ public class ProfileController {
 			profileFeedDto.setMemberId(memberId);
 		}
 
-		List<FeedResponse> responses = feedService.findByRecentScrapFeedListAndMemberId(profileFeedDto);
+		FeedResponseResult responses = feedService.findByRecentScrapFeedListAndMemberId(profileFeedDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -177,10 +180,11 @@ public class ProfileController {
 
 	@GetMapping("/profile/wish")
 	@ApiOperation(value = "프로필 메인 화면 wish 전체 조회")
-	public ResponseEntity<BaseResponse<List<WishProductListResponse>>> getProfileWishDetailList(@ApiIgnore Principal principal,
+	public ResponseEntity<BaseResponse<WishProductListResult>> getProfileWishDetailList(@ApiIgnore Principal principal,
 																								@RequestParam Map<String, String> request){
 
 		ProfileMainWishDto profileMainWishDto = new ProfileMainWishDto();
+		profileMainWishDto.setPageNumber(Integer.parseInt(request.get("pageNumber")));
 
 		Long memberId = null;
 		if(request.containsKey("memberId")) {
@@ -192,7 +196,7 @@ public class ProfileController {
 			profileMainWishDto.setMemberId(memberId);
 		}
 
-		List<WishProductListResponse> wishList = feedService.findByMemberWishDetailList(profileMainWishDto);
+		WishProductListResult wishList = feedService.findByMemberWishDetailList(profileMainWishDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

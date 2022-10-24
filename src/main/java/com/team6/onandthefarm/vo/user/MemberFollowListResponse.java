@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberFollowingListResponse {
-	private Long memberId;
-	private String memberRole;
-	private String memberName;
-	private String memberImg;
+public class MemberFollowListResponse {
+    private Long memberId;
+    private String memberRole;
+    private String memberName;
+    private String memberImg;
 }

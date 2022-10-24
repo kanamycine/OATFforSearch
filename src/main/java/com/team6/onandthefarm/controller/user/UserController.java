@@ -388,11 +388,12 @@ public class UserController {
 
     @GetMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
-    public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
+    public ResponseEntity<BaseResponse<MemberFollowResult>> getFollowerList(
             @ApiIgnore Principal principal,
             @RequestParam Map<String, String> request){
 
         MemberFollowerListRequest memberFollowerListRequest = new MemberFollowerListRequest();
+        memberFollowerListRequest.setPageNumber(Integer.parseInt(request.get("pageNumber")));
 
         if(request.containsKey("memberId")) {
             memberFollowerListRequest.setMemberId(Long.parseLong(request.get("memberId")));
@@ -406,7 +407,7 @@ public class UserController {
             memberFollowerListRequest.setMemberRole(memberRole);
         }
 
-        List<MemberFollowerListResponse> followerList = userService.getFollowerList(memberFollowerListRequest);
+        MemberFollowResult followerList = userService.getFollowerList(memberFollowerListRequest);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -419,11 +420,12 @@ public class UserController {
 
     @GetMapping("/follow/following-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
-    public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
+    public ResponseEntity<BaseResponse<MemberFollowResult>> getFollowingList(
             @ApiIgnore Principal principal,
             @RequestParam Map<String, String> request){
 
         MemberFollowingListRequest memberFollowingListRequest = new MemberFollowingListRequest();
+        memberFollowingListRequest.setPageNumber(Integer.parseInt(request.get("pageNumber")));
 
         if(request.containsKey("memberId")) {
             memberFollowingListRequest.setMemberId(Long.parseLong(request.get("memberId")));
@@ -437,7 +439,7 @@ public class UserController {
             memberFollowingListRequest.setMemberRole(memberRole);
         }
 
-        List<MemberFollowingListResponse> followingList = userService.getFollowingList(memberFollowingListRequest);
+        MemberFollowResult followingList = userService.getFollowingList(memberFollowingListRequest);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
