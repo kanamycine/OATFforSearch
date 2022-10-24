@@ -20,7 +20,7 @@ public class WishProductListResponse {
 
 	private Integer productWishCount;
 
-	//필요 여부 논의...
-	private Long sellerName;
+	private String sellerName;
+
 	private Integer productReviewCount;
 }

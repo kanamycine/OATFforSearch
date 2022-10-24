@@ -328,7 +328,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductsListByLowPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductListByLowPrice(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -339,7 +339,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductBySoldCount(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -350,7 +350,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -361,7 +361,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductsByCategoryNewest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -372,7 +372,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductByCategoryHighest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -383,7 +383,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductByCategoryLowest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -394,7 +394,7 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductSelectionResponse> getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductByCategorySoldCount(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
