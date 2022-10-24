@@ -7,6 +7,7 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.order.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/seller/orders")
 @Api(value = "주문",description = "주문 상태\n" +
@@ -58,12 +60,15 @@ public class SellerOrderController {
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
 
+        String startDate = map.get("startDate").substring(0,10)+" 00:00:00";
+        String endDate = map.get("endDate").substring(0,10)+" 23:59:59";
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderSellerRequest orderSellerRequest = OrderSellerRequest.builder()
                 .sellerId(sellerId)
-                .startDate(map.get("startDate"))
-                .endDate(map.get("endDate"))
+                .startDate(startDate)
+                .endDate(endDate)
                 .pageNumber(Integer.valueOf(map.get("pageNumber")))
                 .ordersStatus(map.get("ordersStatus"))
                 .build();
@@ -130,12 +135,15 @@ public class SellerOrderController {
             return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
         }
 
+        String startDate = map.get("startDate").substring(0,10)+" 00:00:00";
+        String endDate = map.get("endDate").substring(0,10)+" 23:59:59";
+
         String[] principalInfo = principal.getName().split(" ");
         String sellerId = principalInfo[0];
         OrderSellerRequest orderSellerRequest = OrderSellerRequest.builder()
                 .sellerId(sellerId)
-                .startDate(map.get("startDate"))
-                .endDate(map.get("endDate"))
+                .startDate(startDate)
+                .endDate(endDate)
                 .pageNumber(Integer.valueOf(map.get("pageNumber")))
                 .ordersStatus(map.get("ordersStatus"))
                 .build();

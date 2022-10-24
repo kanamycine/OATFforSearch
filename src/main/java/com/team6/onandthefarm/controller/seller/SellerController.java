@@ -313,11 +313,14 @@ public class SellerController {
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
 
+        String startDate = map.get("startDate").substring(0,10)+" 00:00:00";
+        String endDate = map.get("endDate").substring(0,10)+" 23:59:59";
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerMypageRequest sellerMypageRequest = SellerMypageRequest.builder()
-                .startDate(map.get("startDate"))
-                .endDate(map.get("endDate"))
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
         SellerMypageDto sellerMypageDto = modelMapper.map(sellerMypageRequest, SellerMypageDto.class);
         sellerMypageDto.setSellerId(sellerId);

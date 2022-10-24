@@ -34,8 +34,6 @@ public interface UserService {
 
     Boolean loginPhoneConfirm(String phone);
 
-    Long registerUserInfo(UserInfoDto userInfoDto);
-
     Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
 
     Long updateUserInfo(UserInfoDto userInfoDto) throws IOException;

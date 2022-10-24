@@ -23,6 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user/sns")
@@ -34,22 +35,21 @@ public class ProfileController {
 		this.feedService = feedService;
 	}
 
-	@PostMapping ("/profile/main-feed")
+	@GetMapping ("/profile/main-feed")
 	@ApiOperation(value = "프로필 메인 화면 feed 부분 조회")
-	public ResponseEntity<BaseResponse<List<ProfileMainFeedResponse>>> getProfileMainFeed(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest){
+	public ResponseEntity<BaseResponse<List<ProfileMainFeedResponse>>> getProfileMainFeed(@ApiIgnore Principal principal,
+																						  @RequestParam Map<String, String> request){
 
 		ProfileMainFeedDto profileMainFeedDto = new ProfileMainFeedDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null){
+		if(request.containsKey("memberId")){
+			profileMainFeedDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else {
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileMainFeedDto.setMemberId(memberId);
-		}
-		else {
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileMainFeedDto = modelMapper.map(profileFeedRequest, ProfileMainFeedDto.class);
 		}
 
 		List<ProfileMainFeedResponse> feedList = feedService.findByMemberFeedList(profileMainFeedDto);
@@ -63,22 +63,21 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/main-scrap")
+	@GetMapping("/profile/main-scrap")
 	@ApiOperation(value = "프로필 메인 화면 scrap 부분 조회")
-	public ResponseEntity<BaseResponse<List<ProfileMainScrapResponse>>> getProfileMainScrap(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest){
+	public ResponseEntity<BaseResponse<List<ProfileMainScrapResponse>>> getProfileMainScrap(@ApiIgnore Principal principal,
+																							@RequestParam Map<String, String> request){
 
 		ProfileMainScrapDto profileMainScrapDto = new ProfileMainScrapDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			profileMainScrapDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else {
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileMainScrapDto.setMemberId(memberId);
-		}
-		else {
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileMainScrapDto = modelMapper.map(profileFeedRequest, ProfileMainScrapDto.class);
 		}
 
 		List<ProfileMainScrapResponse> scrapList = feedService.findByMemberScrapList(profileMainScrapDto);
@@ -92,22 +91,21 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/main-wish")
+	@GetMapping("/profile/main-wish")
 	@ApiOperation(value = "프로필 메인 화면 wish 부분 조회")
-	public ResponseEntity<BaseResponse<List<ProfileMainWishResponse>>> getProfileMainWish(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest){
+	public ResponseEntity<BaseResponse<List<ProfileMainWishResponse>>> getProfileMainWish(@ApiIgnore Principal principal,
+																						  @RequestParam Map<String, String> request){
 
 		ProfileMainWishDto profileMainWishDto = new ProfileMainWishDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			profileMainWishDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else {
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileMainWishDto.setMemberId(memberId);
-		}
-		else {
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileMainWishDto = modelMapper.map(profileFeedRequest, ProfileMainWishDto.class);
 		}
 
 		List<ProfileMainWishResponse> wishList = feedService.findByMemberWishList(profileMainWishDto);
@@ -121,22 +119,21 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/feed")
+	@GetMapping("/profile/feed")
 	@ApiOperation(value = "프로필 피드 전체 조회")
-	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileFeedResponse(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest) {
+	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileFeedResponse(@ApiIgnore Principal principal,
+																				   @RequestParam Map<String, String> request) {
 
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			profileFeedDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else {
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileFeedDto.setMemberId(memberId);
-		}
-		else {
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileFeedDto = modelMapper.map(profileFeedRequest, ProfileFeedDto.class);
 		}
 
 		List<FeedResponse> responses = feedService.findByRecentFeedListAndMemberId(profileFeedDto);
@@ -150,22 +147,21 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/scrap")
+	@GetMapping("/profile/scrap")
 	@ApiOperation(value = "프로필 스크랩 전체 조회")
-	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileScrapFeedResponse(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest) {
+	public ResponseEntity<BaseResponse<List<FeedResponse>>> getProfileScrapFeedResponse(@ApiIgnore Principal principal,
+																						@RequestParam Map<String, String> request) {
 
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			profileFeedDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else {
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileFeedDto.setMemberId(memberId);
-		}
-		else {
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileFeedDto = modelMapper.map(profileFeedRequest, ProfileFeedDto.class);
 		}
 
 		List<FeedResponse> responses = feedService.findByRecentScrapFeedListAndMemberId(profileFeedDto);
@@ -179,22 +175,21 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/wish")
+	@GetMapping("/profile/wish")
 	@ApiOperation(value = "프로필 메인 화면 wish 전체 조회")
-	public ResponseEntity<BaseResponse<List<WishProductListResponse>>> getProfileWishDetailList(@ApiIgnore Principal principal, @RequestBody ProfileFeedRequest profileFeedRequest){
+	public ResponseEntity<BaseResponse<List<WishProductListResponse>>> getProfileWishDetailList(@ApiIgnore Principal principal,
+																								@RequestParam Map<String, String> request){
 
 		ProfileMainWishDto profileMainWishDto = new ProfileMainWishDto();
 
 		Long memberId = null;
-		if(profileFeedRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			profileMainWishDto.setMemberId(Long.parseLong(request.get("memberId")));
+		}
+		else{
 			String[] principalInfo = principal.getName().split(" ");
 			memberId = Long.parseLong(principalInfo[0]);
 			profileMainWishDto.setMemberId(memberId);
-		}
-		else{
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-			profileMainWishDto = modelMapper.map(profileFeedRequest, ProfileMainWishDto.class);
 		}
 
 		List<WishProductListResponse> wishList = feedService.findByMemberWishDetailList(profileMainWishDto);
@@ -208,24 +203,24 @@ public class ProfileController {
 		return new ResponseEntity(response,HttpStatus.OK);
 	}
 
-	@PostMapping("/profile/count")
+	@GetMapping("/profile/count")
 	@ApiOperation(value = "멤버의 스크랩 수, 좋아요 수 조회")
 	public ResponseEntity<BaseResponse<MemberProfileCountResponse>> getScrapLikeCount(@ApiIgnore Principal principal,
-																					  @RequestBody MemberProfileRequest memberProfileRequest){
+																					  @RequestParam Map<String, String> request){
 
 		MemberProfileDto memberProfileDto = new MemberProfileDto();
 
 		Long loginId = null;
 		String loginRole = null;
-		if(memberProfileRequest.getMemberId() == null) {
+		if(request.containsKey("memberId")) {
+			memberProfileDto.setMemberId(Long.parseLong(request.get("memberId")));
+			memberProfileDto.setMemberRole(request.get("memberRole"));
+		}else{
 			String[] principalInfo = principal.getName().split(" ");
 			loginId = Long.parseLong(principalInfo[0]);
 			loginRole = principalInfo[1];
 			memberProfileDto.setMemberId(loginId);
 			memberProfileDto.setMemberRole(loginRole);
-		}else{
-			memberProfileDto.setMemberId(memberProfileRequest.getMemberId());
-			memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
 		}
 
 		MemberProfileCountResponse memberProfileCountResponse = feedService.getScrapLikeCount(memberProfileDto);
