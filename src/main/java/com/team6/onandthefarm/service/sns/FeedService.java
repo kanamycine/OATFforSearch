@@ -6,6 +6,7 @@ import com.team6.onandthefarm.dto.user.MemberProfileDto;
 import com.team6.onandthefarm.vo.sns.feed.AddableProductResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedDetailResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
+import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
@@ -31,7 +32,7 @@ public interface FeedService {
 
     Boolean upShareCount(Long feedId);
 
-    List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber, Long memberId);
+    FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long memberId);
 
     Boolean createFeedLike(Long feedId, Long userId);
 
@@ -41,13 +42,13 @@ public interface FeedService {
 
     Boolean deleteFeedScrap(Long feedId, Long memberId);
 
-    List<FeedResponse> findByRecentFeedList(Integer pageNumer, Long memberId);
+    FeedResponseResult findByRecentFeedList(Integer pageNumer, Long memberId);
 
-    List<FeedResponse> findByLikeFeedList(Integer pageNumber, Long memberId);
+    FeedResponseResult findByLikeFeedList(Integer pageNumber, Long memberId);
 
-    List<FeedResponse> findByFollowFeedList(Long memberId,Integer pageNumber);
+    FeedResponseResult findByFollowFeedList(Long memberId,Integer pageNumber);
 
-    List<FeedResponse> findByViewCountFeedList(Integer pageNumber, Long memberId);
+    FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long memberId);
 
     List<ProfileMainFeedResponse> findByMemberFeedList(ProfileMainFeedDto profileMainFeedDto);
 

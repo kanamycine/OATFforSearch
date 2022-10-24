@@ -23,6 +23,7 @@ import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.sns.feed.AddableProductResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedDetailResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
+import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageInfo;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductInfo;
 import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
@@ -442,7 +443,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return List<FeedResponse>
 	 */
 	@Override
-	public List<FeedResponse> findByFeedTag(String feedTagName, Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long memberId) {
 		List<FeedTag> feedTagList = feedTagRepository.findByFeedTagName(feedTagName);
 		List<Feed> feedList = new ArrayList<>();
 		for (FeedTag feedTag : feedTagList) {
@@ -454,7 +455,15 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		responseResult.setCurrentPageNum(pageNumber);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	/**
@@ -538,11 +547,11 @@ public class FeedServiceImpl implements FeedService {
 	/**
 	 * feed 메인페이지 최신순 조회
 	 *
-	 * @param pageNumer
+	 * @param pageNumber
 	 * @return
 	 */
 	@Override
-	public List<FeedResponse> findByRecentFeedList(Integer pageNumer, Long memberId) {
+	public FeedResponseResult findByRecentFeedList(Integer pageNumber, Long memberId) {
 		List<Feed> feedList = new ArrayList<>();
 		feedRepository.findAll().forEach(feedList::add);
 		feedList.sort((o1, o2) -> {
@@ -550,11 +559,19 @@ public class FeedServiceImpl implements FeedService {
 			return result;
 		});
 
-		int startIndex = pageNumer * pageContentNumber;
+		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		responseResult.setCurrentPageNum(pageNumber);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	/**
@@ -564,14 +581,22 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public List<FeedResponse> findByLikeFeedList(Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByLikeFeedList(Integer pageNumber, Long memberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedLikeCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		responseResult.setCurrentPageNum(pageNumber);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	/**
@@ -582,7 +607,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public List<FeedResponse> findByFollowFeedList(Long memberId, Integer pageNumber) {
+	public FeedResponseResult findByFollowFeedList(Long memberId, Integer pageNumber) {
 		List<Feed> feedList = new ArrayList<>();
 
 		List<Following> followers = followingRepository.findByFollowingMemberId(memberId);
@@ -596,7 +621,15 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		responseResult.setCurrentPageNum(pageNumber);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	/**
@@ -606,14 +639,22 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public List<FeedResponse> findByViewCountFeedList(Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long memberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedViewCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		return getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		responseResult.setCurrentPageNum(pageNumber);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	/**
@@ -625,10 +666,12 @@ public class FeedServiceImpl implements FeedService {
 	 * @param memberId
 	 * @return
 	 */
-	public List<FeedResponse> getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
+	public FeedResponseResult getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
+		FeedResponseResult responseResult = new FeedResponseResult();
 		List<FeedResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
-			return responseList;
+			responseResult.setFeedResponseList(responseList);
+			return responseResult;
 		}
 		if (size < startIndex + pageContentNumber) {
 			for (Feed feed : feedList.subList(startIndex, size)) {
@@ -677,7 +720,8 @@ public class FeedServiceImpl implements FeedService {
 					responseList.add(response);
 				}
 			}
-			return responseList;
+			responseResult.setFeedResponseList(responseList);
+			return responseResult;
 		}
 		for (Feed feed : feedList.subList(startIndex, startIndex + pageContentNumber)) {
 			FeedResponse response = FeedResponse.builder()
@@ -706,7 +750,8 @@ public class FeedServiceImpl implements FeedService {
 			response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
 			responseList.add(response);
 		}
-		return responseList;
+		responseResult.setFeedResponseList(responseList);
+		return responseResult;
 	}
 
 	/**

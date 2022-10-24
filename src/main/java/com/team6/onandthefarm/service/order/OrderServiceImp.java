@@ -227,6 +227,9 @@ public class OrderServiceImp implements OrderService{
             orderProductRepository.save(orderProduct); // 각각의 주문 상품 생성
             Optional<Product> product = productRepository.findById(order.getProductId());
             product.get().setProductTotalStock(product.get().getProductTotalStock()-order.getProductQty());
+            if(product.get().getProductTotalStock()==0){
+                product.get().setProductStatus("soldout");
+            }
             product.get().setProductSoldCount(product.get().getProductSoldCount()+1);
             if(cartFlag==true){ // 카트 주문일 경우
                 User userTmp = userRepository.findById(orderDto.getUserId()).get();
