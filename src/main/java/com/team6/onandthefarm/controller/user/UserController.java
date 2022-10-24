@@ -293,6 +293,12 @@ public class UserController {
         return new ResponseEntity(response, HttpStatus.CREATED);
     }
 
+    /**
+     * 10/24 상품 이미지 , 상품 이름 추가 지금은 null값
+     * @param principal
+     * @param pageNum
+     * @return
+     */
     @GetMapping("/mypage/QnA/{page-num}")
     @ApiOperation(value = "유저 질의 조회")
     public ResponseEntity<BaseResponse<ProductQnAResultResponse>> findUserQnA(

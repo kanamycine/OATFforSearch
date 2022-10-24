@@ -12,6 +12,8 @@ import java.util.List;
 public interface OrderProductRepository extends CrudRepository<OrderProduct,Long> {
     List<OrderProduct> findByOrders(Orders orders);
 
+    List<OrderProduct> findByOrdersAndOrderProductStatus(Orders orders, String status);
+
     List<OrderProduct> findByOrdersAndSellerIdAndOrderProductStatus(Orders orders, Long sellerId, String status);
 
     List<OrderProduct> findBySellerIdAndOrderProductStatusAndOrderProductDateBetween(Long sellerId, String orderStatus,String startDate,String endDate);

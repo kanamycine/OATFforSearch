@@ -229,6 +229,12 @@ public class FeedContentController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+    /**
+     * 현재 페이지, 전체 페이지 수 반환 필요
+     * @param principal
+     * @param pageNumber
+     * @return
+     */
     @GetMapping("/list")
     @ApiOperation(value = "메인 피드 최신순 조회")
     public ResponseEntity<BaseResponse<List<FeedResponse>>> findByRecentFeedList(@ApiIgnore Principal principal,
@@ -307,7 +313,7 @@ public class FeedContentController {
         return new ResponseEntity(response,HttpStatus.OK);
     }
 
-    @PutMapping("/like")
+    @PostMapping("/like")
     @ApiOperation(value = "피드 좋아요 메서드")
     public ResponseEntity<BaseResponse> createFeedLike(
             @ApiIgnore Principal principal, @RequestBody FeedRelatedRequest feedRelatedRequest){
@@ -331,7 +337,7 @@ public class FeedContentController {
         return responseResult(result);
     }
 
-    @PutMapping("/scrap")
+    @PostMapping("/scrap")
     @ApiOperation(value = "피드 스크랩 메서드")
     public ResponseEntity<BaseResponse> createFeedScrap(
             @ApiIgnore Principal principal, @RequestBody FeedRelatedRequest feedRelatedRequest){
