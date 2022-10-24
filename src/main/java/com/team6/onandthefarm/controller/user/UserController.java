@@ -28,6 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -417,18 +418,24 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/follow/follower-list")
+    @GetMapping("/follow/follower-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowerListResponse>>> getFollowerList(
             @ApiIgnore Principal principal,
-            @RequestBody MemberFollowerListRequest memberFollowerListRequest){
+            @RequestParam Map<String, String> request){
 
-        if(memberFollowerListRequest.getMemberId() == null) {
+        MemberFollowerListRequest memberFollowerListRequest = new MemberFollowerListRequest();
+
+        if(request.get("memberId") == null) {
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
             memberFollowerListRequest.setMemberId(memberId);
             memberFollowerListRequest.setMemberRole(memberRole);
+        }
+        else{
+            memberFollowerListRequest.setMemberId(Long.parseLong(request.get("memberId")));
+            memberFollowerListRequest.setMemberRole(request.get("memberRole"));
         }
 
         List<MemberFollowerListResponse> followerList = userService.getFollowerList(memberFollowerListRequest);
