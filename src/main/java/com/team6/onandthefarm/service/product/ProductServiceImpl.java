@@ -336,12 +336,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public List<ProductSelectionResponse> getMainProductsBySoldCount(Long userId){
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("productSoldCount").descending());
+
+		Page<Product> productList = productPagingRepository.findProductBySoldCount(pageRequest);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, 0, totalElements);
+	}
+
+	@Override
 	public List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductBySoldCount(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
+
 
 		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
 	}

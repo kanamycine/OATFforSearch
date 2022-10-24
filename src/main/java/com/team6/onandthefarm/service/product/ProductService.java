@@ -30,6 +30,8 @@ public interface ProductService {
 
     List<ProductSelectionResponse> getProductsListByLowPrice(Long userId, Integer pageNumber);
 
+    List<ProductSelectionResponse> getMainProductsBySoldCount(Long userId);
+
     List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber);
 
     List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String Category, Integer pageNumber);
