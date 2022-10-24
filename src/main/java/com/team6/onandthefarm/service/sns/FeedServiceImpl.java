@@ -615,8 +615,10 @@ public class FeedServiceImpl implements FeedService {
 		List<Following> followers = followingRepository.findByFollowingMemberId(memberId);
 
 		for (Following follower : followers) {
-			Feed feed = feedRepository.findByMemberId(follower.getFollowerMemberId());
-			feedList.add(feed);
+			List<Feed> feedListByFollower = feedRepository.findByMemberId(follower.getFollowerMemberId());
+			for(Feed feed : feedListByFollower) {
+				feedList.add(feed);
+			}
 		}
 
 		int startIndex = pageNumber * pageContentNumber;
