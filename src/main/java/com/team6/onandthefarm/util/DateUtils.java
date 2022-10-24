@@ -8,13 +8,14 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
+
 @Component
 public class DateUtils {
 
     public String transDate(String pattern){
-        ZoneId zoneId = ZoneId.of("Asia/Seoul");
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date = simpleDateFormat.format(LocalDate.now(zoneId));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.KOREA);
+        String date = simpleDateFormat.format(new Date());
         return date;
     }
 
