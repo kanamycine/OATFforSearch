@@ -1,8 +1,6 @@
 package com.team6.onandthefarm.controller.product;
 
 import com.team6.onandthefarm.dto.product.*;
-import com.team6.onandthefarm.entity.product.ProductQna;
-import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.*;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user/product")
@@ -189,6 +186,25 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/list/main")
+	@ApiOperation(value = "상품 메인 화면 조회(판매순 10개)")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getMainProductsListBySoldCount(
+			@ApiIgnore Principal principal){
+		Long userId = null;
+		if(principal != null){
+			String [] principalInfo = principal.getName().split(" ");
+			userId = Long.parseLong(principalInfo[0]);
+		}
+		List<ProductSelectionResponse> products = productService.getMainProductsBySoldCount(userId);
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting main view products by sold count")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
 	@GetMapping(value = "/list/orderby/soldcount/{page-no}")
 	@ApiOperation(value = "상품 높은 판매순 조회")
 	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySoldCount(
@@ -204,7 +220,7 @@ public class UserProductController {
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
-				.message("getting products by high price completed")
+				.message("getting products by sold count completed")
 				.data(products)
 				.build();
 
