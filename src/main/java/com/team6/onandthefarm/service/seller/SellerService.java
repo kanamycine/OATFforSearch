@@ -8,6 +8,7 @@ import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.vo.seller.SellerInfoResponse;
 import com.team6.onandthefarm.vo.seller.SellerMypageResponse;
 import com.team6.onandthefarm.vo.seller.SellerProductQnaResponse;
+import com.team6.onandthefarm.vo.seller.SellerProductQnaResponseResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface SellerService {
     boolean sellerIdCheck(String sellerEmail);
 
     Boolean searchSellerId(String sellerEmail, String phone);
-    List<SellerProductQnaResponse> findSellerQnA(Long sellerId);
+    SellerProductQnaResponseResult findSellerQnA(Long sellerId, Integer pageNumber);
     Boolean createQnaAnswer(SellerQnaDto sellerQnaDto);
     Token login(SellerDto sellerDto);
     SellerMypageResponse findSellerMypage(SellerMypageDto sellerMypageDto);

@@ -258,8 +258,8 @@ public class SellerController {
 
     @GetMapping("/QnA")
     @ApiOperation(value = "셀러의 전체 질의 조회")
-    public ResponseEntity<BaseResponse<List<SellerProductQnaResponse>>> findSellerQnA (
-            @ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<SellerProductQnaResponseResult>> findSellerQnA (
+            @ApiIgnore Principal principal, @RequestParam String pageNumber){
 
         if(principal == null){
             BaseResponse baseResponse = BaseResponse.builder()
@@ -272,8 +272,8 @@ public class SellerController {
         String[] principalInfo = principal.getName().split(" ");
         Long sellerId = Long.parseLong(principalInfo[0]);
 
-        List<SellerProductQnaResponse> productQnas
-                = sellerService.findSellerQnA(sellerId);
+        SellerProductQnaResponseResult productQnas
+                = sellerService.findSellerQnA(sellerId,Integer.valueOf(pageNumber));
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")

@@ -40,6 +40,8 @@ import java.util.*;
 public class SellerServiceImp implements SellerService{
 
     private final int listNum = 5;
+
+    private final int pageContentNumber = 8;
     
     private SellerRepository sellerRepository;
 
@@ -197,7 +199,8 @@ public class SellerServiceImp implements SellerService{
      * @param sellerId
      * @return
      */
-    public List<SellerProductQnaResponse> findSellerQnA(Long sellerId){
+    public SellerProductQnaResponseResult findSellerQnA(Long sellerId,Integer pageNumber){
+        SellerProductQnaResponseResult sellerProductQnaResponseResult = new SellerProductQnaResponseResult();
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         Optional<Seller> seller = sellerRepository.findById(sellerId);
@@ -221,7 +224,33 @@ public class SellerServiceImp implements SellerService{
             }
             sellerProductQnaResponses.add(response);
         }
-        return sellerProductQnaResponses;
+
+        sellerProductQnaResponses.sort((o1, o2) -> {
+            int result = o2.getProductQnaCreatedAt().compareTo(o1.getProductQnaCreatedAt());
+            return result;
+        });
+
+        int startIndex = pageNumber*pageContentNumber;
+
+        int size = sellerProductQnaResponses.size();
+
+        if(size<startIndex+pageContentNumber) {
+            sellerProductQnaResponseResult
+                    .setSellerProductQnaResponseList(sellerProductQnaResponses.subList(startIndex, size));
+        }
+        else{
+            sellerProductQnaResponseResult
+                    .setSellerProductQnaResponseList(
+                            sellerProductQnaResponses.subList(startIndex,startIndex+pageContentNumber));
+        }
+        sellerProductQnaResponseResult.setCurrentPageNum(pageNumber);
+        if(size%pageContentNumber!=0){
+            sellerProductQnaResponseResult.setTotalPageNum((size/pageContentNumber)+1);
+        }
+        else{
+            sellerProductQnaResponseResult.setTotalPageNum(size/pageContentNumber);
+        }
+        return sellerProductQnaResponseResult;
     }
 
     /**
