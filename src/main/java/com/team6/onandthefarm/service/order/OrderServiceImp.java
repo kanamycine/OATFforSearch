@@ -356,6 +356,7 @@ public class OrderServiceImp implements OrderService{
     /**
      * 유저가 주문 내역을 조회 할때 사용되는 메서드
      * userId로 자신의 주문 다 가져오고 -> orderProduct테이블에서 orderId로 묶은 뒤 보내기
+     * 10/24 할것 주문 취소 상태는 안나오게 함
      * @param orderUserFindDto
      * @return
      */
@@ -700,6 +701,29 @@ public class OrderServiceImp implements OrderService{
         List<OrderRefundResponse> responses = new ArrayList<>();
 
         List<Refund> refunds = refundRepository.findByUserId(Long.valueOf(orderUserFindDto.getUserId()));
+
+        User user = userRepository.findById(Long.valueOf(orderUserFindDto.getUserId())).get();
+
+        List<Orders> orders = orderRepository.findByUser(user);
+
+        for(Orders order : orders){
+            List<OrderProduct> cancels
+                    = orderProductRepository.findByOrdersAndOrderProductStatus(order,"canceled");
+            for(OrderProduct orderProduct : cancels){
+                OrderRefundResponse response = OrderRefundResponse.builder()
+                        .productPrice(orderProduct.getOrderProductPrice())
+                        .productQty(orderProduct.getOrderProductQty())
+                        .productTotalPrice(
+                                orderProduct.getOrderProductPrice() * orderProduct.getOrderProductQty())
+                        .productStatus(orderProduct.getOrderProductStatus())
+                        .productName(orderProduct.getOrderProductName())
+                        .productImage(orderProduct.getOrderProductMainImg())
+                        .orderDate(orderProduct.getOrderProductDate())
+                        .orderSerial(orderProduct.getOrders().getOrdersSerial())
+                        .build();
+                responses.add(response);
+            }
+        }
 
         for(Refund refund : refunds){
             Optional<OrderProduct> orderProduct

@@ -1,16 +1,20 @@
 package com.team6.onandthefarm.util;
 
+import org.joda.time.LocalTime;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 @Component
 public class DateUtils {
 
     public String transDate(String pattern){
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date = simpleDateFormat.format(new Date());
+        String date = simpleDateFormat.format(LocalDate.now(zoneId));
         return date;
     }
 
