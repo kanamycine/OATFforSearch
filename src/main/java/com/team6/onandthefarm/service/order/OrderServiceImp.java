@@ -285,6 +285,7 @@ public class OrderServiceImp implements OrderService{
                 if(orderProduct.getOrders().getOrdersId()!=orderId) continue;
                 OrderSellerResponse orderSellerResponse = OrderSellerResponse.builder()
                         .userName(user.get().getUserName())
+                        .userProfile(user.get().getUserProfileImg())
                         .orderProductName(orderProduct.getOrderProductName())
                         .orderProductMainImg(orderProduct.getOrderProductMainImg())
                         .orderProductPrice(orderProduct.getOrderProductPrice())
@@ -374,7 +375,18 @@ public class OrderServiceImp implements OrderService{
             int totalPrice = 0;
 
             OrderUserResponseList orderUserResponseList = new OrderUserResponseList();
-            List<OrderProduct> userOrders = orderProductRepository.findByOrders(order);
+            List<OrderProduct> userOrdersO1
+                    = orderProductRepository.findByOrdersAndOrderProductStatus(order,"activated");
+            List<OrderProduct> userOrdersO2
+                    = orderProductRepository.findByOrdersAndOrderProductStatus(order,"deliveryProgress");
+            List<OrderProduct> userOrdersO3
+                    = orderProductRepository.findByOrdersAndOrderProductStatus(order,"deliveryCompleted");
+
+            List<OrderProduct> userOrders = new ArrayList<>();
+            userOrders.addAll(userOrdersO1);
+            userOrders.addAll(userOrdersO2);
+            userOrders.addAll(userOrdersO3);
+
             List<OrderUserResponse> orderUserResponses = new ArrayList<>();
 
             for(OrderProduct orderProduct : userOrders){
@@ -390,7 +402,7 @@ public class OrderServiceImp implements OrderService{
                 totalPrice+=orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty();
                 orderUserResponses.add(orderUserResponse);
             }
-
+            if(orderUserResponses.isEmpty()) continue;
             orderUserResponseList.setOrderUserResponses(orderUserResponses);
             orderUserResponseList.setOrderTotalPrice(totalPrice);
             orderUserResponseList.setOrdersSerial(order.getOrdersSerial());
@@ -652,6 +664,7 @@ public class OrderServiceImp implements OrderService{
             orderSellerResponse.setOrdersDate(orders.get().getOrdersDate());
             orderSellerResponse.setOrdersSerial(orders.get().getOrdersSerial());
             orderSellerResponse.setUserName(user.get().getUserName());
+            orderSellerResponse.setUserProfile(user.get().getUserProfileImg());
             orderSellerResponse.setOrderProductId(orderProduct.getOrderProductId());
             orderSellerResponse.setOrderTotalPrice(
                     orderProduct.getOrderProductPrice()*orderProduct.getOrderProductQty());

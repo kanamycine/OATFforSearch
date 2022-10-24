@@ -39,4 +39,6 @@ public class OrderSellerResponse {
     private String orderProductDeliveryDate;
 
     private Integer orderTotalPrice;
+
+    private String userProfile;
 }
