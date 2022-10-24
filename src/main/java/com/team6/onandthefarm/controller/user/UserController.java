@@ -105,44 +105,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @PostMapping("/register")
-    @ApiOperation(value = "소셜 로그인 후 유저의 추가 정보 저장")
-    public ResponseEntity<BaseResponse> join(@ApiIgnore Principal principal,
-            @RequestBody UserInfoRequest userInfoRequest) {
-
-        if(principal == null){
-            BaseResponse baseResponse = BaseResponse.builder()
-                    .httpStatus(HttpStatus.FORBIDDEN)
-                    .message("no authorization")
-                    .build();
-            return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
-        }
-
-        String[] principalInfo = principal.getName().split(" ");
-        Long userId = Long.parseLong(principalInfo[0]);
-
-        BaseResponse response = null;
-
-        UserInfoDto userInfoDto = UserInfoDto.builder()
-                .userId(userId)
-                .userZipcode(userInfoRequest.getUserZipcode())
-                .userAddress(userInfoRequest.getUserAddress())
-                .userAddressDetail(userInfoRequest.getUserAddressDetail())
-                .userName(userInfoRequest.getUserName())
-                .userBirthday(userInfoRequest.getUserBirthday())
-                .userPhone(userInfoRequest.getUserPhone())
-                .userSex(userInfoRequest.getUserSex())
-                .build();
-
-        Long savedUserId = userService.registerUserInfo(userInfoDto);
-        if (savedUserId != -1L) {
-            response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
-        } else {
-            response = BaseResponse.builder().httpStatus(HttpStatus.FORBIDDEN).message("실패").build();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
     @PutMapping("/update")
     @ApiOperation(value = "유저 정보 수정")
     public ResponseEntity<BaseResponse> updateUserInfo(
@@ -432,16 +394,16 @@ public class UserController {
 
         MemberFollowerListRequest memberFollowerListRequest = new MemberFollowerListRequest();
 
-        if(request.get("memberId") == null) {
+        if(request.containsKey("memberId")) {
+            memberFollowerListRequest.setMemberId(Long.parseLong(request.get("memberId")));
+            memberFollowerListRequest.setMemberRole(request.get("memberRole"));
+        }
+        else{
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
             memberFollowerListRequest.setMemberId(memberId);
             memberFollowerListRequest.setMemberRole(memberRole);
-        }
-        else{
-            memberFollowerListRequest.setMemberId(Long.parseLong(request.get("memberId")));
-            memberFollowerListRequest.setMemberRole(request.get("memberRole"));
         }
 
         List<MemberFollowerListResponse> followerList = userService.getFollowerList(memberFollowerListRequest);
@@ -455,13 +417,19 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/follow/following-list")
+    @GetMapping("/follow/following-list")
     @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
     public ResponseEntity<BaseResponse<List<MemberFollowingListResponse>>> getFollowingList(
             @ApiIgnore Principal principal,
-            @RequestBody MemberFollowingListRequest memberFollowingListRequest){
+            @RequestParam Map<String, String> request){
 
-        if(memberFollowingListRequest.getMemberId() == null) {
+        MemberFollowingListRequest memberFollowingListRequest = new MemberFollowingListRequest();
+
+        if(request.containsKey("memberId")) {
+            memberFollowingListRequest.setMemberId(Long.parseLong(request.get("memberId")));
+            memberFollowingListRequest.setMemberRole(request.get("memberRole"));
+        }
+        else {
             String[] principalInfo = principal.getName().split(" ");
             Long memberId = Long.parseLong(principalInfo[0]);
             String memberRole = principalInfo[1];
@@ -480,32 +448,32 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/profile")
+    @GetMapping("/profile")
     @ApiOperation(value = "멤버의 프로필 조회")
     public ResponseEntity<BaseResponse<MemberProfileResponse>> getUserProfile(@ApiIgnore Principal principal,
-                                                                              @RequestBody MemberProfileRequest memberProfileRequest){
+                                                                              @RequestParam Map<String, String> request){
 
         MemberProfileDto memberProfileDto = new MemberProfileDto();
 
         Long loginId = null;
         String loginRole = null;
-        if(memberProfileRequest.getMemberId() == null) {
+        if(request.containsKey("memberId")) {
+            memberProfileDto.setMemberId(Long.parseLong(request.get("memberId")));
+            memberProfileDto.setMemberRole(request.get("memberRole"));
+        }else{
             String[] principalInfo = principal.getName().split(" ");
             loginId = Long.parseLong(principalInfo[0]);
             loginRole = principalInfo[1];
             memberProfileDto.setMemberId(loginId);
             memberProfileDto.setMemberRole(loginRole);
-        }else{
-            memberProfileDto.setMemberId(memberProfileRequest.getMemberId());
-            memberProfileDto.setMemberRole(memberProfileRequest.getMemberRole());
         }
 
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
-        if(memberProfileRequest.getMemberId() == null) {
-            memberProfileResponse.setIsModifiable(true);
+        if(request.containsKey("memberId")) {
+            memberProfileResponse.setIsModifiable(false);
         }
         else{
-            memberProfileResponse.setIsModifiable(false);
+            memberProfileResponse.setIsModifiable(true);
         }
 
         BaseResponse response = BaseResponse.builder()

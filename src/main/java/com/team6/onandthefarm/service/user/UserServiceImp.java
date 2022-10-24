@@ -166,6 +166,10 @@ public class UserServiceImp implements UserService {
 							.role("ROLE_USER")
 							.provider(provider)
 							.userNaverNumber(userInfo.getNaverId())
+							.userFollowerCount(0)
+							.userFollowingCount(0)
+							.userProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png")
+							.userRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")))
 							.build();
 					user = userRepository.save(newUser);
 				}
@@ -200,6 +204,10 @@ public class UserServiceImp implements UserService {
 							.role("ROLE_USER")
 							.provider(provider)
 							.userKakaoNumber(userInfo.getKakaoId())
+							.userFollowerCount(0)
+							.userFollowingCount(0)
+							.userProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png")
+							.userRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")))
 							.build();
 					user = userRepository.save(newUser);
 				}
@@ -239,25 +247,6 @@ public class UserServiceImp implements UserService {
 		}
 
 		return true;
-	}
-
-	@Override
-	public Long registerUserInfo(UserInfoDto userInfoDto) {
-		Optional<User> user = userRepository.findById(userInfoDto.getUserId());
-
-		user.get().setUserName(userInfoDto.getUserName());
-		user.get().setUserPhone(userInfoDto.getUserPhone());
-		user.get().setUserZipcode(userInfoDto.getUserZipcode());
-		user.get().setUserAddress(userInfoDto.getUserAddress());
-		user.get().setUserAddressDetail(userInfoDto.getUserAddressDetail());
-		user.get().setUserBirthday(userInfoDto.getUserBirthday());
-		user.get().setUserSex(userInfoDto.getUserSex());
-		user.get().setUserFollowerCount(0);
-		user.get().setUserFollowingCount(0);
-		user.get().setUserProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png");
-		user.get().setUserRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")));
-
-		return user.get().getUserId();
 	}
 
 	@Override
