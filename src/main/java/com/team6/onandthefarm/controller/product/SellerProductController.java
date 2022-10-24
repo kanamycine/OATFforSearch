@@ -237,9 +237,9 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/list/orderby/seller/{page-no}")
-	@ApiOperation(value = "농부별 자신이 등록한 상품 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getNewestProductList(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
+	@GetMapping(value = "/list/selling-product/by-seller/{page-no}")
+	@ApiOperation(value = "농부별 자신이 등록한 판매중 상품 최신순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getSellingProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
 
 		if(principal == null){
 			BaseResponse baseResponse = BaseResponse.builder()
@@ -253,7 +253,7 @@ public class SellerProductController {
 		Long sellerId = Long.parseLong(principalInfo[0]);
 		Long userId = null;
 
-		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
+		List<ProductSelectionResponse> products = productService.getSellingProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -264,5 +264,30 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/list/pause-product/by-seller/{page-no}")
+	@ApiOperation(value = "농부별 자신이 등록한 일시정지 상품 최신순 조회")
+	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getPauseProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
 
+		if(principal == null){
+			BaseResponse baseResponse = BaseResponse.builder()
+					.httpStatus(HttpStatus.FORBIDDEN)
+					.message("no authorization")
+					.build();
+			return new ResponseEntity(baseResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long sellerId = Long.parseLong(principalInfo[0]);
+		Long userId = null;
+
+		List<ProductSelectionResponse> products = productService.getPauseProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("getting Newest products by farmer completed")
+				.data(products)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
 }
