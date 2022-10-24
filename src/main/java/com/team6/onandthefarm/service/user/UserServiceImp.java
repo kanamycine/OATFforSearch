@@ -306,6 +306,8 @@ public class UserServiceImp implements UserService {
 									.getProductQnaAnswerContent();
 					response.setProductSellerAnswer(answer);
 				}
+				response.setUserName(user.get().getUserName());
+				response.setUserProfileImg(user.get().getUserProfileImg());
 				responses.add(response);
 			}
 		}
