@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.vo.sns.feed;
+package com.team6.onandthefarm.vo.user;
 
 import lombok.*;
 
@@ -9,12 +9,14 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FeedResponseResult {
-    private List<FeedResponse> feedResponseList;
+public class MemberFollowResult {
+
+    private List<MemberFollowListResponse> memberFollowListResponseList;
 
     private Integer currentPageNum;
 
     private Integer totalPageNum;
 
     private Integer totalElementNum;
+
 }

@@ -7,10 +7,7 @@ import com.team6.onandthefarm.vo.sns.feed.AddableProductResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedDetailResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
-import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
+import com.team6.onandthefarm.vo.sns.profile.*;
 import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 
 import java.io.IOException;
@@ -56,11 +53,11 @@ public interface FeedService {
 
     List<ProfileMainWishResponse> findByMemberWishList(ProfileMainWishDto profileMainWishDto);
 
-    List<WishProductListResponse> findByMemberWishDetailList(ProfileMainWishDto profileMainWishDto);
+    WishProductListResult findByMemberWishDetailList(ProfileMainWishDto profileMainWishDto);
 
-    List<FeedResponse> findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto);
+    FeedResponseResult findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto);
 
-    List<FeedResponse> findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto);
+    FeedResponseResult findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto);
 
     MemberProfileCountResponse getScrapLikeCount(MemberProfileDto memberProfileDto);
 
