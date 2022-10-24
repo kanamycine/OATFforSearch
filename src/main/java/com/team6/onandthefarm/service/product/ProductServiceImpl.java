@@ -414,6 +414,28 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public List<ProductSelectionResponse> getSellingProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+
+		Page<Product> productList =  productPagingRepository.findSellingProductBySellerNewest(pageRequest, sellerId);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+	}
+
+	@Override
+	public List<ProductSelectionResponse> getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
+
+		Page<Product> productList =  productPagingRepository.findPauseProductBySellerNewest(pageRequest, sellerId);
+		int totalPage = productList.getTotalPages();
+		Long totalElements = productList.getTotalElements();
+
+		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+	}
+
+	@Override
 	public List<ProductQnAResponse> findProductQnAList(Long productId){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
