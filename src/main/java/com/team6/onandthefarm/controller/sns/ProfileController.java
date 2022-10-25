@@ -53,7 +53,7 @@ public class ProfileController {
 			profileMainFeedDto.setMemberId(memberId);
 		}
 
-		List<ProfileMainFeedResponse> feedList = feedService.findByMemberFeedList(profileMainFeedDto);
+		List<ProfileMainFeedResponse> feedList = feedService.findFeedListByMember(profileMainFeedDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

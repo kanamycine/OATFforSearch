@@ -858,12 +858,12 @@ public class FeedServiceImpl implements FeedService {
 		return wishProductListResult;
 	}
 
-
 	@Override
-	public List<ProfileMainFeedResponse> findByMemberFeedList(ProfileMainFeedDto profileMainFeedDto) {
+	public List<ProfileMainFeedResponse> findFeedListByMember(ProfileMainFeedDto profileMainFeedDto) {
+		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("feedCreatedAt").descending());
 		Long memberId = profileMainFeedDto.getMemberId();
 
-		List<Feed> feedList = feedRepository.findFeedListByMemberId(memberId);
+		Page<Feed> feedList = feedRepository.findMainFeedListByMemberId(pageRequest, memberId);
 		List<ProfileMainFeedResponse> responseList = new ArrayList<>();
 		for (Feed feed : feedList) {
 			FeedImage feedThumbnailImage = feedImageRepository.findByFeed(feed).get(0);
