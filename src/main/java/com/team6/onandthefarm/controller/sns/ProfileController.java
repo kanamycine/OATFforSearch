@@ -227,7 +227,7 @@ public class ProfileController {
 			memberProfileDto.setMemberRole(loginRole);
 		}
 
-		MemberProfileCountResponse memberProfileCountResponse = feedService.getFeedScrapLikeCount(memberProfileDto);
+		MemberProfileCountResponse memberProfileCountResponse = feedService.getFeedScrapWishCount(memberProfileDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

@@ -8,5 +8,5 @@ import lombok.Data;
 public class MemberProfileCountResponse {
     private Integer photoCount;
     private Integer scrapCount;
-    private Integer likeCount;
+    private Integer wishCount;
 }
