@@ -335,7 +335,7 @@ public class UserController {
 
     @PostMapping("/follow/add")
     @ApiOperation(value = "다른 유저 팔로우")
-    public ResponseEntity<BaseResponse<Following>> addFollow(@ApiIgnore Principal principal,
+    public ResponseEntity<BaseResponse> addFollow(@ApiIgnore Principal principal,
             @RequestBody MemberFollowRequest memberFollowRequest) {
 
         String[] principalInfo = principal.getName().split(" ");
@@ -351,6 +351,15 @@ public class UserController {
 
         Long followingId = userService.addFollowList(memberFollowingDto);
 
+        if(followingId == null){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("OK")
+                    .build();
+
+            return new ResponseEntity(response, HttpStatus.FORBIDDEN);
+        }
+
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("OK")
@@ -362,7 +371,7 @@ public class UserController {
 
     @PutMapping("/follow/cancel")
     @ApiOperation(value = "다른 유저 팔로우 취소")
-    public ResponseEntity<BaseResponse<Following>> cancelFollow(@ApiIgnore Principal principal,
+    public ResponseEntity<BaseResponse> cancelFollow(@ApiIgnore Principal principal,
             @RequestBody MemberFollowRequest memberFollowRequest) {
 
         String[] principalInfo = principal.getName().split(" ");
@@ -376,6 +385,15 @@ public class UserController {
                 .followerMemberRole(memberFollowRequest.getFollowerMemberRole())
                 .build();
         Long followingId = userService.cancelFollowList(memberFollowingDto);
+
+        if(followingId == null){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.FORBIDDEN)
+                    .message("OK")
+                    .build();
+
+            return new ResponseEntity(response, HttpStatus.FORBIDDEN);
+        }
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -392,19 +410,22 @@ public class UserController {
             @ApiIgnore Principal principal,
             @RequestParam Map<String, String> request){
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
+        String loginMemberRole = principalInfo[1];
+
         MemberFollowerListRequest memberFollowerListRequest = new MemberFollowerListRequest();
         memberFollowerListRequest.setPageNumber(Integer.parseInt(request.get("pageNumber")));
+        memberFollowerListRequest.setLoginMemberId(loginMemberId);
+        memberFollowerListRequest.setLoginMemberRole(loginMemberRole);
 
         if(request.containsKey("memberId")) {
             memberFollowerListRequest.setMemberId(Long.parseLong(request.get("memberId")));
             memberFollowerListRequest.setMemberRole(request.get("memberRole"));
         }
         else{
-            String[] principalInfo = principal.getName().split(" ");
-            Long memberId = Long.parseLong(principalInfo[0]);
-            String memberRole = principalInfo[1];
-            memberFollowerListRequest.setMemberId(memberId);
-            memberFollowerListRequest.setMemberRole(memberRole);
+            memberFollowerListRequest.setMemberId(loginMemberId);
+            memberFollowerListRequest.setMemberRole(loginMemberRole);
         }
 
         MemberFollowResult followerList = userService.getFollowerList(memberFollowerListRequest);
@@ -419,24 +440,27 @@ public class UserController {
     }
 
     @GetMapping("/follow/following-list")
-    @ApiOperation(value = "멤버의 팔로워 유저 리스트 조회")
+    @ApiOperation(value = "멤버의 팔로잉 유저 리스트 조회")
     public ResponseEntity<BaseResponse<MemberFollowResult>> getFollowingList(
             @ApiIgnore Principal principal,
             @RequestParam Map<String, String> request){
 
+        String[] principalInfo = principal.getName().split(" ");
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
+        String loginMemberRole = principalInfo[1];
+
         MemberFollowingListRequest memberFollowingListRequest = new MemberFollowingListRequest();
         memberFollowingListRequest.setPageNumber(Integer.parseInt(request.get("pageNumber")));
+        memberFollowingListRequest.setLoginMemberId(loginMemberId);
+        memberFollowingListRequest.setLoginMemberRole(loginMemberRole);
 
         if(request.containsKey("memberId")) {
             memberFollowingListRequest.setMemberId(Long.parseLong(request.get("memberId")));
             memberFollowingListRequest.setMemberRole(request.get("memberRole"));
         }
         else {
-            String[] principalInfo = principal.getName().split(" ");
-            Long memberId = Long.parseLong(principalInfo[0]);
-            String memberRole = principalInfo[1];
-            memberFollowingListRequest.setMemberId(memberId);
-            memberFollowingListRequest.setMemberRole(memberRole);
+            memberFollowingListRequest.setMemberId(loginMemberId);
+            memberFollowingListRequest.setMemberRole(loginMemberRole);
         }
 
         MemberFollowResult followingList = userService.getFollowingList(memberFollowingListRequest);
@@ -463,6 +487,12 @@ public class UserController {
             memberProfileDto.setMemberId(Long.parseLong(request.get("memberId")));
             memberProfileDto.setMemberRole(request.get("memberRole"));
             memberProfileDto.setLoginMemberStatus(false);
+
+            String[] principalInfo = principal.getName().split(" ");
+            loginId = Long.parseLong(principalInfo[0]);
+            loginRole = principalInfo[1];
+            memberProfileDto.setLoginMemberId(loginId);
+            memberProfileDto.setLoginMemberRole(loginRole);
         }else{
             String[] principalInfo = principal.getName().split(" ");
             loginId = Long.parseLong(principalInfo[0]);

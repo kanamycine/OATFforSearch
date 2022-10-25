@@ -37,7 +37,7 @@ public class FeedResponse {
 
     private Boolean scrapStatus;
 
-    private Boolean FollowStatus;
+    private Boolean followStatus;
 
     private Boolean isModifiable;
 

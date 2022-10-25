@@ -125,17 +125,19 @@ public class ProfileController {
 	public ResponseEntity<BaseResponse<FeedResponseResult>> getProfileFeedResponse(@ApiIgnore Principal principal,
 																				   @RequestParam Map<String, String> request) {
 
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long loginMemberId = Long.parseLong(principalInfo[0]);
+
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
 		profileFeedDto.setPageNumber(Integer.parseInt(request.get("pageNumber")));
+		profileFeedDto.setLoginMemberId(loginMemberId);
 
-		Long memberId = null;
 		if(request.containsKey("memberId")) {
 			profileFeedDto.setMemberId(Long.parseLong(request.get("memberId")));
 		}
 		else {
-			String[] principalInfo = principal.getName().split(" ");
-			memberId = Long.parseLong(principalInfo[0]);
-			profileFeedDto.setMemberId(memberId);
+			profileFeedDto.setMemberId(loginMemberId);
 		}
 
 		FeedResponseResult responses = feedService.findByRecentFeedListAndMemberId(profileFeedDto);
@@ -154,17 +156,19 @@ public class ProfileController {
 	public ResponseEntity<BaseResponse<FeedResponseResult>> getProfileScrapFeedResponse(@ApiIgnore Principal principal,
 																						@RequestParam Map<String, String> request) {
 
+
+		String[] principalInfo = principal.getName().split(" ");
+		Long loginMemberId =  Long.parseLong(principalInfo[0]);
+
 		ProfileFeedDto profileFeedDto = new ProfileFeedDto();
 		profileFeedDto.setPageNumber(Integer.parseInt(request.get("pageNumber")));
+		profileFeedDto.setLoginMemberId(loginMemberId);
 
-		Long memberId = null;
 		if(request.containsKey("memberId")) {
 			profileFeedDto.setMemberId(Long.parseLong(request.get("memberId")));
 		}
 		else {
-			String[] principalInfo = principal.getName().split(" ");
-			memberId = Long.parseLong(principalInfo[0]);
-			profileFeedDto.setMemberId(memberId);
+			profileFeedDto.setMemberId(loginMemberId);
 		}
 
 		FeedResponseResult responses = feedService.findByRecentScrapFeedListAndMemberId(profileFeedDto);

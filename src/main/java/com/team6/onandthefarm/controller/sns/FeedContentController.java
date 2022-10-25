@@ -79,9 +79,9 @@ public class FeedContentController {
         }
 
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
 
-        FeedDetailResponse feedDetailResponse = feedService.findFeedDetail(feedId, memberId);
+        FeedDetailResponse feedDetailResponse = feedService.findFeedDetail(feedId, loginMemberId);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -216,9 +216,9 @@ public class FeedContentController {
                                                                           @RequestParam String feedTagName,
                                                                           @RequestParam Integer pageNumber){
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
 
-        FeedResponseResult responses = feedService.findByFeedTag(feedTagName, pageNumber, memberId);
+        FeedResponseResult responses = feedService.findByFeedTag(feedTagName, pageNumber, loginMemberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -240,9 +240,9 @@ public class FeedContentController {
     public ResponseEntity<BaseResponse<FeedResponseResult>> findByRecentFeedList(@ApiIgnore Principal principal,
                                                                                  @RequestParam Integer pageNumber){
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
 
-        FeedResponseResult responses = feedService.findByRecentFeedList(pageNumber, memberId);
+        FeedResponseResult responses = feedService.findByRecentFeedList(pageNumber, loginMemberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -258,11 +258,11 @@ public class FeedContentController {
     public ResponseEntity<BaseResponse<FeedResponseResult>> findByLikeFeedList(@ApiIgnore Principal principal,
                                                                                @RequestParam Map<String,String> request){
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
 
         Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
 
-        FeedResponseResult responses = feedService.findByLikeFeedList(pageNumber, memberId);
+        FeedResponseResult responses = feedService.findByLikeFeedList(pageNumber, loginMemberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -277,10 +277,12 @@ public class FeedContentController {
     @ApiOperation(value = "메인 피드 팔로우 조회")
     public ResponseEntity<BaseResponse<FeedResponseResult>> findByFollowFeedList(@ApiIgnore Principal principal,
             @RequestParam Map<String,String> request){
-        Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
+
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
-        FeedResponseResult responses = feedService.findByFollowFeedList(memberId,pageNumber);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
+
+        Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
+        FeedResponseResult responses = feedService.findByFollowFeedList(loginMemberId, pageNumber);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -298,11 +300,11 @@ public class FeedContentController {
             @RequestParam Map<String,String> request){
 
         String[] principalInfo = principal.getName().split(" ");
-        Long memberId = Long.parseLong(principalInfo[0]);
+        Long loginMemberId = Long.parseLong(principalInfo[0]);
 
         Integer pageNumber = Integer.valueOf(request.get("pageNumber"));
 
-        FeedResponseResult responses = feedService.findByViewCountFeedList(pageNumber, memberId);
+        FeedResponseResult responses = feedService.findByViewCountFeedList(pageNumber, loginMemberId);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
