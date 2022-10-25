@@ -208,8 +208,8 @@ public class ProfileController {
 	}
 
 	@GetMapping("/profile/count")
-	@ApiOperation(value = "멤버의 스크랩 수, 좋아요 수 조회")
-	public ResponseEntity<BaseResponse<MemberProfileCountResponse>> getScrapLikeCount(@ApiIgnore Principal principal,
+	@ApiOperation(value = "멤버의 피드 수,스크랩 수, 좋아요 수 조회")
+	public ResponseEntity<BaseResponse<MemberProfileCountResponse>> getFeedScrapLikeCount(@ApiIgnore Principal principal,
 																					  @RequestParam Map<String, String> request){
 
 		MemberProfileDto memberProfileDto = new MemberProfileDto();
@@ -227,7 +227,7 @@ public class ProfileController {
 			memberProfileDto.setMemberRole(loginRole);
 		}
 
-		MemberProfileCountResponse memberProfileCountResponse = feedService.getScrapLikeCount(memberProfileDto);
+		MemberProfileCountResponse memberProfileCountResponse = feedService.getFeedScrapLikeCount(memberProfileDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
