@@ -26,14 +26,13 @@ import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageInfo;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductInfo;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainFeedResponse;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainScrapResponse;
-import com.team6.onandthefarm.vo.sns.profile.ProfileMainWishResponse;
-import com.team6.onandthefarm.vo.sns.profile.WishProductListResponse;
+import com.team6.onandthefarm.vo.sns.profile.*;
 import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -455,6 +454,7 @@ public class FeedServiceImpl implements FeedService {
 
 		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
 		responseResult.setCurrentPageNum(pageNumber);
+		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
 			responseResult.setTotalPageNum(size/pageContentNumber);
 		}
@@ -563,6 +563,7 @@ public class FeedServiceImpl implements FeedService {
 
 		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
 		responseResult.setCurrentPageNum(pageNumber);
+		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
 			responseResult.setTotalPageNum(size/pageContentNumber);
 		}
@@ -588,6 +589,7 @@ public class FeedServiceImpl implements FeedService {
 
 		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
 		responseResult.setCurrentPageNum(pageNumber);
+		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
 			responseResult.setTotalPageNum(size/pageContentNumber);
 		}
@@ -611,8 +613,10 @@ public class FeedServiceImpl implements FeedService {
 		List<Following> followers = followingRepository.findByFollowingMemberId(memberId);
 
 		for (Following follower : followers) {
-			Feed feed = feedRepository.findByMemberId(follower.getFollowerMemberId());
-			feedList.add(feed);
+			List<Feed> feedListByFollower = feedRepository.findByMemberId(follower.getFollowerMemberId());
+			for(Feed feed : feedListByFollower) {
+				feedList.add(feed);
+			}
 		}
 
 		int startIndex = pageNumber * pageContentNumber;
@@ -621,6 +625,7 @@ public class FeedServiceImpl implements FeedService {
 
 		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
 		responseResult.setCurrentPageNum(pageNumber);
+		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
 			responseResult.setTotalPageNum(size/pageContentNumber);
 		}
@@ -646,6 +651,7 @@ public class FeedServiceImpl implements FeedService {
 
 		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
 		responseResult.setCurrentPageNum(pageNumber);
+		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
 			responseResult.setTotalPageNum(size/pageContentNumber);
 		}
@@ -750,6 +756,7 @@ public class FeedServiceImpl implements FeedService {
 					.isModifiable(false)
 					.feedLikeStatus(false)
 					.scrapStatus(false)
+          .FollowStatus(false)
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부
@@ -790,73 +797,56 @@ public class FeedServiceImpl implements FeedService {
 
 	/**
 	 * 조회 목록에 대한 리스트를 만드는 메서드
-	 * @param feedList
+	 * @param wishList
 	 * @Param memberId
 	 * @return List<FeedResponse>
 	 */
-	public List<FeedResponse> getResponses(List<Feed> feedList, Long memberId){
-
-		List<FeedResponse> responseList = new ArrayList<>();
-
-		Map<Long,Integer> followMap = new HashMap<>();
-		List<Following> followings = followingRepository.findByFollowingMemberId(memberId);
-		for(Following following : followings){
-			followMap.put(following.getFollowingMemberId(),1);
+	public WishProductListResult getResponseForWish(int size, int startIndex, List<Wish> wishList){
+		WishProductListResult wishProductListResult = new WishProductListResult();
+		List<WishProductListResponse> responseList = new ArrayList<>();
+		if(size < startIndex){
+			wishProductListResult.setWishProductListResponse(responseList);
+			return wishProductListResult;
 		}
 
-		for (Feed feed : feedList) {
-			FeedResponse response = FeedResponse.builder()
-					.feedTitle(feed.getFeedTitle())
-					.feedId(feed.getFeedId())
-					.feedCommentCount(feed.getFeedCommentCount())
-					.feedLikeCount(feed.getFeedLikeCount())
-					.feedScrapCount(feed.getFeedScrapCount())
-					.feedShareCount(feed.getFeedShareCount())
-					.feedViewCount(feed.getFeedViewCount())
-					.memberId(feed.getMemberId())
-					.memberRole(feed.getMemberRole())
-					.feedContent(feed.getFeedContent())
-					.isModifiable(false)
-					.feedLikeStatus(false)
-					.scrapStatus(false)
-					.FollowStatus(false)
-					.build();
+		if(size < startIndex + pageContentNumber) {
+			for (Wish wish : wishList.subList(startIndex, size)) {
+				if (wish != null) {
+					WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
+							.productId(wish.getProduct().getProductId())
+							.productName(wish.getProduct().getProductName())
+							.productPrice(wish.getProduct().getProductPrice())
+							.productMainImgSrc(wish.getProduct().getProductMainImgSrc())
+							.productOriginPlace(wish.getProduct().getProductOriginPlace())
+							.productWishCount(wish.getProduct().getProductWishCount())
+							.productStatus(wish.getProduct().getProductStatus())
+							.build();
 
-			// feed 작성자와 로그인한 사용자가 같은지 여부
-			if (feed.getMemberId() == memberId) {
-				response.setIsModifiable(true);
+					responseList.add(wishProductListResponse);
+				}
 			}
-			// follow 한 상태인지 여부
-			if(followMap.containsKey(feed.getMemberId())){
-				response.setFollowStatus(true);
-			}
-
-			// feed에 대한 스크랩, 좋아요 여부
-			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, memberId);
-			if (feedLike.isPresent()) {
-				response.setFeedLikeStatus(true);
-			}
-			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, memberId);
-			if (scrap.isPresent()) {
-				response.setScrapStatus(true);
-			}
-
-			if (feed.getMemberRole().equals("user")) { // 유저
-				Optional<User> user = userRepository.findById(feed.getMemberId());
-				response.setMemberName(user.get().getUserName());
-				response.setMemberProfileImg(user.get().getUserProfileImg());
-			} else if (feed.getMemberRole().equals("seller")) { // 셀러
-				Optional<Seller> seller = sellerRepository.findById(feed.getMemberId());
-				response.setMemberName(seller.get().getSellerName());
-				response.setMemberProfileImg(seller.get().getSellerProfileImg());
-			}
-			List<FeedImage> feedImage = feedImageRepository.findByFeed(feed);
-			response.setFeedImageSrc(feedImage.get(0).getFeedImageSrc());
-
-			responseList.add(response);
+			wishProductListResult.setWishProductListResponse(responseList);
+			return wishProductListResult;
 		}
 
-		return responseList;
+		for (Wish wish : wishList.subList(startIndex, startIndex + pageContentNumber)) {
+			if (wish != null) {
+				WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
+						.productId(wish.getProduct().getProductId())
+						.productName(wish.getProduct().getProductName())
+						.productPrice(wish.getProduct().getProductPrice())
+						.productMainImgSrc(wish.getProduct().getProductMainImgSrc())
+						.productOriginPlace(wish.getProduct().getProductOriginPlace())
+						.productWishCount(wish.getProduct().getProductWishCount())
+						.productStatus(wish.getProduct().getProductStatus())
+						.build();
+
+				responseList.add(wishProductListResponse);
+			}
+		}
+
+		wishProductListResult.setWishProductListResponse(responseList);
+		return wishProductListResult;
 	}
 
 
@@ -924,14 +914,32 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	@Override
-	public List<FeedResponse> findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
-		List<Feed> feedList = feedRepository.findFeedListByMemberId(profileFeedDto.getMemberId());
+	public FeedResponseResult findByRecentFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
 
-		return getResponses(feedList, profileFeedDto.getMemberId());
+		List<Feed> feedPageList = feedRepository.findFeedListByMemberId(profileFeedDto.getMemberId());
+		List<Feed> feedList = new ArrayList<>();
+		for(Feed feed : feedPageList){
+			feedList.add(feed);
+		}
+
+		int startIndex = profileFeedDto.getPageNumber() * pageContentNumber;
+
+		int size = feedList.size();
+
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
+		responseResult.setCurrentPageNum(profileFeedDto.getPageNumber());
+		responseResult.setTotalElementNum(size);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
 	}
 
 	@Override
-	public List<FeedResponse> findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
+	public FeedResponseResult findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto) {
 
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(profileFeedDto.getMemberId());
 		List<Feed> feedList = new ArrayList<>();
@@ -939,7 +947,42 @@ public class FeedServiceImpl implements FeedService {
 			feedList.add(scrap.getFeed());
 		}
 
-		return getResponses(feedList, profileFeedDto.getMemberId());
+		int startIndex = profileFeedDto.getPageNumber() * pageContentNumber;
+		int size = feedList.size();
+
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
+		responseResult.setCurrentPageNum(profileFeedDto.getPageNumber());
+		responseResult.setTotalElementNum(size);
+		if(size%pageContentNumber==0){
+			responseResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			responseResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+		return responseResult;
+	}
+
+	@Override
+	public WishProductListResult findByMemberWishDetailList(ProfileMainWishDto profileMainWishDto) {
+
+		Long memberId = profileMainWishDto.getMemberId();
+
+		List<Wish> wishList = productWishRepository.findWishListByUserId(memberId);
+
+		int startIndex = profileMainWishDto.getPageNumber() * pageContentNumber;
+		int size = wishList.size();
+
+		WishProductListResult wishProductListResult = getResponseForWish(size, startIndex, wishList);
+		wishProductListResult.setCurrentPageNum(profileMainWishDto.getPageNumber());
+		wishProductListResult.setTotalElementNum(size);
+		if(size%pageContentNumber==0){
+			wishProductListResult.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			wishProductListResult.setTotalPageNum((size/pageContentNumber)+1);
+		}
+
+		return wishProductListResult;
 	}
 
 	@Override
@@ -956,26 +999,5 @@ public class FeedServiceImpl implements FeedService {
 		return memberProfileCountResponse;
 	}
 
-	@Override
-	public List<WishProductListResponse> findByMemberWishDetailList(ProfileMainWishDto profileMainWishDto) {
-		Long memberId = profileMainWishDto.getMemberId();
-		List<WishProductListResponse> wishProductListResponses = new ArrayList<>();
 
-		List<Wish> wishList = productWishRepository.findWishListByUserId(memberId);
-		for(Wish wish : wishList){
-			WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
-					.productId(wish.getProduct().getProductId())
-					.productName(wish.getProduct().getProductName())
-					.productPrice(wish.getProduct().getProductPrice())
-					.productMainImgSrc(wish.getProduct().getProductMainImgSrc())
-					.productOriginPlace(wish.getProduct().getProductOriginPlace())
-					.productWishCount(wish.getProduct().getProductWishCount())
-					.productStatus(wish.getProduct().getProductStatus())
-					.build();
-
-			wishProductListResponses.add(wishProductListResponse);
-		}
-
-		return wishProductListResponses;
-	}
 }
