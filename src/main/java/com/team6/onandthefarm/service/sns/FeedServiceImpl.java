@@ -148,11 +148,13 @@ public class FeedServiceImpl implements FeedService {
 		Feed savedFeed = feedRepository.save(feed);
 
 		//피드 태그 추가
-		for (String tag : feedInfoDto.getFeedTag()) {
-			FeedTag feedTag = new FeedTag();
-			feedTag.setFeed(savedFeed);
-			feedTag.setFeedTagName(tag);
-			feedTagRepository.save(feedTag);
+		if(feedInfoDto.getFeedTag()!=null) {
+			for (String tag : feedInfoDto.getFeedTag()) {
+				FeedTag feedTag = new FeedTag();
+				feedTag.setFeed(savedFeed);
+				feedTag.setFeedTagName(tag);
+				feedTagRepository.save(feedTag);
+			}
 		}
 
 		int imageIndex = 0;
@@ -165,14 +167,16 @@ public class FeedServiceImpl implements FeedService {
 			feedImage.setFeedImageSrc(url);
 			FeedImage saveFeedImage = feedImageRepository.save(feedImage);
 
-			for (ImageProductInfo imageProduct : feedInfoDto.getFeedProductIdList()) {
-				if (imageProduct.getImageIndex() == imageIndex) {
-					FeedImageProduct feedImageProduct = new FeedImageProduct();
-					feedImageProduct.setFeedImage(saveFeedImage);
-					feedImageProduct.setProductId(imageProduct.getProductId());
+			if(feedInfoDto.getFeedProductIdList() != null) {
+				for (ImageProductInfo imageProduct : feedInfoDto.getFeedProductIdList()) {
+					if (imageProduct.getImageIndex() == imageIndex) {
+						FeedImageProduct feedImageProduct = new FeedImageProduct();
+						feedImageProduct.setFeedImage(saveFeedImage);
+						feedImageProduct.setProductId(imageProduct.getProductId());
 
-					//피드 이미지 별 상품 추가
-					FeedImageProduct savedFeedImageProduct = feedImageProductRepository.save(feedImageProduct);
+						//피드 이미지 별 상품 추가
+						FeedImageProduct savedFeedImageProduct = feedImageProductRepository.save(feedImageProduct);
+					}
 				}
 			}
 			imageIndex++;
