@@ -109,7 +109,7 @@ public class ProfileController {
 			profileMainWishDto.setMemberId(memberId);
 		}
 
-		List<ProfileMainWishResponse> wishList = feedService.findByMemberWishList(profileMainWishDto);
+		List<ProfileMainWishResponse> wishList = feedService.findWishListByMember(profileMainWishDto);
 
 		BaseResponse response = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

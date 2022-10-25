@@ -32,6 +32,8 @@ import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -860,7 +862,7 @@ public class FeedServiceImpl implements FeedService {
 
 	@Override
 	public List<ProfileMainFeedResponse> findFeedListByMember(ProfileMainFeedDto profileMainFeedDto) {
-		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("feedCreatedAt").descending());
+		PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("feedCreateAt").descending());
 		Long memberId = profileMainFeedDto.getMemberId();
 
 		Page<Feed> feedList = feedRepository.findMainFeedListByMemberId(pageRequest, memberId);
@@ -879,9 +881,10 @@ public class FeedServiceImpl implements FeedService {
 
 	@Override
 	public List<ProfileMainScrapResponse> findByMemberScrapList(ProfileMainScrapDto profileMainScrapDto) {
+		PageRequest pageRequest = PageRequest.of(0, 8);
 		Long memberId = profileMainScrapDto.getMemberId();
 		List<ProfileMainScrapResponse> responseList = new ArrayList<>();
-		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberId);
+		Page<Scrap> scrapList = scrapRepository.findMainScrapListByMemberId(pageRequest, memberId);
 		for (Scrap scrap : scrapList) {
 			FeedImage feedImage = feedImageRepository.findByFeed(scrap.getFeed()).get(0);
 			ProfileMainScrapResponse profileMainScrapResponse = ProfileMainScrapResponse.builder()
@@ -905,11 +908,12 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	@Override
-	public List<ProfileMainWishResponse> findByMemberWishList(ProfileMainWishDto profileMainWishDto) {
+	public List<ProfileMainWishResponse> findWishListByMember(ProfileMainWishDto profileMainWishDto) {
+		PageRequest pageRequest = PageRequest.of(0, 8);
 		Long memberId = profileMainWishDto.getMemberId();
 		List<ProfileMainWishResponse> responseList = new ArrayList<>();
 
-		List<Wish> wishList = productWishRepository.findWishListByUserId(memberId);
+		Page<Wish> wishList = productWishRepository.findMainWishListByUserId(pageRequest, memberId);
 		for(Wish wish : wishList){
 			Optional<Product> product = productRepository.findById(wish.getProduct().getProductId());
 			ProfileMainWishResponse profileMainWishResponse = ProfileMainWishResponse.builder()
