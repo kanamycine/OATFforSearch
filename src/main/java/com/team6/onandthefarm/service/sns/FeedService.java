@@ -59,6 +59,6 @@ public interface FeedService {
 
     FeedResponseResult findByRecentScrapFeedListAndMemberId(ProfileFeedDto profileFeedDto);
 
-    MemberProfileCountResponse getFeedScrapLikeCount(MemberProfileDto memberProfileDto);
+    MemberProfileCountResponse getFeedScrapWishCount(MemberProfileDto memberProfileDto);
 
 }

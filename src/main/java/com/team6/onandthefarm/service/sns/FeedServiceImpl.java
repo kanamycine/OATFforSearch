@@ -990,16 +990,16 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	@Override
-	public MemberProfileCountResponse getFeedScrapLikeCount(MemberProfileDto memberProfileDto) {
+	public MemberProfileCountResponse getFeedScrapWishCount(MemberProfileDto memberProfileDto) {
 
 		List<Feed> feedList = feedRepository.findFeedListByMemberId(memberProfileDto.getMemberId());
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberProfileDto.getMemberId());
-		List<FeedLike> likeList = feedLikeRepository.findFeedLikeListByMemberId(memberProfileDto.getMemberId());
+		List<Wish> wishList = productWishRepository.findWishListByUserId(memberProfileDto.getMemberId());
 
 		MemberProfileCountResponse memberProfileCountResponse = MemberProfileCountResponse.builder()
 				.photoCount(feedList.size())
 				.scrapCount(scrapList.size())
-				.likeCount(likeList.size())
+				.wishCount(wishList.size())
 				.build();
 
 		return memberProfileCountResponse;
