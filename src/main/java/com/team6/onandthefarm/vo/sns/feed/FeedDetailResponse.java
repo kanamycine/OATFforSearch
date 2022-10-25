@@ -2,7 +2,7 @@ package com.team6.onandthefarm.vo.sns.feed;
 
 import com.team6.onandthefarm.entity.sns.FeedTag;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageInfo;
-import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductInfo;
+import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +46,7 @@ public class FeedDetailResponse {
 
     private List<ImageInfo> feedImageList;
 
-    private List<ImageProductInfo> feedImageProductList;
+    private List<ImageProductResponse> feedImageProductList;
 
     private List<FeedTag> feedTag;
 

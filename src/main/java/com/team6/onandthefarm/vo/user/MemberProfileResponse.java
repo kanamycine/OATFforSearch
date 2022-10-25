@@ -15,4 +15,5 @@ public class MemberProfileResponse {
 	private Boolean isModifiable;
 	private Integer followingCount;
 	private Integer followerCount;
+	private Boolean followStatus;
 }

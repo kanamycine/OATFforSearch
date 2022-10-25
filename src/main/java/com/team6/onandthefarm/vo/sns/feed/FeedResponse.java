@@ -41,10 +41,4 @@ public class FeedResponse {
 
     private Boolean isModifiable;
 
-    public FeedResponse(){
-        this.feedLikeStatus = false;
-        this.scrapStatus = false;
-        this.isModifiable = false;
-    }
-
 }

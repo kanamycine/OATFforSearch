@@ -26,13 +26,12 @@ import com.team6.onandthefarm.vo.sns.feed.FeedResponse;
 import com.team6.onandthefarm.vo.sns.feed.FeedResponseResult;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageInfo;
 import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductInfo;
+import com.team6.onandthefarm.vo.sns.feed.imageProduct.ImageProductResponse;
 import com.team6.onandthefarm.vo.sns.profile.*;
 import com.team6.onandthefarm.vo.user.MemberProfileCountResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -262,7 +261,7 @@ public class FeedServiceImpl implements FeedService {
 
 			// feed image 및 image 별 product
 			List<ImageInfo> imageInfoList = new ArrayList<>();
-			List<ImageProductInfo> imageProductInfoList = new ArrayList<>();
+			List<ImageProductResponse> imageProductInfoList = new ArrayList<>();
 
 			List<FeedImage> savedFeedImageList = feedImageRepository.findByFeed(feedEntity);
 			for (FeedImage feedImage : savedFeedImageList) {
@@ -275,11 +274,17 @@ public class FeedServiceImpl implements FeedService {
 				List<FeedImageProduct> savedFeedImageProductList = feedImageProductRepository.findByFeedImage(
 						feedImage);
 				for (FeedImageProduct feedImageProduct : savedFeedImageProductList) {
-					ImageProductInfo imageProductInfo = ImageProductInfo.builder()
+					Optional<Product> product = productRepository.findById(feedImageProduct.getProductId());
+
+					ImageProductResponse imageProductResponse = ImageProductResponse.builder()
 							.feedImageId(feedImage.getFeedImageId())
 							.productId(feedImageProduct.getProductId())
+							.productPrice(product.get().getProductPrice())
+							.productName(product.get().getProductName())
+							.productMainImgSrc(product.get().getProductMainImgSrc())
+							.sellerName(product.get().getSeller().getSellerName())
 							.build();
-					imageProductInfoList.add(imageProductInfo);
+					imageProductInfoList.add(imageProductResponse);
 				}
 			}
 
