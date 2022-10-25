@@ -39,9 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -675,6 +673,13 @@ public class FeedServiceImpl implements FeedService {
 	public FeedResponseResult getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
 		FeedResponseResult responseResult = new FeedResponseResult();
 		List<FeedResponse> responseList = new ArrayList<>();
+
+		Map<Long,Integer> followMap = new HashMap<>();
+		List<Following> followings = followingRepository.findByFollowingMemberId(memberId);
+		for(Following following : followings){
+			followMap.put(following.getFollowingMemberId(),1);
+		}
+
 		if(size < startIndex){
 			responseResult.setFeedResponseList(responseList);
 			return responseResult;
@@ -694,11 +699,18 @@ public class FeedServiceImpl implements FeedService {
 							.memberRole(feed.getMemberRole())
 							.feedContent(feed.getFeedContent())
 							.isModifiable(false)
+							.feedLikeStatus(false)
+							.scrapStatus(false)
+							.FollowStatus(false)
 							.build();
 
 					// feed 작성자와 로그인한 사용자가 같은지 여부
 					if (feed.getMemberId() == memberId) {
 						response.setIsModifiable(true);
+					}
+					// follow 한 상태인지 여부
+					if(followMap.containsKey(feed.getMemberId())){
+						response.setFollowStatus(true);
 					}
 
 					// feed에 대한 스크랩, 좋아요 여부
@@ -741,7 +753,30 @@ public class FeedServiceImpl implements FeedService {
 					.memberId(feed.getMemberId())
 					.memberRole(feed.getMemberRole())
 					.feedContent(feed.getFeedContent())
+					.isModifiable(false)
+					.feedLikeStatus(false)
+					.scrapStatus(false)
+          .FollowStatus(false)
 					.build();
+
+			// feed 작성자와 로그인한 사용자가 같은지 여부
+			if (feed.getMemberId() == memberId) {
+				response.setIsModifiable(true);
+			}
+			// follow 한 상태인지 여부
+			if(followMap.containsKey(feed.getMemberId())){
+				response.setFollowStatus(true);
+			}
+
+			// feed에 대한 스크랩, 좋아요 여부
+			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, memberId);
+			if (feedLike.isPresent()) {
+				response.setFeedLikeStatus(true);
+			}
+			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, memberId);
+			if (scrap.isPresent()) {
+				response.setScrapStatus(true);
+			}
 
 			if (feed.getMemberRole().equals("user")) { // 유저
 				Optional<User> user = userRepository.findById(feed.getMemberId());
