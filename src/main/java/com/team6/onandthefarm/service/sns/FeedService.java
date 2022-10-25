@@ -47,7 +47,7 @@ public interface FeedService {
 
     FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long memberId);
 
-    List<ProfileMainFeedResponse> findByMemberFeedList(ProfileMainFeedDto profileMainFeedDto);
+    List<ProfileMainFeedResponse> findFeedListByMember(ProfileMainFeedDto profileMainFeedDto);
 
     List<ProfileMainScrapResponse> findByMemberScrapList(ProfileMainScrapDto profileMainScrapDto);
 
