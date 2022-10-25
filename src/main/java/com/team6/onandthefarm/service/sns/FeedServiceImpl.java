@@ -990,7 +990,7 @@ public class FeedServiceImpl implements FeedService {
 	}
 
 	@Override
-	public MemberProfileCountResponse getScrapLikeCount(MemberProfileDto memberProfileDto) {
+	public MemberProfileCountResponse getFeedScrapLikeCount(MemberProfileDto memberProfileDto) {
 
 		List<Feed> feedList = feedRepository.findFeedListByMemberId(memberProfileDto.getMemberId());
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberProfileDto.getMemberId());
