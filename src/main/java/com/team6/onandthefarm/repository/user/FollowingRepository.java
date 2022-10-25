@@ -15,6 +15,9 @@ public interface FollowingRepository extends CrudRepository<Following, Long> {
 	Optional<Following> findByFollowingMemberIdAndFollowerMemberId(
 			Long followingMemberId, Long followerMemberId);
 
+	Optional<Following> findByFollowingMemberIdAndFollowingMemberRole(
+			Long followingMemberId, String followerMemberRole);
+
 	@Query("select f from Following f where f.followerMemberId =:followerId")
 	List<Following> findFollowingIdByFollowerId(@Param("followerId")Long followerId);
 

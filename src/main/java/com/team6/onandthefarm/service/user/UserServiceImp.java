@@ -525,6 +525,19 @@ public class UserServiceImp implements UserService {
 					.followerCount(seller.getSellerFollowerCount())
 					.build();
 		}
+
+		memberProfileResponse.setFollowStatus(false);
+		if(memberProfileDto.getLoginMemberStatus()){
+			memberProfileResponse.setIsModifiable(true);
+		}
+		else{
+			memberProfileResponse.setIsModifiable(false);
+			Optional<Following> following = followingRepository.findByFollowingMemberIdAndFollowingMemberRole(memberId, memberRole);
+			if(following.isPresent()){
+				memberProfileResponse.setFollowStatus(true);
+			}
+		}
+
 		return memberProfileResponse;
 	}
 

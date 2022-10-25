@@ -8,4 +8,5 @@ public class MemberProfileDto {
 	private String memberRole;
 	private String userName;
 	private String memberProfileImage;
+	private Boolean loginMemberStatus;
 }

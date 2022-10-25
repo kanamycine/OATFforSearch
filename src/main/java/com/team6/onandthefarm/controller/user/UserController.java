@@ -462,21 +462,17 @@ public class UserController {
         if(request.containsKey("memberId")) {
             memberProfileDto.setMemberId(Long.parseLong(request.get("memberId")));
             memberProfileDto.setMemberRole(request.get("memberRole"));
+            memberProfileDto.setLoginMemberStatus(false);
         }else{
             String[] principalInfo = principal.getName().split(" ");
             loginId = Long.parseLong(principalInfo[0]);
             loginRole = principalInfo[1];
             memberProfileDto.setMemberId(loginId);
             memberProfileDto.setMemberRole(loginRole);
+            memberProfileDto.setLoginMemberStatus(true);
         }
 
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);
-        if(request.containsKey("memberId")) {
-            memberProfileResponse.setIsModifiable(false);
-        }
-        else{
-            memberProfileResponse.setIsModifiable(true);
-        }
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
