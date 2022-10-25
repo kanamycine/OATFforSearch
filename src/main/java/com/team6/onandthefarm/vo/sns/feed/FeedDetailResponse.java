@@ -56,4 +56,6 @@ public class FeedDetailResponse {
 
     private Boolean isModifiable;
 
+    private Boolean followStatus;
+
 }

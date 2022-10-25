@@ -14,4 +14,5 @@ public class MemberFollowListResponse {
     private String memberRole;
     private String memberName;
     private String memberImg;
+    private Boolean followStatus;
 }

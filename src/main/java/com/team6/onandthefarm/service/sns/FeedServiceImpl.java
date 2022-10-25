@@ -253,7 +253,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return FeedDetailResponse
 	 */
 	@Override
-	public FeedDetailResponse findFeedDetail(Long feedId, Long memberId) {
+	public FeedDetailResponse findFeedDetail(Long feedId, Long loginMemberId) {
 
 		FeedDetailResponse feedDetailResponse = new FeedDetailResponse();
 
@@ -310,19 +310,26 @@ public class FeedServiceImpl implements FeedService {
 					.isModifiable(false)
 					.feedLikeStatus(false)
 					.scrapStatus(false)
+					.followStatus(false)
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부
-			if (savedFeed.get().getMemberId() == memberId) {
+			if (savedFeed.get().getMemberId() == loginMemberId) {
 				feedDetailResponse.setIsModifiable(true);
 			}
 
+			// feed 작성자와 로그인한 사용자의 팔로우 여부
+			Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, savedFeed.get().getMemberId());
+			if(followingStatus.isPresent()){
+				feedDetailResponse.setFollowStatus(true);
+			}
+
 			// feed에 대한 스크랩, 좋아요 여부
-			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(savedFeed.get(), memberId);
+			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(savedFeed.get(), loginMemberId);
 			if (feedLike.isPresent()) {
 				feedDetailResponse.setFeedLikeStatus(true);
 			}
-			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(savedFeed.get(), memberId);
+			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(savedFeed.get(), loginMemberId);
 			if (scrap.isPresent()) {
 				feedDetailResponse.setScrapStatus(true);
 			}
@@ -451,7 +458,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return List<FeedResponse>
 	 */
 	@Override
-	public FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long loginMemberId) {
 		List<FeedTag> feedTagList = feedTagRepository.findByFeedTagName(feedTagName);
 		List<Feed> feedList = new ArrayList<>();
 		for (FeedTag feedTag : feedTagList) {
@@ -463,7 +470,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, loginMemberId);
 		responseResult.setCurrentPageNum(pageNumber);
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -560,7 +567,7 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public FeedResponseResult findByRecentFeedList(Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByRecentFeedList(Integer pageNumber, Long loginMemberId) {
 		List<Feed> feedList = new ArrayList<>();
 		feedRepository.findAll().forEach(feedList::add);
 		feedList.sort((o1, o2) -> {
@@ -572,7 +579,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, loginMemberId);
 		responseResult.setCurrentPageNum(pageNumber);
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -591,14 +598,14 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public FeedResponseResult findByLikeFeedList(Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByLikeFeedList(Integer pageNumber, Long loginMemberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedLikeCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, loginMemberId);
 		responseResult.setCurrentPageNum(pageNumber);
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -613,15 +620,15 @@ public class FeedServiceImpl implements FeedService {
 	/**
 	 * feed 메인페이지 팔로우 조회
 	 *
-	 * @param memberId
+	 * @param loginMemberId
 	 * @param pageNumber
 	 * @return
 	 */
 	@Override
-	public FeedResponseResult findByFollowFeedList(Long memberId, Integer pageNumber) {
+	public FeedResponseResult findByFollowFeedList(Long loginMemberId, Integer pageNumber) {
 		List<Feed> feedList = new ArrayList<>();
 
-		List<Following> followers = followingRepository.findByFollowingMemberId(memberId);
+		List<Following> followers = followingRepository.findByFollowingMemberId(loginMemberId);
 
 		for (Following follower : followers) {
 			List<Feed> feedListByFollower = feedRepository.findByMemberId(follower.getFollowerMemberId());
@@ -634,7 +641,7 @@ public class FeedServiceImpl implements FeedService {
 
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, loginMemberId);
 		responseResult.setCurrentPageNum(pageNumber);
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -653,14 +660,14 @@ public class FeedServiceImpl implements FeedService {
 	 * @return
 	 */
 	@Override
-	public FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long memberId) {
+	public FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long loginMemberId) {
 		List<Feed> feedList = feedRepository.findAll(Sort.by(Sort.Direction.DESC, "feedViewCount"));
 
 		int startIndex = pageNumber * pageContentNumber;
 
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, memberId);
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, loginMemberId);
 		responseResult.setCurrentPageNum(pageNumber);
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -678,17 +685,17 @@ public class FeedServiceImpl implements FeedService {
 	 * @param size
 	 * @param startIndex
 	 * @param feedList
-	 * @param memberId
+	 * @param loginMemberId
 	 * @return
 	 */
-	public FeedResponseResult getResponses(int size, int startIndex, List<Feed> feedList, Long memberId) {
+	public FeedResponseResult getResponses(int size, int startIndex, List<Feed> feedList, Long loginMemberId) {
 		FeedResponseResult responseResult = new FeedResponseResult();
 		List<FeedResponse> responseList = new ArrayList<>();
 
 		Map<Long,Integer> followMap = new HashMap<>();
-		List<Following> followings = followingRepository.findByFollowingMemberId(memberId);
+		List<Following> followings = followingRepository.findByFollowingMemberId(loginMemberId);
 		for(Following following : followings){
-			followMap.put(following.getFollowingMemberId(),1);
+			followMap.put(following.getFollowerMemberId(), 1);
 		}
 
 		if(size < startIndex){
@@ -712,24 +719,25 @@ public class FeedServiceImpl implements FeedService {
 							.isModifiable(false)
 							.feedLikeStatus(false)
 							.scrapStatus(false)
-							.FollowStatus(false)
+							.followStatus(false)
 							.build();
 
 					// feed 작성자와 로그인한 사용자가 같은지 여부
-					if (feed.getMemberId() == memberId) {
+					if (feed.getMemberId() == loginMemberId) {
 						response.setIsModifiable(true);
 					}
+
 					// follow 한 상태인지 여부
 					if(followMap.containsKey(feed.getMemberId())){
 						response.setFollowStatus(true);
 					}
 
 					// feed에 대한 스크랩, 좋아요 여부
-					Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, memberId);
+					Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, loginMemberId);
 					if (feedLike.isPresent()) {
 						response.setFeedLikeStatus(true);
 					}
-					Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, memberId);
+					Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, loginMemberId);
 					if (scrap.isPresent()) {
 						response.setScrapStatus(true);
 					}
@@ -767,24 +775,25 @@ public class FeedServiceImpl implements FeedService {
 					.isModifiable(false)
 					.feedLikeStatus(false)
 					.scrapStatus(false)
-          .FollowStatus(false)
+					.followStatus(false)
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부
-			if (feed.getMemberId() == memberId) {
+			if (feed.getMemberId() == loginMemberId) {
 				response.setIsModifiable(true);
 			}
+
 			// follow 한 상태인지 여부
 			if(followMap.containsKey(feed.getMemberId())){
 				response.setFollowStatus(true);
 			}
 
 			// feed에 대한 스크랩, 좋아요 여부
-			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, memberId);
+			Optional<FeedLike> feedLike = feedLikeRepository.findByFeedAndMemberId(feed, loginMemberId);
 			if (feedLike.isPresent()) {
 				response.setFeedLikeStatus(true);
 			}
-			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, memberId);
+			Optional<Scrap> scrap = scrapRepository.findByFeedAndMemberId(feed, loginMemberId);
 			if (scrap.isPresent()) {
 				response.setScrapStatus(true);
 			}
@@ -936,10 +945,9 @@ public class FeedServiceImpl implements FeedService {
 		}
 
 		int startIndex = profileFeedDto.getPageNumber() * pageContentNumber;
-
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getLoginMemberId());
 		responseResult.setCurrentPageNum(profileFeedDto.getPageNumber());
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -963,7 +971,7 @@ public class FeedServiceImpl implements FeedService {
 		int startIndex = profileFeedDto.getPageNumber() * pageContentNumber;
 		int size = feedList.size();
 
-		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getMemberId());
+		FeedResponseResult responseResult = getResponses(size, startIndex, feedList, profileFeedDto.getLoginMemberId());
 		responseResult.setCurrentPageNum(profileFeedDto.getPageNumber());
 		responseResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){

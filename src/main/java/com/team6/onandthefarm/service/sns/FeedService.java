@@ -19,7 +19,7 @@ public interface FeedService {
 
     List<AddableProductResponse> findAddableProducts(Long memberId, String memberRole);
 
-    FeedDetailResponse findFeedDetail(Long feedId, Long memberId);
+    FeedDetailResponse findFeedDetail(Long feedId, Long loginMemberId);
 
     Long modifyFeed(Long memberId, FeedInfoDto feedInfoDto);
 
@@ -29,7 +29,7 @@ public interface FeedService {
 
     Boolean upShareCount(Long feedId);
 
-    FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long memberId);
+    FeedResponseResult findByFeedTag(String feedTagName, Integer pageNumber, Long loginMemberId);
 
     Boolean createFeedLike(Long feedId, Long userId);
 
@@ -39,11 +39,11 @@ public interface FeedService {
 
     Boolean deleteFeedScrap(Long feedId, Long memberId);
 
-    FeedResponseResult findByRecentFeedList(Integer pageNumer, Long memberId);
+    FeedResponseResult findByRecentFeedList(Integer pageNumer, Long loginMemberId);
 
-    FeedResponseResult findByLikeFeedList(Integer pageNumber, Long memberId);
+    FeedResponseResult findByLikeFeedList(Integer pageNumber, Long loginMemberId);
 
-    FeedResponseResult findByFollowFeedList(Long memberId,Integer pageNumber);
+    FeedResponseResult findByFollowFeedList(Long loginMemberId, Integer pageNumber);
 
     FeedResponseResult findByViewCountFeedList(Integer pageNumber, Long memberId);
 

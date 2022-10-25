@@ -458,12 +458,14 @@ public class UserServiceImp implements UserService {
 	public MemberFollowResult getFollowerList(MemberFollowerListRequest memberFollowerListRequest){
 
 		Long memberId = memberFollowerListRequest.getMemberId();
+		Long loginMemberId = memberFollowerListRequest.getLoginMemberId();
+		String loginMemberRole = memberFollowerListRequest.getLoginMemberRole();
 		List<Following> followerList = followingRepository.findFollowingIdByFollowerId(memberId);
 
 		int startIndex = memberFollowerListRequest.getPageNumber() * pageContentNumber;
 		int size = followerList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList);
+		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList, loginMemberId, loginMemberRole);
 		memberFollowResult.setCurrentPageNum(memberFollowerListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -480,12 +482,14 @@ public class UserServiceImp implements UserService {
 	public MemberFollowResult getFollowingList(MemberFollowingListRequest memberFollowingListRequest){
 
 		Long memberId = memberFollowingListRequest.getMemberId();
+		Long loginMemberId = memberFollowingListRequest.getLoginMemberId();
+		String loginMemberRole = memberFollowingListRequest.getLoginMemberRole();
 		List<Following> followingList = followingRepository.findFollowerIdByFollowingId(memberId);
 
 		int startIndex = memberFollowingListRequest.getPageNumber() * pageContentNumber;
 		int size = followingList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList);
+		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList, loginMemberId, loginMemberRole);
 		memberFollowResult.setCurrentPageNum(memberFollowingListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -532,7 +536,7 @@ public class UserServiceImp implements UserService {
 		}
 		else{
 			memberProfileResponse.setIsModifiable(false);
-			Optional<Following> following = followingRepository.findByFollowingMemberIdAndFollowingMemberRole(memberId, memberRole);
+			Optional<Following> following = followingRepository.findByFollowingMemberIdAndFollowerMemberId(memberProfileDto.getLoginMemberId(), memberId);
 			if(following.isPresent()){
 				memberProfileResponse.setFollowStatus(true);
 			}
@@ -541,7 +545,7 @@ public class UserServiceImp implements UserService {
 		return memberProfileResponse;
 	}
 
-	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList){
+	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList, Long loginMemberId, String loginMemberRole){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
@@ -553,26 +557,30 @@ public class UserServiceImp implements UserService {
 			for (Following following : followerList.subList(startIndex, size)) {
 				Long followingMemberId = following.getFollowingMemberId();
 				String followingMemberRole = following.getFollowingMemberRole();
+
+				MemberFollowListResponse memberFollowListResponse = new MemberFollowListResponse();
 				if(followingMemberRole.equals("user")){
 					User user = userRepository.findById(followingMemberId).get();
-					MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-							.memberId(user.getUserId())
-							.memberRole("user")
-							.memberName(user.getUserName())
-							.memberImg(user.getUserProfileImg())
-							.build();
+					memberFollowListResponse.setMemberId(user.getUserId());
+					memberFollowListResponse.setMemberRole("user");
+					memberFollowListResponse.setMemberName(user.getUserName());
+					memberFollowListResponse.setMemberImg(user.getUserProfileImg());
 					responseList.add(memberFollowListResponse);
 				}
 
 				else {
 					Seller seller = sellerRepository.findById(followingMemberId).get();
-					MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-							.memberId(seller.getSellerId())
-							.memberRole("seller")
-							.memberName(seller.getSellerName())
-							.memberImg(seller.getSellerProfileImg())
-							.build();
+					memberFollowListResponse.setMemberId(seller.getSellerId());
+					memberFollowListResponse.setMemberRole("seller");
+					memberFollowListResponse.setMemberName(seller.getSellerName());
+					memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 					responseList.add(memberFollowListResponse);
+				}
+
+				memberFollowListResponse.setFollowStatus(false);
+				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followingMemberId);
+				if(followingStatus.isPresent()){
+					memberFollowListResponse.setFollowStatus(true);
 				}
 			}
 
@@ -583,26 +591,30 @@ public class UserServiceImp implements UserService {
 		for (Following following : followerList.subList(startIndex, startIndex+pageContentNumber)) {
 			Long followingMemberId = following.getFollowingMemberId();
 			String followingMemberRole = following.getFollowingMemberRole();
+
+			MemberFollowListResponse memberFollowListResponse = new MemberFollowListResponse();
 			if(followingMemberRole.equals("user")){
 				User user = userRepository.findById(followingMemberId).get();
-				MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-						.memberId(user.getUserId())
-						.memberRole("user")
-						.memberName(user.getUserName())
-						.memberImg(user.getUserProfileImg())
-						.build();
+				memberFollowListResponse.setMemberId(user.getUserId());
+				memberFollowListResponse.setMemberRole("user");
+				memberFollowListResponse.setMemberName(user.getUserName());
+				memberFollowListResponse.setMemberImg(user.getUserProfileImg());
 				responseList.add(memberFollowListResponse);
 			}
 
 			else {
 				Seller seller = sellerRepository.findById(followingMemberId).get();
-				MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-						.memberId(seller.getSellerId())
-						.memberRole("seller")
-						.memberName(seller.getSellerName())
-						.memberImg(seller.getSellerProfileImg())
-						.build();
+				memberFollowListResponse.setMemberId(seller.getSellerId());
+				memberFollowListResponse.setMemberRole("seller");
+				memberFollowListResponse.setMemberName(seller.getSellerName());
+				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setFollowStatus(false);
+			Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followingMemberId);
+			if(followingStatus.isPresent()){
+				memberFollowListResponse.setFollowStatus(true);
 			}
 		}
 
@@ -610,7 +622,7 @@ public class UserServiceImp implements UserService {
 		return memberFollowResult;
 	}
 
-	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList){
+	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList, Long loginMemberId, String loginMemberRole){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
@@ -620,28 +632,32 @@ public class UserServiceImp implements UserService {
 
 		if(size < startIndex + pageContentNumber) {
 			for (Following following : followingList.subList(startIndex, size)) {
-				Long followingMemberId = following.getFollowerMemberId();
-				String followingMemberRole = following.getFollowerMemberRole();
-				if(followingMemberRole.equals("user")){
-					User user = userRepository.findById(followingMemberId).get();
-					MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-							.memberId(user.getUserId())
-							.memberRole("user")
-							.memberName(user.getUserName())
-							.memberImg(user.getUserProfileImg())
-							.build();
+				Long followerMemberId = following.getFollowerMemberId();
+				String followerMemberRole = following.getFollowerMemberRole();
+
+				MemberFollowListResponse memberFollowListResponse = new MemberFollowListResponse();
+				if(followerMemberRole.equals("user")){
+					User user = userRepository.findById(followerMemberId).get();
+					memberFollowListResponse.setMemberId(user.getUserId());
+					memberFollowListResponse.setMemberRole("user");
+					memberFollowListResponse.setMemberName(user.getUserName());
+					memberFollowListResponse.setMemberImg(user.getUserProfileImg());
 					responseList.add(memberFollowListResponse);
 				}
 
 				else {
-					Seller seller = sellerRepository.findById(followingMemberId).get();
-					MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-							.memberId(seller.getSellerId())
-							.memberRole("seller")
-							.memberName(seller.getSellerName())
-							.memberImg(seller.getSellerProfileImg())
-							.build();
+					Seller seller = sellerRepository.findById(followerMemberId).get();
+					memberFollowListResponse.setMemberId(seller.getSellerId());
+					memberFollowListResponse.setMemberRole("seller");
+					memberFollowListResponse.setMemberName(seller.getSellerName());
+					memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 					responseList.add(memberFollowListResponse);
+				}
+
+				memberFollowListResponse.setFollowStatus(false);
+				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followerMemberId);
+				if(followingStatus.isPresent()){
+					memberFollowListResponse.setFollowStatus(true);
 				}
 			}
 
@@ -650,28 +666,32 @@ public class UserServiceImp implements UserService {
 		}
 
 		for (Following following : followingList.subList(startIndex, startIndex+pageContentNumber)) {
-			Long followingMemberId = following.getFollowerMemberId();
-			String followingMemberRole = following.getFollowerMemberRole();
-			if(followingMemberRole.equals("user")){
-				User user = userRepository.findById(followingMemberId).get();
-				MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-						.memberId(user.getUserId())
-						.memberRole("user")
-						.memberName(user.getUserName())
-						.memberImg(user.getUserProfileImg())
-						.build();
+			Long followerMemberId = following.getFollowerMemberId();
+			String followerMemberRole = following.getFollowerMemberRole();
+
+			MemberFollowListResponse memberFollowListResponse = new MemberFollowListResponse();
+			if(followerMemberRole.equals("user")){
+				User user = userRepository.findById(followerMemberId).get();
+				memberFollowListResponse.setMemberId(user.getUserId());
+				memberFollowListResponse.setMemberRole("user");
+				memberFollowListResponse.setMemberName(user.getUserName());
+				memberFollowListResponse.setMemberImg(user.getUserProfileImg());
 				responseList.add(memberFollowListResponse);
 			}
 
 			else {
-				Seller seller = sellerRepository.findById(followingMemberId).get();
-				MemberFollowListResponse memberFollowListResponse = MemberFollowListResponse.builder()
-						.memberId(seller.getSellerId())
-						.memberRole("seller")
-						.memberName(seller.getSellerName())
-						.memberImg(seller.getSellerProfileImg())
-						.build();
+				Seller seller = sellerRepository.findById(followerMemberId).get();
+				memberFollowListResponse.setMemberId(seller.getSellerId());
+				memberFollowListResponse.setMemberRole("seller");
+				memberFollowListResponse.setMemberName(seller.getSellerName());
+				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setFollowStatus(false);
+			Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followerMemberId);
+			if(followingStatus.isPresent()){
+				memberFollowListResponse.setFollowStatus(true);
 			}
 		}
 

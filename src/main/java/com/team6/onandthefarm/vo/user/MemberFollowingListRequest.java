@@ -13,4 +13,6 @@ public class MemberFollowingListRequest {
 	private Long memberId;
 	private String memberRole;
 	private Integer pageNumber;
+	private Long loginMemberId;
+	private String loginMemberRole;
 }
