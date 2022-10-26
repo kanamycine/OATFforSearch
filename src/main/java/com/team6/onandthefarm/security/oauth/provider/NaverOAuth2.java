@@ -89,12 +89,10 @@ public class NaverOAuth2 implements OAuth2UserUtil {
             JSONObject iJson = new JSONObject(userInfoString);
             JSONObject responseJson = new JSONObject(iJson.get("response").toString());
             String naverId = responseJson.getString("id");
-            String name = responseJson.getString("name");
             String email = responseJson.getString("email");
 
             OAuth2UserDto userDto = OAuth2UserDto.builder()
                     .naverId(naverId)
-                    .name(name)
                     .email(email)
                     .build();
 
