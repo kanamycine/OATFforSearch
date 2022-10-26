@@ -6,6 +6,7 @@ import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.order.Orders;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.Wish;
+import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.sns.*;
 import com.team6.onandthefarm.entity.user.Following;
@@ -14,6 +15,7 @@ import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.order.OrderRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.product.ProductWishRepository;
+import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.repository.sns.*;
 import com.team6.onandthefarm.repository.user.FollowingRepository;
@@ -81,6 +83,8 @@ public class FeedServiceImpl implements FeedService {
 
 	private final FeedImageProductRepository feedImageProductRepository;
 
+	private final ReviewRepository reviewRepository;
+
 	private final S3Upload s3Upload;
 
 	private DateUtils dateUtils;
@@ -101,6 +105,7 @@ public class FeedServiceImpl implements FeedService {
 						   ProductWishRepository productWishRepository,
 						   OrderRepository orderRepository,
 						   OrderProductRepository orderProductRepository,
+						   ReviewRepository reviewRepository,
 						   S3Upload s3Upload,
 						   DateUtils dateUtils,
 						   Environment env) {
@@ -118,6 +123,7 @@ public class FeedServiceImpl implements FeedService {
 		this.productWishRepository = productWishRepository;
 		this.orderRepository = orderRepository;
 		this.orderProductRepository = orderProductRepository;
+		this.reviewRepository = reviewRepository;
 		this.s3Upload = s3Upload;
 		this.dateUtils = dateUtils;
 		this.env = env;
@@ -832,6 +838,15 @@ public class FeedServiceImpl implements FeedService {
 		if(size < startIndex + pageContentNumber) {
 			for (Wish wish : wishList.subList(startIndex, size)) {
 				if (wish != null) {
+					List<Review> reviews = reviewRepository.findReviewByProduct(wish.getProduct());
+					Long sumOfReviewCount = 0L;
+					for (Review review : reviews) {
+						sumOfReviewCount += review.getReviewRate();
+					}
+
+					Long reviewRate = Math.round((sumOfReviewCount / reviews.size()) *100 / 100.0);
+
+
 					WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
 							.productId(wish.getProduct().getProductId())
 							.productName(wish.getProduct().getProductName())
@@ -840,6 +855,8 @@ public class FeedServiceImpl implements FeedService {
 							.productOriginPlace(wish.getProduct().getProductOriginPlace())
 							.productWishCount(wish.getProduct().getProductWishCount())
 							.productStatus(wish.getProduct().getProductStatus())
+							.sellerName(wish.getProduct().getSeller().getSellerName())
+							.reviewRate(reviewRate)
 							.build();
 
 					responseList.add(wishProductListResponse);
