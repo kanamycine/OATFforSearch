@@ -90,6 +90,7 @@ public class CommentServiceImpl implements CommentService {
     public Long addComment(CommentInfoDto commentInfoDto) {
 
         Optional<Feed> feed = feedRepository.findById(commentInfoDto.getFeedId());
+        feed.get().setFeedCommentCount(feed.get().getFeedCommentCount()+1);
 
         FeedComment feedComment = new FeedComment();
         feedComment.setMemberId(commentInfoDto.getMemberId());
