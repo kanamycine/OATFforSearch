@@ -23,4 +23,6 @@ public class WishProductListResponse {
 	private String sellerName;
 
 	private Integer productReviewCount;
+
+	private Long reviewRate;
 }
