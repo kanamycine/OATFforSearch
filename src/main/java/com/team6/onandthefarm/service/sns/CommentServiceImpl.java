@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
                     .isModifiable(false)
                     .build();
 
-            if(feedComment.getMemberId() == memberId){
+            if(feedComment.getMemberId().equals(memberId)){
                 commentDetail.setIsModifiable(true);
             }
 
