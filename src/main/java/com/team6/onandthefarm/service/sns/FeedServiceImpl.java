@@ -840,15 +840,17 @@ public class FeedServiceImpl implements FeedService {
 				if (wish != null) {
 					List<Review> reviews = reviewRepository.findReviewByProduct(wish.getProduct());
 					Long sumOfReviewCount = 0L;
+					int reviewCount = 0;
 					Long reviewRate = 0L;
 					if(reviews.size() != 0) {
 						for (Review review : reviews) {
 							sumOfReviewCount += review.getReviewRate();
 						}
-
+						reviewCount = reviews.size();
 						reviewRate = Math.round((sumOfReviewCount / reviews.size()) * 100 / 100.0);
 					} else {
 						reviewRate = 0L;
+						reviewCount = 0;
 					}
 
 
@@ -862,6 +864,7 @@ public class FeedServiceImpl implements FeedService {
 							.productStatus(wish.getProduct().getProductStatus())
 							.sellerName(wish.getProduct().getSeller().getSellerName())
 							.reviewRate(reviewRate)
+							.reviewCount(reviewCount)
 							.build();
 
 					responseList.add(wishProductListResponse);
@@ -875,15 +878,17 @@ public class FeedServiceImpl implements FeedService {
 			if (wish != null) {
 				List<Review> reviews = reviewRepository.findReviewByProduct(wish.getProduct());
 				Long sumOfReviewCount = 0L;
+				int reviewCount = 0;
 				Long reviewRate = 0L;
 				if(reviews.size() != 0) {
 					for (Review review : reviews) {
 						sumOfReviewCount += review.getReviewRate();
 					}
-
+					reviewCount = reviews.size();
 					reviewRate = Math.round((sumOfReviewCount / reviews.size()) * 100 / 100.0);
 				} else {
 					reviewRate = 0L;
+					reviewCount = 0;
 				}
 				WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
 						.productId(wish.getProduct().getProductId())
@@ -893,6 +898,9 @@ public class FeedServiceImpl implements FeedService {
 						.productOriginPlace(wish.getProduct().getProductOriginPlace())
 						.productWishCount(wish.getProduct().getProductWishCount())
 						.productStatus(wish.getProduct().getProductStatus())
+						.productStatus(wish.getProduct().getProductStatus())
+						.sellerName(wish.getProduct().getSeller().getSellerName())
+						.reviewCount(reviewCount)
 						.build();
 
 				responseList.add(wishProductListResponse);
