@@ -537,7 +537,7 @@ public class FeedServiceImpl implements FeedService {
 		if (!scrap.isPresent()) { // 스크랩이 없는 경우 BAD REQUEST
 			return Boolean.FALSE;
 		}
-		feed.get().setFeedLikeCount(feed.get().getFeedScrapCount() - 1);
+		feed.get().setFeedScrapCount(feed.get().getFeedScrapCount() - 1);
 		scrapRepository.delete(scrap.get());
 		return Boolean.TRUE;
 	}
