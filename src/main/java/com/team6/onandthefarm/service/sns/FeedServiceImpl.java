@@ -840,11 +840,16 @@ public class FeedServiceImpl implements FeedService {
 				if (wish != null) {
 					List<Review> reviews = reviewRepository.findReviewByProduct(wish.getProduct());
 					Long sumOfReviewCount = 0L;
-					for (Review review : reviews) {
-						sumOfReviewCount += review.getReviewRate();
-					}
+					Long reviewRate = 0L;
+					if(reviews.size() != 0) {
+						for (Review review : reviews) {
+							sumOfReviewCount += review.getReviewRate();
+						}
 
-					Long reviewRate = Math.round((sumOfReviewCount / reviews.size()) *100 / 100.0);
+						reviewRate = Math.round((sumOfReviewCount / reviews.size()) * 100 / 100.0);
+					} else {
+						reviewRate = 0L;
+					}
 
 
 					WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
@@ -868,6 +873,18 @@ public class FeedServiceImpl implements FeedService {
 
 		for (Wish wish : wishList.subList(startIndex, startIndex + pageContentNumber)) {
 			if (wish != null) {
+				List<Review> reviews = reviewRepository.findReviewByProduct(wish.getProduct());
+				Long sumOfReviewCount = 0L;
+				Long reviewRate = 0L;
+				if(reviews.size() != 0) {
+					for (Review review : reviews) {
+						sumOfReviewCount += review.getReviewRate();
+					}
+
+					reviewRate = Math.round((sumOfReviewCount / reviews.size()) * 100 / 100.0);
+				} else {
+					reviewRate = 0L;
+				}
 				WishProductListResponse wishProductListResponse = WishProductListResponse.builder()
 						.productId(wish.getProduct().getProductId())
 						.productName(wish.getProduct().getProductName())
