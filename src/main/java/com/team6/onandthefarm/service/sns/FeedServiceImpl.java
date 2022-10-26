@@ -898,8 +898,8 @@ public class FeedServiceImpl implements FeedService {
 						.productOriginPlace(wish.getProduct().getProductOriginPlace())
 						.productWishCount(wish.getProduct().getProductWishCount())
 						.productStatus(wish.getProduct().getProductStatus())
-						.productStatus(wish.getProduct().getProductStatus())
 						.sellerName(wish.getProduct().getSeller().getSellerName())
+						.reviewRate(reviewRate)
 						.reviewCount(reviewCount)
 						.build();
 
