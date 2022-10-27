@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
                     .isModifiable(false)
                     .build();
 
-            if(feedComment.getMemberId() == memberId){
+            if(feedComment.getMemberId().equals(memberId)){
                 commentDetail.setIsModifiable(true);
             }
 
@@ -90,6 +90,7 @@ public class CommentServiceImpl implements CommentService {
     public Long addComment(CommentInfoDto commentInfoDto) {
 
         Optional<Feed> feed = feedRepository.findById(commentInfoDto.getFeedId());
+        feed.get().setFeedCommentCount(feed.get().getFeedCommentCount()+1);
 
         FeedComment feedComment = new FeedComment();
         feedComment.setMemberId(commentInfoDto.getMemberId());
@@ -126,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<FeedComment> feedComment = feedCommentRepository.findById(commentInfoDto.getFeedCommentId());
 
         if(feedComment.isPresent()){
-            if(feedComment.get().getMemberId() == commentInfoDto.getMemberId()) {
+            if(feedComment.get().getMemberId().equals(commentInfoDto.getMemberId())) {
                 feedComment.get().setFeedCommentStatus(false);
 
                 return feedComment.get().getFeedCommnetId();

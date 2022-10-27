@@ -66,6 +66,7 @@ public class UserController {
                     .build();
             return new ResponseEntity<>(badResponse, HttpStatus.BAD_REQUEST);
         }
+
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
@@ -481,25 +482,19 @@ public class UserController {
 
         MemberProfileDto memberProfileDto = new MemberProfileDto();
 
-        Long loginId = null;
-        String loginRole = null;
+        String[] principalInfo = principal.getName().split(" ");
+        Long loginId = Long.parseLong(principalInfo[0]);
+        String loginRole = principalInfo[1];
+
+        memberProfileDto.setLoginMemberId(loginId);
+        memberProfileDto.setLoginMemberRole(loginRole);
+
         if(request.containsKey("memberId")) {
             memberProfileDto.setMemberId(Long.parseLong(request.get("memberId")));
             memberProfileDto.setMemberRole(request.get("memberRole"));
-            memberProfileDto.setLoginMemberStatus(false);
-
-            String[] principalInfo = principal.getName().split(" ");
-            loginId = Long.parseLong(principalInfo[0]);
-            loginRole = principalInfo[1];
-            memberProfileDto.setLoginMemberId(loginId);
-            memberProfileDto.setLoginMemberRole(loginRole);
         }else{
-            String[] principalInfo = principal.getName().split(" ");
-            loginId = Long.parseLong(principalInfo[0]);
-            loginRole = principalInfo[1];
             memberProfileDto.setMemberId(loginId);
             memberProfileDto.setMemberRole(loginRole);
-            memberProfileDto.setLoginMemberStatus(true);
         }
 
         MemberProfileResponse memberProfileResponse = userService.getMemberProfile(memberProfileDto);

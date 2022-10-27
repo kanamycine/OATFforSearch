@@ -13,14 +13,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @SequenceGenerator(
-        name="SELLER_SEQ_GENERATOR",
-        sequenceName = "SELLER_SEQ",
+        name="MEMBER_SEQ_GENERATOR",
+        sequenceName = "MEMBER_SEQ",
         initialValue = 100000, allocationSize = 1
 )
 public class Seller {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "SELLER_SEQ_GENERATOR")
+            generator = "MEMBER_SEQ_GENERATOR")
     private Long sellerId;
     private String sellerEmail;
     private String sellerPassword;

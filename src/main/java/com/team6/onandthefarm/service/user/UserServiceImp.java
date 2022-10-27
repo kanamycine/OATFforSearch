@@ -127,6 +127,7 @@ public class UserServiceImp implements UserService {
 		Token token = null;
 		Boolean needRegister = false;
 		String email = new String();
+		Long userId = null;
 
 		String provider = userLoginDto.getProvider();
 		if (provider.equals("google")) {
@@ -168,6 +169,7 @@ public class UserServiceImp implements UserService {
 
 				// jwt 토큰 발행
 				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+				userId = user.getUserId();
 			}
 		} else if (provider.equals("kakao")) {
 			// 카카오 액세스 토큰 받아오기
@@ -206,12 +208,14 @@ public class UserServiceImp implements UserService {
 
 				// jwt 토큰 발행
 				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+				userId = user.getUserId();
 			}
 		}
 		UserTokenResponse userTokenResponse = UserTokenResponse.builder()
 				.token(token)
 				.needRegister(needRegister)
 				.email(email)
+				.userId(userId)
 				.build();
 
 		return userTokenResponse;
@@ -459,13 +463,13 @@ public class UserServiceImp implements UserService {
 
 		Long memberId = memberFollowerListRequest.getMemberId();
 		Long loginMemberId = memberFollowerListRequest.getLoginMemberId();
-		String loginMemberRole = memberFollowerListRequest.getLoginMemberRole();
+
 		List<Following> followerList = followingRepository.findFollowingIdByFollowerId(memberId);
 
 		int startIndex = memberFollowerListRequest.getPageNumber() * pageContentNumber;
 		int size = followerList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList, loginMemberId, loginMemberRole);
+		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList, loginMemberId);
 		memberFollowResult.setCurrentPageNum(memberFollowerListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -483,13 +487,14 @@ public class UserServiceImp implements UserService {
 
 		Long memberId = memberFollowingListRequest.getMemberId();
 		Long loginMemberId = memberFollowingListRequest.getLoginMemberId();
-		String loginMemberRole = memberFollowingListRequest.getLoginMemberRole();
+
 		List<Following> followingList = followingRepository.findFollowerIdByFollowingId(memberId);
 
 		int startIndex = memberFollowingListRequest.getPageNumber() * pageContentNumber;
 		int size = followingList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList, loginMemberId, loginMemberRole);
+		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList, loginMemberId);
+
 		memberFollowResult.setCurrentPageNum(memberFollowingListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -531,7 +536,7 @@ public class UserServiceImp implements UserService {
 		}
 
 		memberProfileResponse.setFollowStatus(false);
-		if(memberProfileDto.getLoginMemberStatus()){
+		if(memberId.equals(memberProfileDto.getLoginMemberId())){
 			memberProfileResponse.setIsModifiable(true);
 		}
 		else{
@@ -545,7 +550,7 @@ public class UserServiceImp implements UserService {
 		return memberProfileResponse;
 	}
 
-	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList, Long loginMemberId, String loginMemberRole){
+	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList, Long loginMemberId){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
@@ -622,7 +627,7 @@ public class UserServiceImp implements UserService {
 		return memberFollowResult;
 	}
 
-	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList, Long loginMemberId, String loginMemberRole){
+	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList, Long loginMemberId){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
