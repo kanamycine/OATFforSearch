@@ -932,7 +932,7 @@ public class FeedServiceImpl implements FeedService {
 
 	@Override
 	public List<ProfileMainScrapResponse> findByMemberScrapList(ProfileMainScrapDto profileMainScrapDto) {
-		PageRequest pageRequest = PageRequest.of(0, 8);
+		PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("scrapId").descending());
 		Long memberId = profileMainScrapDto.getMemberId();
 		List<ProfileMainScrapResponse> responseList = new ArrayList<>();
 		Page<Scrap> scrapList = scrapRepository.findMainScrapListByMemberId(pageRequest, memberId);
@@ -960,7 +960,7 @@ public class FeedServiceImpl implements FeedService {
 
 	@Override
 	public List<ProfileMainWishResponse> findWishListByMember(ProfileMainWishDto profileMainWishDto) {
-		PageRequest pageRequest = PageRequest.of(0, 8);
+		PageRequest pageRequest = PageRequest.of(0, 8, Sort.by("wishId").descending());
 		Long memberId = profileMainWishDto.getMemberId();
 		List<ProfileMainWishResponse> responseList = new ArrayList<>();
 
