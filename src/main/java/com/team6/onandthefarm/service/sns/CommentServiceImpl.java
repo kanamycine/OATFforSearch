@@ -127,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
         Optional<FeedComment> feedComment = feedCommentRepository.findById(commentInfoDto.getFeedCommentId());
 
         if(feedComment.isPresent()){
-            if(feedComment.get().getMemberId() == commentInfoDto.getMemberId()) {
+            if(feedComment.get().getMemberId().equals(commentInfoDto.getMemberId())) {
                 feedComment.get().setFeedCommentStatus(false);
 
                 return feedComment.get().getFeedCommnetId();
