@@ -459,13 +459,13 @@ public class UserServiceImp implements UserService {
 
 		Long memberId = memberFollowerListRequest.getMemberId();
 		Long loginMemberId = memberFollowerListRequest.getLoginMemberId();
-		String loginMemberRole = memberFollowerListRequest.getLoginMemberRole();
+
 		List<Following> followerList = followingRepository.findFollowingIdByFollowerId(memberId);
 
 		int startIndex = memberFollowerListRequest.getPageNumber() * pageContentNumber;
 		int size = followerList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList, loginMemberId, loginMemberRole);
+		MemberFollowResult memberFollowResult = getResponseForFollower(size, startIndex, followerList, loginMemberId);
 		memberFollowResult.setCurrentPageNum(memberFollowerListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -483,13 +483,14 @@ public class UserServiceImp implements UserService {
 
 		Long memberId = memberFollowingListRequest.getMemberId();
 		Long loginMemberId = memberFollowingListRequest.getLoginMemberId();
-		String loginMemberRole = memberFollowingListRequest.getLoginMemberRole();
+
 		List<Following> followingList = followingRepository.findFollowerIdByFollowingId(memberId);
 
 		int startIndex = memberFollowingListRequest.getPageNumber() * pageContentNumber;
 		int size = followingList.size();
 
-		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList, loginMemberId, loginMemberRole);
+		MemberFollowResult memberFollowResult = getResponseForFollowing(size, startIndex, followingList, loginMemberId);
+
 		memberFollowResult.setCurrentPageNum(memberFollowingListRequest.getPageNumber());
 		memberFollowResult.setTotalElementNum(size);
 		if(size%pageContentNumber==0){
@@ -531,7 +532,7 @@ public class UserServiceImp implements UserService {
 		}
 
 		memberProfileResponse.setFollowStatus(false);
-		if(memberProfileDto.getLoginMemberStatus()){
+		if(memberId.equals(memberProfileDto.getLoginMemberId())){
 			memberProfileResponse.setIsModifiable(true);
 		}
 		else{
@@ -545,7 +546,7 @@ public class UserServiceImp implements UserService {
 		return memberProfileResponse;
 	}
 
-	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList, Long loginMemberId, String loginMemberRole){
+	public MemberFollowResult getResponseForFollower(int size, int startIndex, List<Following> followerList, Long loginMemberId){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
@@ -622,7 +623,7 @@ public class UserServiceImp implements UserService {
 		return memberFollowResult;
 	}
 
-	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList, Long loginMemberId, String loginMemberRole){
+	public MemberFollowResult getResponseForFollowing(int size, int startIndex, List<Following> followingList, Long loginMemberId){
 		MemberFollowResult memberFollowResult = new MemberFollowResult();
 		List<MemberFollowListResponse> responseList = new ArrayList<>();
 		if(size < startIndex){
