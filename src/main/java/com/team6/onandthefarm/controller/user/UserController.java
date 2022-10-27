@@ -66,6 +66,7 @@ public class UserController {
                     .build();
             return new ResponseEntity<>(badResponse, HttpStatus.BAD_REQUEST);
         }
+        
         return new ResponseEntity(response, HttpStatus.OK);
     }
 

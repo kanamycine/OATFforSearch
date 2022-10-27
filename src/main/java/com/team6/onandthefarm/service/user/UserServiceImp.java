@@ -127,6 +127,7 @@ public class UserServiceImp implements UserService {
 		Token token = null;
 		Boolean needRegister = false;
 		String email = new String();
+		Long userId = null;
 
 		String provider = userLoginDto.getProvider();
 		if (provider.equals("google")) {
@@ -168,6 +169,7 @@ public class UserServiceImp implements UserService {
 
 				// jwt 토큰 발행
 				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+				userId = user.getUserId();
 			}
 		} else if (provider.equals("kakao")) {
 			// 카카오 액세스 토큰 받아오기
@@ -206,12 +208,14 @@ public class UserServiceImp implements UserService {
 
 				// jwt 토큰 발행
 				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+				userId = user.getUserId();
 			}
 		}
 		UserTokenResponse userTokenResponse = UserTokenResponse.builder()
 				.token(token)
 				.needRegister(needRegister)
 				.email(email)
+				.userId(userId)
 				.build();
 
 		return userTokenResponse;
