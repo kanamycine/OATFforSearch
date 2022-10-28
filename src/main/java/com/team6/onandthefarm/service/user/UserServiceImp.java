@@ -582,6 +582,11 @@ public class UserServiceImp implements UserService {
 					responseList.add(memberFollowListResponse);
 				}
 
+				memberFollowListResponse.setIsModifiable(false);
+				if(followingMemberId.equals(loginMemberId)){
+					memberFollowListResponse.setIsModifiable(true);
+				}
+
 				memberFollowListResponse.setFollowStatus(false);
 				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followingMemberId);
 				if(followingStatus.isPresent()){
@@ -614,6 +619,11 @@ public class UserServiceImp implements UserService {
 				memberFollowListResponse.setMemberName(seller.getSellerName());
 				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setIsModifiable(false);
+			if(followingMemberId.equals(loginMemberId)){
+				memberFollowListResponse.setIsModifiable(true);
 			}
 
 			memberFollowListResponse.setFollowStatus(false);
@@ -659,6 +669,11 @@ public class UserServiceImp implements UserService {
 					responseList.add(memberFollowListResponse);
 				}
 
+				memberFollowListResponse.setIsModifiable(false);
+				if(followerMemberId.equals(loginMemberId)){
+					memberFollowListResponse.setIsModifiable(true);
+				}
+
 				memberFollowListResponse.setFollowStatus(false);
 				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followerMemberId);
 				if(followingStatus.isPresent()){
@@ -691,6 +706,11 @@ public class UserServiceImp implements UserService {
 				memberFollowListResponse.setMemberName(seller.getSellerName());
 				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setIsModifiable(false);
+			if(followerMemberId.equals(loginMemberId)){
+				memberFollowListResponse.setIsModifiable(true);
 			}
 
 			memberFollowListResponse.setFollowStatus(false);
