@@ -519,6 +519,7 @@ public class UserServiceImp implements UserService {
 			String userProfileImage = user.getUserProfileImg();
 
 			memberProfileResponse = MemberProfileResponse.builder()
+					.memberRole(memberRole)
 					.memberName(userName)
 					.memberProfileImage(userProfileImage)
 					.followingCount(user.getUserFollowingCount())
@@ -528,6 +529,7 @@ public class UserServiceImp implements UserService {
 		else if (memberRole.equals("seller")){
 			Seller seller = sellerRepository.findById(memberId).get();
 			memberProfileResponse = MemberProfileResponse.builder()
+					.memberRole(memberRole)
 					.memberName(seller.getSellerName())
 					.memberProfileImage(seller.getSellerProfileImg())
 					.followingCount(seller.getSellerFollowingCount())
