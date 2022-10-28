@@ -320,7 +320,7 @@ public class FeedServiceImpl implements FeedService {
 					.build();
 
 			// feed 작성자와 로그인한 사용자가 같은지 여부
-			if (savedFeed.get().getMemberId() == loginMemberId) {
+			if (savedFeed.get().getMemberId().equals(loginMemberId)) {
 				feedDetailResponse.setIsModifiable(true);
 			}
 
