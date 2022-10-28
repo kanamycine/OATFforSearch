@@ -1053,15 +1053,30 @@ public class FeedServiceImpl implements FeedService {
 
 		List<Feed> feedList = feedRepository.findFeedListByMemberId(memberProfileDto.getMemberId());
 		List<Scrap> scrapList = scrapRepository.findScrapListByMemberId(memberProfileDto.getMemberId());
-		List<Wish> wishList = productWishRepository.findWishListByUserId(memberProfileDto.getMemberId());
 
-		MemberProfileCountResponse memberProfileCountResponse = MemberProfileCountResponse.builder()
-				.photoCount(feedList.size())
-				.scrapCount(scrapList.size())
-				.wishCount(wishList.size())
-				.build();
+		if(memberProfileDto.getMemberRole().equals("user")) {
+			List<Wish> wishList = productWishRepository.findWishListByUserId(memberProfileDto.getMemberId());
 
-		return memberProfileCountResponse;
+			MemberProfileCountResponse memberProfileCountResponse = MemberProfileCountResponse.builder()
+					.photoCount(feedList.size())
+					.scrapCount(scrapList.size())
+					.wishCount(wishList.size())
+					.build();
+
+			return memberProfileCountResponse;
+		}
+		else{
+			Optional<Seller> seller = sellerRepository.findById(memberProfileDto.getMemberId());
+			List<Product> productList = productRepository.findBySeller(seller.get());
+
+			MemberProfileCountResponse memberProfileCountResponse = MemberProfileCountResponse.builder()
+					.photoCount(feedList.size())
+					.scrapCount(scrapList.size())
+					.productCount(productList.size())
+					.build();
+
+			return memberProfileCountResponse;
+		}
 	}
 
 
