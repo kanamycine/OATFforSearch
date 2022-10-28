@@ -10,10 +10,7 @@ import com.team6.onandthefarm.entity.user.Following;
 import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.product.ProductQnAResponse;
-import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
-import com.team6.onandthefarm.vo.product.ProductReviewResponse;
-import com.team6.onandthefarm.vo.product.ProductWishResponse;
+import com.team6.onandthefarm.vo.product.*;
 import com.team6.onandthefarm.vo.user.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -175,7 +172,7 @@ public class UserController {
 
     @GetMapping("/mypage/wish")
     @ApiOperation(value = "사용자 별 위시리스트 조회")
-    public ResponseEntity<BaseResponse<List<ProductWishResponse>>> getWishList(@ApiIgnore Principal principal) {
+    public ResponseEntity<BaseResponse<ProductWishResult>> getWishList(@ApiIgnore Principal principal, @RequestParam Integer pageNumber) {
 
         if(principal == null){
             BaseResponse baseResponse = BaseResponse.builder()
@@ -188,7 +185,7 @@ public class UserController {
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
-        List<ProductWishResponse> productInfos = productService.getWishList(userId);
+        ProductWishResult productInfos = productService.getWishList(userId, pageNumber);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
@@ -201,8 +198,8 @@ public class UserController {
 
     @GetMapping("/mypage/review")
     @ApiOperation(value = "사용자 별로 작성 가능한 리뷰 조회")
-    public ResponseEntity<BaseResponse<List<ProductReviewResponse>>> getWritableReviewList(
-            @ApiIgnore Principal principal) {
+    public ResponseEntity<BaseResponse<ProductReviewResult>> getWritableReviewList(
+            @ApiIgnore Principal principal, @RequestParam Integer pageNumber) {
 
         if(principal == null){
             BaseResponse baseResponse = BaseResponse.builder()
@@ -215,7 +212,7 @@ public class UserController {
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
-        List<ProductReviewResponse> productsWithoutReview = productService.getProductsWithoutReview(userId);
+        ProductReviewResult productsWithoutReview = productService.getProductsWithoutReview(userId, pageNumber);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
