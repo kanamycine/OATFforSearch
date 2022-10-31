@@ -120,7 +120,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/all/newest/{page-no}")
 	@ApiOperation(value = "모든 상품 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getAllProductListOrderByNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getAllProductListOrderByNewest(
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
@@ -129,7 +129,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(userId,
+		ProductSelectionResponseResult products = productService.getAllProductListOrderByNewest(userId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -143,7 +143,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/orderby/highprice/{page-no}")
 	@ApiOperation(value = "상품 높은 가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByHighPrice(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByHighPrice(
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
@@ -152,7 +152,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(userId,
+		ProductSelectionResponseResult products = productService.getProductsListByHighPrice(userId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -166,7 +166,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/orderby/lowprice/{page-no}")
 	@ApiOperation(value = "상품 낮은 가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByLowPrice(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByLowPrice(
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
@@ -175,7 +175,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -188,14 +188,14 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/main")
 	@ApiOperation(value = "상품 메인 화면 조회(판매순 10개)")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getMainProductsListBySoldCount(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getMainProductsListBySoldCount(
 			@ApiIgnore Principal principal){
 		Long userId = null;
 		if(principal != null){
 			String [] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getMainProductsBySoldCount(userId);
+		ProductSelectionResponseResult products = productService.getMainProductsBySoldCount(userId);
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting main view products by sold count")
@@ -207,7 +207,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/orderby/soldcount/{page-no}")
 	@ApiOperation(value = "상품 높은 판매순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySoldCount(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListBySoldCount(
 			@ApiIgnore Principal principal,
 			@PathVariable("page-no") String pageNumber) {
 
@@ -216,7 +216,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -229,7 +229,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/orderby/seller/{sellerId}/{page-no}")
 	@ApiOperation(value = "상품 농부별 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySellerNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListBySellerNewest(
 			@ApiIgnore Principal principal,
 			@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber) {
 
@@ -238,7 +238,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId,
+		ProductSelectionResponseResult products = productService.getProductListBySellerNewest(userId, sellerId,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -252,7 +252,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/{category}/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListByCategoryNewest(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
 
@@ -261,7 +261,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, category,
+		ProductSelectionResponseResult products = productService.getProductListByCategoryNewest(userId, category,
 				Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
@@ -275,7 +275,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/{category}/highprice/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 높은가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryHighest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByCategoryHighest(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
 
@@ -284,7 +284,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryHighest(userId, category, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductListByCategoryHighest(userId, category, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -297,7 +297,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/{category}/lowprice/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 낮은가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByCategoryLowest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByCategoryLowest(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber){
 
@@ -306,7 +306,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryLowest(userId, category, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductListByCategoryLowest(userId, category, Integer.valueOf(pageNumber));
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("getting lowest products by category completed")
@@ -318,7 +318,7 @@ public class UserProductController {
 
 	@GetMapping(value = "/list/{category}/soldcount/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 판매 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategorySoldCount(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListByCategorySoldCount(
 			@ApiIgnore Principal principal,
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
 
@@ -327,7 +327,7 @@ public class UserProductController {
 			String[] principalInfo = principal.getName().split(" ");
 			userId = Long.parseLong(principalInfo[0]);
 		}
-		List<ProductSelectionResponse> products = productService.getProductsByCategorySoldCount(userId, category, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsByCategorySoldCount(userId, category, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)

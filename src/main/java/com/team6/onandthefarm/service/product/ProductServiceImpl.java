@@ -18,6 +18,7 @@ import com.team6.onandthefarm.repository.product.*;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.util.S3Upload;
+import com.team6.onandthefarm.vo.PageVo;
 import com.team6.onandthefarm.vo.product.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -351,136 +352,207 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getAllProductListOrderByNewest(Long userId, Integer pageNumber){
+	public ProductSelectionResponseResult getAllProductListOrderByNewest(Long userId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
 		Page<Product> productList = productPagingRepository.findAllProductOrderByNewest(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsListByHighPrice(Long userId, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductsListByHighPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsListByLowPrice(Long userId, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductsListByLowPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 
 		Page<Product> productList =  productPagingRepository.findProductListByLowPrice(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getMainProductsBySoldCount(Long userId){
+	public ProductSelectionResponseResult getMainProductsBySoldCount(Long userId){
 		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("productSoldCount").descending());
 
 		Page<Product> productList = productPagingRepository.findProductBySoldCount(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, 0, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(0)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsBySoldCount(Long userId, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductBySoldCount(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+	public ProductSelectionResponseResult getProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductBySellerNewest(pageRequest, sellerId);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productRegisterDate").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductsByCategoryNewest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductByCategoryHighest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
+	public ProductSelectionResponseResult getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productPrice").ascending());
 
 		Page<Product> productList =  productPagingRepository.findProductByCategoryLowest(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
+	public ProductSelectionResponseResult getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber,8, Sort.by("productSoldCount").descending());
 
 		Page<Product> productList =  productPagingRepository.findProductByCategorySoldCount(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getSellingProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+	public ProductSelectionResponseResult getSellingProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
 		Page<Product> productList =  productPagingRepository.findSellingProductBySellerNewest(pageRequest, sellerId);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
-	public List<ProductSelectionResponse> getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+	public ProductSelectionResponseResult getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 8, Sort.by("productRegisterDate").descending());
 
 		Page<Product> productList =  productPagingRepository.findPauseProductBySellerNewest(pageRequest, sellerId);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
-		return setProductSelectResponse(productList, userId, totalPage, pageNumber, totalElements);
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		return setProductSelectResponse(productList, userId, pageVo);
 	}
 
 	@Override
@@ -541,14 +613,12 @@ public class ProductServiceImpl implements ProductService {
 	 * @param productList, userId
 	 * @return List<ProductSelectionResponse>
 	 */
-	private List<ProductSelectionResponse> setProductSelectResponse(Page<Product> productList, Long userId, Integer totalPage, Integer nowPage, Long totalElements){
+	private ProductSelectionResponseResult setProductSelectResponse(Page<Product> productList, Long userId, PageVo pageVo){
 		List<ProductSelectionResponse> productResponseList = new ArrayList<>();
 
 		for(Product p : productList) {
 			ProductSelectionResponse pResponse = new ProductSelectionResponse(p);
-			pResponse.setTotalPage(totalPage);
-			pResponse.setNowPage(nowPage);
-			pResponse.setTotalElement(totalElements);
+
 
 			List<Review> reviewList = reviewRepository.findReviewByProduct(p);
 			pResponse.setProductReviewCount(reviewList.size());
@@ -576,7 +646,12 @@ public class ProductServiceImpl implements ProductService {
 			productResponseList.add(pResponse);
 		}
 
-		return productResponseList;
+		ProductSelectionResponseResult productSelectionResponseResult = ProductSelectionResponseResult.builder()
+				.productSelectionResponses(productResponseList)
+				.pageVo(pageVo)
+				.build();
+
+		return productSelectionResponseResult;
 	}
 
 	/**
