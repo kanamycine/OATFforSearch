@@ -32,7 +32,7 @@ public interface ProductPagingRepository extends PagingAndSortingRepository<Prod
 			countQuery = "select count(p) from Product p")
 	Page<Product> findProductBySellerNewest(PageRequest pageRequest, @Param("sellerId") Long sellerId);
 
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.seller.sellerId =:sellerId and p.productStatus ='selling'",
+	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.seller.sellerId =:sellerId and p.productStatus ='selling' or p.productStatus ='soldout'",
 			countQuery = "select count(p) from Product p")
 	Page<Product> findSellingProductBySellerNewest(PageRequest pageRequest, @Param("sellerId") Long sellerId);
 
