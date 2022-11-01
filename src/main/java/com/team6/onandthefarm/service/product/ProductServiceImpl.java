@@ -41,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
-
 public class ProductServiceImpl implements ProductService {
 
 	private final int pageContentNumber = 8;
@@ -353,7 +352,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getAllProductListOrderByNewest(Long userId, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber, 16, Sort.by("productRegisterDate").descending());
 
-		Page<Product> productList = productPagingRepository.findAllProductOrderByNewest(pageRequest);
+		Page<Product> productList = productPagingRepository.findProductOrderBy(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -370,7 +369,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductsListByHighPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productPrice").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByHighPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductOrderBy(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -387,7 +386,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductsListByLowPrice(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productPrice").ascending());
 
-		Page<Product> productList =  productPagingRepository.findProductListByLowPrice(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductOrderBy(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -404,7 +403,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getMainProductsBySoldCount(Long userId){
 		PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("productSoldCount").descending());
 
-		Page<Product> productList = productPagingRepository.findProductBySoldCount(pageRequest);
+		Page<Product> productList = productPagingRepository.findProductOrderBy(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -421,7 +420,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductsBySoldCount(Long userId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productSoldCount").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductBySoldCount(pageRequest);
+		Page<Product> productList =  productPagingRepository.findProductOrderBy(pageRequest);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -455,7 +454,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductListByCategoryNewest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productRegisterDate").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductsByCategoryNewest(pageRequest, category);
+		Page<Product> productList =  productPagingRepository.findProductsByCategoryOrderBy(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -472,7 +471,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductListByCategoryHighest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productPrice").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductByCategoryHighest(pageRequest, category);
+		Page<Product> productList =  productPagingRepository.findProductsByCategoryOrderBy(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -489,7 +488,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductListByCategoryLowest(Long userId, String category, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productPrice").ascending());
 
-		Page<Product> productList =  productPagingRepository.findProductByCategoryLowest(pageRequest, category);
+		Page<Product> productList =  productPagingRepository.findProductsByCategoryOrderBy(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -506,7 +505,7 @@ public class ProductServiceImpl implements ProductService {
 	public ProductSelectionResponseResult getProductsByCategorySoldCount(Long userId, String category, Integer pageNumber){
 		PageRequest pageRequest = PageRequest.of(pageNumber,16, Sort.by("productSoldCount").descending());
 
-		Page<Product> productList =  productPagingRepository.findProductByCategorySoldCount(pageRequest, category);
+		Page<Product> productList =  productPagingRepository.findProductsByCategoryOrderBy(pageRequest, category);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
