@@ -14,19 +14,7 @@ public interface ProductPagingRepository extends PagingAndSortingRepository<Prod
 
 	@Query(value = "select p from Product p join fetch p.category join fetch p.seller",
 			countQuery = "select count(p) from Product p")
-	Page<Product> findAllProductOrderByNewest(PageRequest pageRequest);
-
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller",
-			countQuery = "select count(p) from Product p")
-	Page<Product> findProductListByHighPrice(PageRequest pageRequest);
-
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller",
-			countQuery = "select count(p) from Product p")
-	Page<Product> findProductListByLowPrice(PageRequest pageRequest);
-
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller",
-			countQuery = "select count(p) from Product p")
-	Page<Product> findProductBySoldCount(PageRequest pageRequest);
+	Page<Product> findProductOrderBy(PageRequest pageRequest);
 
 	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.seller.sellerId =:sellerId and p.productStatus ='selling'",
 			countQuery = "select count(p) from Product p where p.seller.sellerId =:sellerId and p.productStatus ='selling'")
@@ -42,17 +30,6 @@ public interface ProductPagingRepository extends PagingAndSortingRepository<Prod
 
 	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.category.categoryName =:category",
 			countQuery = "select count(p) from Product p where p.category.categoryName =:category")
-	Page<Product> findProductsByCategoryNewest(PageRequest pageRequest, @Param("category") String category);
+	Page<Product> findProductsByCategoryOrderBy(PageRequest pageRequest, @Param("category") String category);
 
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.category.categoryName =:category",
-			countQuery = "select count(p) from Product p where p.category.categoryName =:category")
-	Page<Product> findProductByCategoryHighest(PageRequest pageRequest, @Param("category") String category);
-
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.category.categoryName =:category",
-			countQuery = "select count(p) from Product p where p.category.categoryName =:category")
-	Page<Product> findProductByCategoryLowest(PageRequest pageRequest, @Param("category") String category);
-
-	@Query(value = "select p from Product p join fetch p.category join fetch p.seller where p.category.categoryName =:category",
-			countQuery = "select count(p) from Product p where p.category.categoryName =:category")
-	Page<Product> findProductByCategorySoldCount(PageRequest pageRequest, @Param("category") String category);
 }
