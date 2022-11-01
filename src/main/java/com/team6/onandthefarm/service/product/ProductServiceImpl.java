@@ -159,15 +159,13 @@ public class ProductServiceImpl implements ProductService {
 			changedProduct.get().setProductTotalStock(0);
 		}
 
-		//기존 이미지 삭제
-		if(productUpdateFormDto.getDeleteImageIdList() != null){
-			for(Long deleteImgId : productUpdateFormDto.getDeleteImageIdList()) {
-				Optional<ProductImg> productImg = productImgRepository.findById(deleteImgId);
-				productImgRepository.delete(productImg.get());
-			}
-		}
-		//이미지 추가
+		//새로운 이미지 추가 시 기존 이미지 삭제 후 이미지 추가
 		if(productUpdateFormDto.getAddImageList() != null){
+			List<ProductImg> existingProductImgList = productImgRepository.findByProduct(product.get());
+			for(ProductImg productImg : existingProductImgList){
+				productImgRepository.delete(productImg);
+			}
+
 			for(MultipartFile productImgs : productUpdateFormDto.getAddImageList()){
 				String url = s3Upload.productUpload(productImgs);
 
