@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SellerPopularProductResponse {
-    private String productMainImgSrc;
+    private String productMainImg;
 
     private String productName;
 
