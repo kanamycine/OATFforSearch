@@ -14,4 +14,6 @@ public class ProductQnAResponseResult {
     private Integer currentPageNum;
 
     private Integer totalPageNum;
+
+    private Integer totalElementNum;
 }
