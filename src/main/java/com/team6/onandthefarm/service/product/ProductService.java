@@ -48,7 +48,7 @@ public interface ProductService {
 
     ProductSelectionResponseResult getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber);
 
-    ProductQnAInfoResponse findProductQnAList(Long productId, Integer pageNumber);
+    ProductQnAResponseResult findProductQnAList(Long productId,Integer pageNumber);
 
     ProductReviewResult getProductsWithoutReview(Long userId, Integer pageNumber);
 	

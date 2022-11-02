@@ -338,18 +338,18 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping("/QnA/{product-no}/{page-no}")
+	@GetMapping("/QnA/{product-no}")
 	@ApiOperation(value = "상품에 대한 질의 조회")
-	public ResponseEntity<BaseResponse<ProductQnAInfoResponse>> findProductQnAList(
-			@PathVariable("product-no") Long productId, @PathVariable("page-no") Integer pageNumber) {
+	public ResponseEntity<BaseResponse<ProductQnAResponseResult>> findProductQnAList(
+			@PathVariable("product-no") Long productId, @RequestParam Integer pageNumber) {
 
-		ProductQnAInfoResponse productQnAInfoResponse
-				= productService.findProductQnAList(productId, pageNumber);
+        ProductQnAResponseResult qnAList
+				= productService.findProductQnAList(productId,pageNumber);
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("OK")
-				.data(productQnAInfoResponse)
+				.data(qnAList)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);

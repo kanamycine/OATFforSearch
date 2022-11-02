@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,15 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @ToString
+@SequenceGenerator(
+		name="EXHIBITION_SEQ_GENERATOR",
+		sequenceName = "EXHIBITION_SEQ",
+		initialValue = 100000, allocationSize = 1
+)
 public class Module {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
-			generator = "PRODUCT_SEQ_GENERATOR")
+			generator = "EXHIBITION_SEQ_GENERATOR")
 	private Long moduleId;
 
 	private String moduleName;
