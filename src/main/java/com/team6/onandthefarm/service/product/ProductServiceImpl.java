@@ -536,10 +536,10 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductSelectionResponseResult getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber){
+	public ProductSelectionResponseResult getPauseProductListBySellerNewest(Long userId, Long sellerId, Integer pageNumber) {
 		PageRequest pageRequest = PageRequest.of(pageNumber, 16, Sort.by("productRegisterDate").descending());
 
-		Page<Product> productList =  productPagingRepository.findPauseProductBySellerNewest(pageRequest, sellerId);
+		Page<Product> productList = productPagingRepository.findPauseProductBySellerNewest(pageRequest, sellerId);
 		int totalPage = productList.getTotalPages();
 		Long totalElements = productList.getTotalElements();
 
@@ -551,41 +551,6 @@ public class ProductServiceImpl implements ProductService {
 
 		return setProductSelectResponse(productList, userId, pageVo);
 	}
-
-	@Override
-	public List<ProductQnAResponse> findProductQnAList(Long productId){
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		Optional<Product> product = productRepository.findById(productId);
-		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
-
-		List<ProductQnAResponse> responses = new ArrayList<>();
-
-		for(ProductQna productQna : productQnas){
-			User user = userRepository.findById(productQna.getUser().getUserId()).get();
-			ProductQnAResponse response = ProductQnAResponse.builder()
-					.productQnaStatus(productQna.getProductQnaStatus())
-					.productQnaCreatedAt(productQna.getProductQnaCreatedAt())
-					.productQnaContent(productQna.getProductQnaContent())
-					.productQnaId(productQna.getProductQnaId())
-					.productQnaModifiedAt(productQna.getProductQnaModifiedAt())
-					.userName(user.getUserName())
-					.userProfileImg(user.getUserProfileImg())
-					.build();
-			if(productQna.getProductQnaStatus().equals("waiting")){
-				responses.add(response);
-				continue;
-			}
-			if(productQna.getProductQnaStatus().equals("deleted")){
-				continue;
-			}
-			String answer =
-					productQnaAnswerRepository
-							.findByProductQna(productQna)
-							.getProductQnaAnswerContent();
-			response.setProductSellerAnswer(answer);
-			responses.add(response);
-		}
     @Override
     public ProductQnAResponseResult findProductQnAList(Long productId, Integer pageNumber) {
         ModelMapper modelMapper = new ModelMapper();
