@@ -519,6 +519,7 @@ public class UserServiceImp implements UserService {
 			String userProfileImage = user.getUserProfileImg();
 
 			memberProfileResponse = MemberProfileResponse.builder()
+					.memberRole(memberRole)
 					.memberName(userName)
 					.memberProfileImage(userProfileImage)
 					.followingCount(user.getUserFollowingCount())
@@ -528,6 +529,7 @@ public class UserServiceImp implements UserService {
 		else if (memberRole.equals("seller")){
 			Seller seller = sellerRepository.findById(memberId).get();
 			memberProfileResponse = MemberProfileResponse.builder()
+					.memberRole(memberRole)
 					.memberName(seller.getSellerName())
 					.memberProfileImage(seller.getSellerProfileImg())
 					.followingCount(seller.getSellerFollowingCount())
@@ -582,6 +584,11 @@ public class UserServiceImp implements UserService {
 					responseList.add(memberFollowListResponse);
 				}
 
+				memberFollowListResponse.setIsModifiable(false);
+				if(followingMemberId.equals(loginMemberId)){
+					memberFollowListResponse.setIsModifiable(true);
+				}
+
 				memberFollowListResponse.setFollowStatus(false);
 				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followingMemberId);
 				if(followingStatus.isPresent()){
@@ -614,6 +621,11 @@ public class UserServiceImp implements UserService {
 				memberFollowListResponse.setMemberName(seller.getSellerName());
 				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setIsModifiable(false);
+			if(followingMemberId.equals(loginMemberId)){
+				memberFollowListResponse.setIsModifiable(true);
 			}
 
 			memberFollowListResponse.setFollowStatus(false);
@@ -659,6 +671,11 @@ public class UserServiceImp implements UserService {
 					responseList.add(memberFollowListResponse);
 				}
 
+				memberFollowListResponse.setIsModifiable(false);
+				if(followerMemberId.equals(loginMemberId)){
+					memberFollowListResponse.setIsModifiable(true);
+				}
+
 				memberFollowListResponse.setFollowStatus(false);
 				Optional<Following> followingStatus = followingRepository.findByFollowingMemberIdAndFollowerMemberId(loginMemberId, followerMemberId);
 				if(followingStatus.isPresent()){
@@ -691,6 +708,11 @@ public class UserServiceImp implements UserService {
 				memberFollowListResponse.setMemberName(seller.getSellerName());
 				memberFollowListResponse.setMemberImg(seller.getSellerProfileImg());
 				responseList.add(memberFollowListResponse);
+			}
+
+			memberFollowListResponse.setIsModifiable(false);
+			if(followerMemberId.equals(loginMemberId)){
+				memberFollowListResponse.setIsModifiable(true);
 			}
 
 			memberFollowListResponse.setFollowStatus(false);

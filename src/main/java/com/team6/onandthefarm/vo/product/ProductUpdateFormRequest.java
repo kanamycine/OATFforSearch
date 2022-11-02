@@ -30,5 +30,4 @@ public class ProductUpdateFormRequest {
 	private String productStatus;
 	private Integer productWishCount;
 	private Integer productSoldCount;
-	private List<Long> deleteImageIdList;
 }

@@ -26,6 +26,7 @@ import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.product.ProductDeleteRequest;
 import com.team6.onandthefarm.vo.product.ProductFormRequest;
 import com.team6.onandthefarm.vo.product.ProductSelectionResponse;
+import com.team6.onandthefarm.vo.product.ProductSelectionResponseResult;
 import com.team6.onandthefarm.vo.product.ProductUpdateFormRequest;
 import com.team6.onandthefarm.vo.product.ProductWishCancelRequest;
 import com.team6.onandthefarm.vo.product.ProductWishFormRequest;
@@ -138,10 +139,10 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/all/newest/{page-no}")
 	@ApiOperation(value = "모든 상품 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getAllProductListOrderByNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getAllProductListOrderByNewest(
 			@PathVariable("page-no") String pageNumber) {
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getAllProductListOrderByNewest(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getAllProductListOrderByNewest(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -154,11 +155,11 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/orderby/highprice/{page-no}")
 	@ApiOperation(value = "상품 높은 가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByHighPrice(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByHighPrice(
 			@PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductsListByHighPrice(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsListByHighPrice(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -171,11 +172,11 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/orderby/lowprice/{page-no}")
 	@ApiOperation(value = "상품 낮은 가격 순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductListByLowPrice(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductListByLowPrice(
 			@PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsListByLowPrice(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -188,11 +189,11 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/orderby/soldcount/{page-no}")
 	@ApiOperation(value = "상품 높은 판매순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySoldCount(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListBySoldCount(
 			@PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductsBySoldCount(userId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -205,11 +206,11 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/orderby/seller/{sellerId}/{page-no}")
 	@ApiOperation(value = "상품 농부별 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListBySellerNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListBySellerNewest(
 			@PathVariable("sellerId") Long sellerId, @PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -220,13 +221,13 @@ public class SellerProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/list/orderby/{category}/{page-no}")
+	@GetMapping(value = "/list/orderby/{category}/newest/{page-no}")
 	@ApiOperation(value = "상품 카테고리별 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getProductsListByCategoryNewest(
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getProductsListByCategoryNewest(
 			@PathVariable("category") String category, @PathVariable("page-no") String pageNumber) {
 
 		Long userId = null;
-		List<ProductSelectionResponse> products = productService.getProductListByCategoryNewest(userId, category, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getProductListByCategoryNewest(userId, category, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -239,7 +240,7 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/selling-product/by-seller/{page-no}")
 	@ApiOperation(value = "농부별 자신이 등록한 판매중 상품 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getSellingProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getSellingProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
 
 		if(principal == null){
 			BaseResponse baseResponse = BaseResponse.builder()
@@ -253,7 +254,7 @@ public class SellerProductController {
 		Long sellerId = Long.parseLong(principalInfo[0]);
 		Long userId = null;
 
-		List<ProductSelectionResponse> products = productService.getSellingProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getSellingProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -266,7 +267,7 @@ public class SellerProductController {
 
 	@GetMapping(value = "/list/pause-product/by-seller/{page-no}")
 	@ApiOperation(value = "농부별 자신이 등록한 일시정지 상품 최신순 조회")
-	public ResponseEntity<BaseResponse<List<ProductSelectionResponse>>> getPauseProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
+	public ResponseEntity<BaseResponse<ProductSelectionResponseResult>> getPauseProductListBy(@ApiIgnore Principal principal, @PathVariable("page-no") String pageNumber) {
 
 		if(principal == null){
 			BaseResponse baseResponse = BaseResponse.builder()
@@ -280,7 +281,7 @@ public class SellerProductController {
 		Long sellerId = Long.parseLong(principalInfo[0]);
 		Long userId = null;
 
-		List<ProductSelectionResponse> products = productService.getPauseProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
+		ProductSelectionResponseResult products = productService.getPauseProductListBySellerNewest(userId, sellerId, Integer.valueOf(pageNumber));
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
