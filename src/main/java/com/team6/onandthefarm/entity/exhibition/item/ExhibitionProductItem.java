@@ -7,12 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionCategory;
-import com.team6.onandthefarm.entity.product.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
