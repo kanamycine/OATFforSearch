@@ -553,14 +553,12 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductQnAResponse> findProductQnAList(Long productId){
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+	public ProductQnAInfoResponse findProductQnAList(Long productId, Integer pageNumber){
+
 		Optional<Product> product = productRepository.findById(productId);
 		List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
 
 		List<ProductQnAResponse> responses = new ArrayList<>();
-
 		for(ProductQna productQna : productQnas){
 			User user = userRepository.findById(productQna.getUser().getUserId()).get();
 			ProductQnAResponse response = ProductQnAResponse.builder()
@@ -579,13 +577,16 @@ public class ProductServiceImpl implements ProductService {
 			if(productQna.getProductQnaStatus().equals("deleted")){
 				continue;
 			}
-			String answer =
-					productQnaAnswerRepository
+			String answer = productQnaAnswerRepository
 							.findByProductQna(productQna)
 							.getProductQnaAnswerContent();
 			response.setProductSellerAnswer(answer);
 			responses.add(response);
 		}
+
+		int startIndex = pageNumber * pageContentNumber;
+		int size = responses.size();
+		List<ProductQnAResponse> pagedQnaListResponse = getQnaPagination(size, startIndex, responses);
 
 //		// QNA : QNA답변
 //		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
@@ -602,7 +603,37 @@ public class ProductServiceImpl implements ProductService {
 //			}
 //		}
 
-		return responses;
+		ProductQnAInfoResponse productQnAInfoResponse = new ProductQnAInfoResponse();
+		productQnAInfoResponse.setProductQnAResponseList(pagedQnaListResponse);
+		productQnAInfoResponse.setCurrentPageNum(pageNumber);
+		productQnAInfoResponse.setTotalElementNum(size);
+		if(size%pageContentNumber==0){
+			productQnAInfoResponse.setTotalPageNum(size/pageContentNumber);
+		}
+		else{
+			productQnAInfoResponse.setTotalPageNum((size/pageContentNumber)+1);
+		}
+
+		return productQnAInfoResponse;
+	}
+
+	public List<ProductQnAResponse> getQnaPagination(int size, int startIndex, List<ProductQnAResponse> qnaList){
+		List<ProductQnAResponse> productQnAResponseList = new ArrayList<>();
+
+		if(size < startIndex){
+			return productQnAResponseList;
+		}
+
+		if (size < startIndex + pageContentNumber) {
+			for (ProductQnAResponse qna : qnaList.subList(startIndex, size)) {
+				productQnAResponseList.add(qna);
+			}
+			return productQnAResponseList;
+		}
+		for (ProductQnAResponse qna : qnaList.subList(startIndex, startIndex + pageContentNumber)) {
+			productQnAResponseList.add(qna);
+		}
+		return productQnAResponseList;
 	}
 
 	/**

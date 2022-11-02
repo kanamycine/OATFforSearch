@@ -5,10 +5,7 @@ import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.service.cart.CartService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.cart.CartDeleteRequest;
-import com.team6.onandthefarm.vo.cart.CartIsActivatedRequest;
-import com.team6.onandthefarm.vo.cart.CartRequest;
-import com.team6.onandthefarm.vo.cart.CartResponse;
+import com.team6.onandthefarm.vo.cart.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -151,7 +148,7 @@ public class CartController {
 
     @GetMapping
     @ApiOperation(value = "장바구니 조회")
-    public ResponseEntity<BaseResponse<List<CartResponse>>> selectCart(@ApiIgnore Principal principal){
+    public ResponseEntity<BaseResponse<CartResult>> selectCart(@ApiIgnore Principal principal, @RequestParam Integer pageNumber){
 
         if(principal == null){
             BaseResponse baseResponse = BaseResponse.builder()
@@ -164,7 +161,7 @@ public class CartController {
         String[] principalInfo = principal.getName().split(" ");
 
         Long userId = Long.parseLong(principalInfo[0]);
-        List<CartResponse> cartResponses = cartService.selectCart(userId);
+        CartResult cartResponses = cartService.selectCart(userId, pageNumber);
 
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.CREATED)

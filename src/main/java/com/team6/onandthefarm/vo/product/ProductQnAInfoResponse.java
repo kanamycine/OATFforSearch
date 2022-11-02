@@ -6,10 +6,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Builder
 public class ProductQnAInfoResponse {
 
     private List<ProductQnAResponse> productQnAResponseList;
-    private Integer qnACount;
+    private Integer currentPageNum;
+    private Integer totalPageNum;
+    private Integer totalElementNum;
 
 }
