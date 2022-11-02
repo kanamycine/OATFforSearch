@@ -338,11 +338,6 @@ public class UserProductController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
-	/**
-	 * 페이지네이션 필요
-	 * @param productId
-	 * @return
-	 */
 	@GetMapping("/QnA/{product-no}")
 	@ApiOperation(value = "상품에 대한 질의 조회")
 	public ResponseEntity<BaseResponse<ProductQnAResponseResult>> findProductQnAList(

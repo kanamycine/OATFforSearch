@@ -551,40 +551,42 @@ public class ProductServiceImpl implements ProductService {
 
 		return setProductSelectResponse(productList, userId, pageVo);
 	}
-    @Override
-    public ProductQnAResponseResult findProductQnAList(Long productId, Integer pageNumber) {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        Optional<Product> product = productRepository.findById(productId);
-        List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
 
-        List<ProductQnAResponse> responses = new ArrayList<>();
+  @Override
+  public ProductQnAResponseResult findProductQnAList(Long productId, Integer pageNumber) {
+      ModelMapper modelMapper = new ModelMapper();
+      modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+      Optional<Product> product = productRepository.findById(productId);
+      List<ProductQna> productQnas = productQnaRepository.findByProduct(product.get());
 
-        for (ProductQna productQna : productQnas) {
-            User user = userRepository.findById(productQna.getUser().getUserId()).get();
-            ProductQnAResponse response = ProductQnAResponse.builder()
-                    .productQnaStatus(productQna.getProductQnaStatus())
-                    .productQnaCreatedAt(productQna.getProductQnaCreatedAt())
-                    .productQnaContent(productQna.getProductQnaContent())
-                    .productQnaId(productQna.getProductQnaId())
-                    .productQnaModifiedAt(productQna.getProductQnaModifiedAt())
-                    .userName(user.getUserName())
-                    .userProfileImg(user.getUserProfileImg())
-                    .build();
-            if (productQna.getProductQnaStatus().equals("waiting")) {
-                responses.add(response);
-                continue;
-            }
-            if (productQna.getProductQnaStatus().equals("deleted")) {
-                continue;
-            }
-            String answer =
-                    productQnaAnswerRepository
-                            .findByProductQna(productQna)
-                            .getProductQnaAnswerContent();
-            response.setProductSellerAnswer(answer);
-            responses.add(response);
-        }
+      List<ProductQnAResponse> responses = new ArrayList<>();
+
+      for (ProductQna productQna : productQnas) {
+          User user = userRepository.findById(productQna.getUser().getUserId()).get();
+          ProductQnAResponse response = ProductQnAResponse.builder()
+                  .productQnaStatus(productQna.getProductQnaStatus())
+                  .productQnaCreatedAt(productQna.getProductQnaCreatedAt())
+                  .productQnaContent(productQna.getProductQnaContent())
+                  .productQnaId(productQna.getProductQnaId())
+                  .productQnaModifiedAt(productQna.getProductQnaModifiedAt())
+                  .userName(user.getUserName())
+                  .userProfileImg(user.getUserProfileImg())
+                  .build();
+          if (productQna.getProductQnaStatus().equals("waiting")) {
+              responses.add(response);
+              continue;
+          }
+          if (productQna.getProductQnaStatus().equals("deleted")) {
+              continue;
+          }
+          String answer =
+                  productQnaAnswerRepository
+                          .findByProductQna(productQna)
+                          .getProductQnaAnswerContent();
+          response.setProductSellerAnswer(answer);
+          responses.add(response);
+      }
+
 //		// QNA : QNA답변
 //		Map<ProductQnAResponse, ProductQnaAnswerResponse> matching = new HashMap<>();
 //		for(ProductQna productQna : productQnas){
@@ -599,37 +601,39 @@ public class ProductServiceImpl implements ProductService {
 //				matching.put(response,productQnaAnswerResponse);
 //			}
 //		}
-        ProductQnAResponseResult resultResponse = new ProductQnAResponseResult();
-        responses.sort((o1, o2) -> {
-            int result = o2.getProductQnaCreatedAt().compareTo(o1.getProductQnaCreatedAt());
-            return result;
-        });
 
-        int startIndex = pageNumber * pageContentNumber;
+      ProductQnAResponseResult resultResponse = new ProductQnAResponseResult();
+      responses.sort((o1, o2) -> {
+          int result = o2.getProductQnaCreatedAt().compareTo(o1.getProductQnaCreatedAt());
+          return result;
+      });
 
-        int size = responses.size();
+      int startIndex = pageNumber * pageContentNumber;
+
+      int size = responses.size();
 
 
-        if (size < startIndex + pageContentNumber) {
-            resultResponse.setProductQnAResponseList(responses.subList(startIndex, size));
-            resultResponse.setCurrentPageNum(pageNumber);
-            if (size % pageContentNumber != 0) {
-                resultResponse.setTotalPageNum((size / pageContentNumber) + 1);
-            } else {
-                resultResponse.setTotalPageNum(size / pageContentNumber);
-            }
-            return resultResponse;
-        }
+      if (size < startIndex + pageContentNumber) {
+          resultResponse.setProductQnAResponseList(responses.subList(startIndex, size));
+          resultResponse.setCurrentPageNum(pageNumber);
+          if (size % pageContentNumber != 0) {
+              resultResponse.setTotalPageNum((size / pageContentNumber) + 1);
+          } else {
+              resultResponse.setTotalPageNum(size / pageContentNumber);
+          }
+          return resultResponse;
+      }
 
-        resultResponse.setProductQnAResponseList(responses.subList(startIndex, startIndex + pageContentNumber));
-        resultResponse.setCurrentPageNum(pageNumber);
-        if (size % pageContentNumber != 0) {
-            resultResponse.setTotalPageNum((size / pageContentNumber) + 1);
-        } else {
-            resultResponse.setTotalPageNum(size / pageContentNumber);
-        }
-        return resultResponse;
-    }
+      resultResponse.setProductQnAResponseList(responses.subList(startIndex, startIndex + pageContentNumber));
+      resultResponse.setCurrentPageNum(pageNumber);
+      if (size % pageContentNumber != 0) {
+          resultResponse.setTotalPageNum((size / pageContentNumber) + 1);
+      } else {
+          resultResponse.setTotalPageNum(size / pageContentNumber);
+      }
+      return resultResponse;
+  }
+
 	/**
 	 * 상품별로 로그인한 사용자의 wish, cart 여부 조회 메서드
 	 * @param productList, userId

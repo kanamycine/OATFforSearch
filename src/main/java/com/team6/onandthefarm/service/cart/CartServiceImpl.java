@@ -5,6 +5,7 @@ import com.team6.onandthefarm.dto.cart.CartDto;
 import com.team6.onandthefarm.dto.cart.CartIsActivatedDto;
 import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.entity.product.Wish;
 import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
@@ -13,6 +14,8 @@ import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.cart.CartInfoRequest;
 import com.team6.onandthefarm.vo.cart.CartRequest;
 import com.team6.onandthefarm.vo.cart.CartResponse;
+import com.team6.onandthefarm.vo.cart.CartResult;
+import com.team6.onandthefarm.vo.product.ProductWishResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import java.util.Optional;
 @Transactional
 public class CartServiceImpl implements CartService{
 
+    private final int pageContentNumber = 8;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
@@ -137,11 +141,55 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public List<CartResponse> selectCart(Long userId) {
-        List<Cart> carts = cartRepository.findNotDeletedCartByUserId(userId);
+    public CartResult selectCart(Long userId, Integer pageNumber) {
 
-        List<CartResponse> cartResponses = new ArrayList<>();
-        for(Cart c : carts){
+        CartResult cartResult = new CartResult();
+
+        List<Cart> carts = cartRepository.findNotDeletedCartByUserId(userId);
+        int startIndex = pageNumber * pageContentNumber;
+        int size = carts.size();
+
+        List<CartResponse> cartResponses = getCartListPagination(size, startIndex, carts);
+
+        cartResult.setCartResponseList(cartResponses);
+        cartResult.setCurrentPageNum(pageNumber);
+        cartResult.setTotalElementNum(size);
+        if(size%pageContentNumber==0){
+            cartResult.setTotalPageNum(size/pageContentNumber);
+        }
+        else{
+            cartResult.setTotalPageNum((size/pageContentNumber)+1);
+        }
+
+        return cartResult;
+    }
+
+    public List<CartResponse> getCartListPagination(int size, int startIndex, List<Cart> cartList){
+        List<CartResponse> cartResponseList = new ArrayList<>();
+
+        if(size < startIndex){
+            return cartResponseList;
+        }
+
+        if (size < startIndex + pageContentNumber) {
+            for (Cart c : cartList.subList(startIndex, size)) {
+                CartResponse cartResponse = CartResponse.builder()
+                        .cartId(c.getCartId())
+                        .cartIsActivated(c.getCartIsActivated())
+                        .cartQty(c.getCartQty())
+                        .productId(c.getProduct().getProductId())
+                        .productName(c.getProduct().getProductName())
+                        .productDeliveryCompany(c.getProduct().getProductDeliveryCompany())
+                        .productMainImgSrc(c.getProduct().getProductMainImgSrc())
+                        .productOriginPlace(c.getProduct().getProductOriginPlace())
+                        .productPrice(c.getProduct().getProductPrice())
+                        .productStatus(c.getProduct().getProductStatus())
+                        .build();
+                cartResponseList.add(cartResponse);
+            }
+            return cartResponseList;
+        }
+        for (Cart c : cartList.subList(startIndex, startIndex + pageContentNumber)) {
             CartResponse cartResponse = CartResponse.builder()
                     .cartId(c.getCartId())
                     .cartIsActivated(c.getCartIsActivated())
@@ -154,8 +202,8 @@ public class CartServiceImpl implements CartService{
                     .productPrice(c.getProduct().getProductPrice())
                     .productStatus(c.getProduct().getProductStatus())
                     .build();
-            cartResponses.add(cartResponse);
+            cartResponseList.add(cartResponse);
         }
-        return cartResponses;
+        return cartResponseList;
     }
 }
