@@ -1,5 +1,7 @@
 package com.team6.onandthefarm.service.exhibition;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import com.team6.onandthefarm.entity.exhibition.ExhibitionCategory;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionCategoryRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,5 +83,19 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionAccount.get().setExhibitionAccountModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 
 		return exhibitionAccount.get().getExhibitionAccountId();
+	}
+
+	@Override
+	public List<ExhibitionAccountResponse> getExhibitionAccountByExhibitionCategory(Long exhibitionCategoryId){
+
+		List<ExhibitionAccountResponse> responses = new ArrayList<>();
+		List<ExhibitionAccount> exhibitionAccounts = exhibitionRepository.findByExhibitionCategoryId(exhibitionCategoryId);
+		for (ExhibitionAccount exhibitionAccount : exhibitionAccounts) {
+			ExhibitionAccountResponse exhibitionAccountResponse = new ExhibitionAccountResponse();
+			exhibitionAccountResponse.setExhibitionAccountId(exhibitionAccount.getExhibitionAccountId());
+			exhibitionAccountResponse.setExhibitionAccountName(exhibitionAccount.getExhibitionAccountName());
+			exhibitionAccountResponse.setExhibitionAccountStatus(exhibitionAccount.isExhibitionAccountStatus());
+		}
+		return responses;
 	}
 }

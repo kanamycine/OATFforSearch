@@ -1,11 +1,14 @@
 package com.team6.onandthefarm.controller.exhibition;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,7 @@ import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDeleteRequest;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountFormRequest;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountUpdateFormRequest;
 
 import io.swagger.annotations.ApiOperation;
@@ -89,6 +93,21 @@ public class ExhibitionController {
 				.httpStatus(HttpStatus.CREATED)
 				.message("ExhibitionAccount DELETED")
 				.data(exhibitionAccountId)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/account/{exhibition-category-no}")
+	@ApiOperation(value = "전시카테고리 별 전시구좌 조회")
+	public ResponseEntity<BaseResponse<List<ExhibitionAccountResponse>>> getExhibitionAccountByExhibitionCategory(@ApiIgnore Principal principal,
+			@PathVariable("exhibition-category-no") Long exhibitionCategoryId){
+		List<ExhibitionAccountResponse> exhibitionAccounts  = exhibitionService.getExhibitionAccountByExhibitionCategory(exhibitionCategoryId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.CREATED)
+				.message("ExhibitionAccount BY ExhibitionCategoryId")
+				.data(exhibitionAccounts)
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);

@@ -29,5 +29,7 @@ public class ExhibitionCategory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long exhibitionCategoryName;
+	private Long exhibitionCategoryId;
+
+	private String exhibitionCategoryName;
 }
