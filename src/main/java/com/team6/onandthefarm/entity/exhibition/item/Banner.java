@@ -33,7 +33,7 @@ public class Banner {
 
 	private String bannerName;
 
-	private String bannerMainImgSrc;
+	private String bannerImg;
 
 	private String bannerDetail;
 
