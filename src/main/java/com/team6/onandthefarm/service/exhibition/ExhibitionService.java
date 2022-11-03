@@ -5,8 +5,6 @@ import java.util.List;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
-import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
-import com.team6.onandthefarm.entity.exhibition.ExhibitionCategory;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
 

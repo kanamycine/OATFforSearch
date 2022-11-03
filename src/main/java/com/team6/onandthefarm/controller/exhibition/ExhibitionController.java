@@ -1,6 +1,7 @@
 package com.team6.onandthefarm.controller.exhibition;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
+import com.team6.onandthefarm.service.exhibition.ExhibitionItemService;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDeleteRequest;
@@ -25,6 +28,8 @@ import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountFormRequest;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountUpdateFormRequest;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemFormRequest;
+
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +49,17 @@ public class ExhibitionController {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+		List<ExhibitionItemFormRequest> exhibitionItemFormRequests = exhibitionAccountFormRequest.getExhibitionItemFormRequests();
+		List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos = new ArrayList<>();
+
 		ExhibitionAccountFormDto exhibitionAccountFormDto = modelMapper.map(exhibitionAccountFormRequest, ExhibitionAccountFormDto.class);
+
+		for (ExhibitionItemFormRequest exhibitionItemFormRequest : exhibitionItemFormRequests) {
+			ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionItemFormRequestDto.class);
+			exhibitionItemFormRequestDtos.add(exhibitionItemFormRequestDto);
+		}
+
+		exhibitionAccountFormDto.setExhibitionItemFormRequestDtos(exhibitionItemFormRequestDtos);
 
 		Long exhibitionAccountId = exhibitionService.createExhibitionAccount(exhibitionAccountFormDto);
 
@@ -130,5 +145,24 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	// @PostMapping(value = "/items/new")
+	// @ApiOperation(value = "전시 상품 소재들 등록")
+	// public ResponseEntity<BaseResponse<ExhibitionItems>> createExhibitionProductItem(@ApiIgnore Principal principal,
+	// 		ExhibitionItemFormRequest exhibitionItemFormRequest){
+	// 	ModelMapper modelMapper = new ModelMapper();
+	// 	modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+	//
+	// 	ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionProductItemFormRequestDto.class);
+	//
+	// 	Long exhibitionItemId = exhibitionItemService.createExhibitionItem(exhibitionItemFormRequestDto);
+	//
+	// 	BaseResponse baseResponse = BaseResponse.builder()
+	// 			.httpStatus(HttpStatus.CREATED)
+	// 			.message("ExhibitionProductItem CREATED")
+	// 			.data(exhibitionProductItemId)
+	// 			.build();
+	//
+	// 	return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+	// }
 
 }

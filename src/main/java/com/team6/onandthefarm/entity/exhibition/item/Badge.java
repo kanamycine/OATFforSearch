@@ -37,11 +37,14 @@ public class Badge {
 
 	private String badgeDetail;
 
+	private String badgeConnectUrl;
+
 	private String badgeCreatedAt;
 
 	private String badgeModifiedAt;
 
 	private boolean badgeStatus;
+
 
 	// @OneToOne(fetch = FetchType.LAZY)
 	// @JoinColumn(name = "exhibitionAccountId")

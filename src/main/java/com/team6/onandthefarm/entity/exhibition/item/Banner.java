@@ -37,11 +37,12 @@ public class Banner {
 
 	private String bannerDetail;
 
+	private String bannerConnectUrl;
+
 	private String bannerCreatedAt;
 
 	private String bannerModifiedAt;
 
 	private boolean bannerStatus;
 
-	private String bannerConnectUrl;
 }

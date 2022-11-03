@@ -40,7 +40,7 @@ public class DataPicker {
 
 	private String DataPickerName;
 
-	private boolean DataPickerUsableStatus;
+	// private boolean DataPickerUsableStatus;
 
 	private boolean DataPickerStatus;
 

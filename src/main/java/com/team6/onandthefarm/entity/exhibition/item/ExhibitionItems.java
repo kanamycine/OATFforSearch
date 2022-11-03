@@ -1,12 +1,9 @@
-package com.team6.onandthefarm.entity.exhibition;
+package com.team6.onandthefarm.entity.exhibition.item;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 import lombok.AllArgsConstructor;
@@ -28,25 +25,21 @@ import lombok.extern.slf4j.Slf4j;
 		sequenceName = "EXHIBITION_SEQ",
 		initialValue = 100000, allocationSize = 1
 )
-public class ExhibitionAccount {
+public class ExhibitionItems {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
+	private Long exhibitionItemsId;
+
 	private Long exhibitionAccountId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "exhibitionCategoryId")
-	private ExhibitionCategory exhibitionCategory;
+	private String exhibitionItemsName;
 
-	private String exhibitionAccountName;
+	private String exhibitionItemsDetail;
 
-	private String exhibitionAccountTime;
+	public ExhibitionItems(Long exhibitionAccountId, String exhibitionItemsName){
+		this.exhibitionAccountId = exhibitionAccountId;
+		this.exhibitionItemsName =exhibitionItemsName;
+	}
 
-	private String exhibitionAccountDetail;
-
-	private String exhibitionAccountCreatedAt;
-
-	private String exhibitionAccountModifiedAt;
-
-	private boolean exhibitionAccountStatus;
 }

@@ -14,11 +14,11 @@ public class ExhibitionAccountUpdateFormDto {
 
 	private String exhibitionAccountTime;
 
+	private String exhibitionAccountDetail;
+
 	private String exhibitionAccountCreatedAt;
 
 	private String exhibitionAccountModifiedAt;
-
-	private boolean exhibitionAccountUsableStatus;
 
 	private boolean exhibitionAccountStatus;
 }

@@ -37,6 +37,8 @@ public class Module {
 
 	private String moduleContent;
 
+	private Integer moduleDataSize;
+
 	private boolean moduleUsableStatus;
 
 	private boolean moduleStatus;

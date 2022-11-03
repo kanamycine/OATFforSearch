@@ -11,16 +11,14 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountUpdateFormRequest {
+public class ExhibitionItemFormRequest {
 	private Long exhibitionAccountId;
 
-	private Long exhibitionAccountCategoryId;
+	private Long exhibitionCategoryId;
 
-	private String exhibitionAccountName;
+	private Long exhibitionItemId;
 
-	private String exhibitionAccountTime;
+	private Integer exhibitionItemPriority;
 
-	// private boolean exhibitionAccountUsableStatus;
-
-	private boolean exhibitionAccountStatus;
+	private String exhibitionItemTime;
 }
