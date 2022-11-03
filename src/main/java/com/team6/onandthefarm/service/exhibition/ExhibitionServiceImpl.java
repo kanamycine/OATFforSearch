@@ -10,14 +10,17 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
+import com.team6.onandthefarm.entity.exhibition.DataPicker;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionCategory;
 import com.team6.onandthefarm.entity.exhibition.item.ExhibitionItem;
 import com.team6.onandthefarm.entity.exhibition.item.ExhibitionItems;
+import com.team6.onandthefarm.repository.exhibition.DataPickerRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionCategoryRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionAccountRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionItemRepository;
@@ -37,6 +40,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	private ExhibitionCategoryRepository exhibitionCategoryRepository;
 	private ExhibitionItemsRepository exhibitionItemsRepository;
 	private ExhibitionItemRepository exhibitionItemRepository;
+
+	private DataPickerRepository dataPickerRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -44,12 +49,14 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 								ExhibitionCategoryRepository exhibitionCategoryRepository,
 								ExhibitionItemsRepository exhibitionItemsRepository,
 								ExhibitionItemRepository exhibitionItemRepository,
+								DataPickerRepository dataPickerRepository,
 								DateUtils dateUtils,
 								Environment env){
 		this.exhibitionAccountRepository = exhibitionAccountRepository;
 		this.exhibitionCategoryRepository = exhibitionCategoryRepository;
 		this.exhibitionItemsRepository = exhibitionItemsRepository;
 		this.exhibitionItemRepository = exhibitionItemRepository;
+		this.dataPickerRepository = dataPickerRepository;
 		this.env = env;
 		this.dateUtils = dateUtils;
 	}
@@ -150,5 +157,19 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			responses.add(exhibitionCategoryResponse);
 		}
 		return responses;
+	}
+
+	@Override
+	public Long createDataPicker(DataPickerFormRequestDto dataPickerFormRequestDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		DataPicker dataPicker = modelMapper.map(dataPickerFormRequestDto, DataPicker.class);
+
+		dataPicker.setExhibitionCategory(exhibitionCategoryRepository.findById(dataPickerFormRequestDto.getExhibitionCategoryId()).get());
+		dataPicker.setDataPickerCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+		dataPicker.setDataPickerStatus(true);
+
+		return dataPickerRepository.save(dataPicker).getDataPickerId();
 	}
 }
