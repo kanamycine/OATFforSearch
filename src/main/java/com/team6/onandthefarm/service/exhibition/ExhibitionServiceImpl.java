@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.internal.util.Lists;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import com.team6.onandthefarm.repository.exhibition.ExhibitionCategoryRepository
 import com.team6.onandthefarm.repository.exhibition.ExhibitionRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,11 +92,30 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		List<ExhibitionAccountResponse> responses = new ArrayList<>();
 		List<ExhibitionAccount> exhibitionAccounts = exhibitionRepository.findByExhibitionCategoryId(exhibitionCategoryId);
-		for (ExhibitionAccount exhibitionAccount : exhibitionAccounts) {
+		for (ExhibitionAccount e : exhibitionAccounts) {
 			ExhibitionAccountResponse exhibitionAccountResponse = new ExhibitionAccountResponse();
-			exhibitionAccountResponse.setExhibitionAccountId(exhibitionAccount.getExhibitionAccountId());
-			exhibitionAccountResponse.setExhibitionAccountName(exhibitionAccount.getExhibitionAccountName());
-			exhibitionAccountResponse.setExhibitionAccountStatus(exhibitionAccount.isExhibitionAccountStatus());
+			exhibitionAccountResponse.setExhibitionAccountId(e.getExhibitionAccountId());
+			exhibitionAccountResponse.setExhibitionAccountName(e.getExhibitionAccountName());
+			exhibitionAccountResponse.setExhibitionAccountStatus(e.isExhibitionAccountStatus());
+			responses.add(exhibitionAccountResponse);
+		}
+		return responses;
+	}
+
+	@Override
+	public List<ExhibitionCategoryResponse> getAllExhibitionCategory(){
+		List<ExhibitionCategoryResponse> responses = new ArrayList<>();
+		List<ExhibitionCategory> exhibitionCategories = new ArrayList<>();
+		Iterable<ExhibitionCategory> all = exhibitionCategoryRepository.findAll();
+		for (ExhibitionCategory exhibitionCategory : all) {
+			exhibitionCategories.add(exhibitionCategory);
+		}
+
+		for (ExhibitionCategory e : exhibitionCategories) {
+			ExhibitionCategoryResponse  exhibitionCategoryResponse = new ExhibitionCategoryResponse();
+			exhibitionCategoryResponse.setExhibitionCategoryId(e.getExhibitionCategoryId());
+			exhibitionCategoryResponse.setExhibitionCategoryName(e.getExhibitionCategoryName());
+			responses.add(exhibitionCategoryResponse);
 		}
 		return responses;
 	}

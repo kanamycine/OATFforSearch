@@ -24,6 +24,7 @@ import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDeleteRequest;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountFormRequest;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountUpdateFormRequest;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,7 @@ public class ExhibitionController {
 		Long exhibitionAccountId = exhibitionService.updateExhibitionAccount(exhibitionAccountUpdateFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount UPDATED")
 				.data(exhibitionAccountId)
 				.build();
@@ -90,7 +91,7 @@ public class ExhibitionController {
 		Long exhibitionAccountId = exhibitionService.deleteExhibitionAccount(exhibitionAccountDeleteDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount DELETED")
 				.data(exhibitionAccountId)
 				.build();
@@ -98,18 +99,36 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/category")
+	@ApiOperation(value = "전시 카테고리 전체 조회 - 카테고리 선택시 사용")
+	public ResponseEntity<BaseResponse<List<ExhibitionCategoryResponse>>> getAllExhibitionCategory(@ApiIgnore Principal principal){
+
+		List<ExhibitionCategoryResponse> exhibitionCategories = exhibitionService.getAllExhibitionCategory();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionCategory ALL")
+				.data(exhibitionCategories)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+
+	}
+
 	@GetMapping(value = "/account/{exhibition-category-no}")
-	@ApiOperation(value = "전시카테고리 별 전시구좌 조회")
+	@ApiOperation(value = "전시카테고리 별 전시구좌 조회 - 전시구좌 선택시 사용")
 	public ResponseEntity<BaseResponse<List<ExhibitionAccountResponse>>> getExhibitionAccountByExhibitionCategory(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-category-no") Long exhibitionCategoryId){
 		List<ExhibitionAccountResponse> exhibitionAccounts  = exhibitionService.getExhibitionAccountByExhibitionCategory(exhibitionCategoryId);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount BY ExhibitionCategoryId")
 				.data(exhibitionAccounts)
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
+
 }
