@@ -379,6 +379,7 @@ public class SellerServiceImp implements SellerService{
                         .reviewContent(review.getReviewContent())
                         .reviewRate(review.getReviewRate())
                         .reviewLikeCount(review.getReviewLikeCount())
+                        .productId(product.getProductId())
                         .build();
                 responses.add(response);
             }
@@ -393,6 +394,7 @@ public class SellerServiceImp implements SellerService{
                         .reviewContent(review.getReviewContent())
                         .reviewRate(review.getReviewRate())
                         .reviewLikeCount(review.getReviewLikeCount())
+                        .productId(product.getProductId())
                         .build();
                 responses.add(response);
             }
