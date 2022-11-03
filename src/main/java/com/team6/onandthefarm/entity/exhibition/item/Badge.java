@@ -33,7 +33,7 @@ public class Badge {
 
 	private String badgeName;
 
-	private String badgeMainImgSrc;
+	private String badgeImg;
 
 	private String badgeDetail;
 
