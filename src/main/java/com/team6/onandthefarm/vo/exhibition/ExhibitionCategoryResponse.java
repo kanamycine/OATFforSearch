@@ -11,8 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountResponse {
-	private Long exhibitionAccountId;
-	private String exhibitionAccountName;
-	private boolean exhibitionAccountStatus; // 삭제된건 보내지마라
+public class ExhibitionCategoryResponse {
+	private Long exhibitionCategoryId;
+	private String exhibitionCategoryName;
 }

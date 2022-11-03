@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
@@ -32,11 +31,15 @@ import lombok.extern.slf4j.Slf4j;
 		sequenceName = "EXHIBITION_SEQ",
 		initialValue = 100000, allocationSize = 1
 )
-public class ExhibitionAdItem {
+public class ExhibitionItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long exhibitionAdItemId;
+	private Long exhibitionItemId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "exhibitionItmesId")
+	private ExhibitionItems exhibitionItemsId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exhibitionAccountId")
@@ -46,23 +49,15 @@ public class ExhibitionAdItem {
 	@JoinColumn(name = "exhibitionCategoryId")
 	private ExhibitionCategory exhibitionCategory;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "bannerId")
-	private Banner exhibitionAd;
+	private Long exhibitionItemProductId;
 
-	// private String exhibitionAdItemName;
+	private Integer exhibitionItemPriority;
 
-	private Integer exhibitionAdItemPriority;
+	private String exhibitionItemTime;
 
-	private String exhibitionAdItemUrl;
+	private String exhibitionItemCreatedAt;
 
-	private String exhibitionAdItemTime;
+	private String exhibitionItemModifiedAt;
 
-	private String exhibitionAdItemCreatedAt;
-
-	private String exhibitionAdItemModifiedAt;
-
-	private boolean exhibitionAdItemUsableStatus;
-
-	private boolean exhibitionAdItemStatus;
+	private boolean exhibitionItemStatus;
 }
