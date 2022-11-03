@@ -2,6 +2,7 @@ package com.team6.onandthefarm.service.exhibition;
 
 import java.util.List;
 
+import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
@@ -14,4 +15,5 @@ public interface ExhibitionService {
 	Long deleteExhibitionAccount(ExhibitionAccountDeleteDto exhibitionAccountDeleteDto);
 	List<ExhibitionCategoryResponse> getAllExhibitionCategory();
 	List<ExhibitionAccountResponse> getExhibitionAccountByExhibitionCategory(Long exhibitionCategoryId);
+	Long createDataPicker(DataPickerFormRequestDto dataPickerFormRequestDto);
 }

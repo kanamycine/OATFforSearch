@@ -32,21 +32,21 @@ public class DataPicker {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long DataPickerId;
+	private Long dataPickerId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exhibitionCategoryId")
 	private ExhibitionCategory exhibitionCategory;
 
-	private String DataPickerName;
+	private String dataPickerName;
 
-	// private boolean DataPickerUsableStatus;
+	private String dataPickerDetail;
 
-	private boolean DataPickerStatus;
+	private boolean dataPickerStatus;
 
-	private String DataPickerCreatedAt;
+	private String dataPickerCreatedAt;
 
-	private String DataPickerModifiedAt;
+	private String dataPickerModifiedAt;
 
-	private String DataPickerWriter;
+	private String dataPickerWriter;
 }
