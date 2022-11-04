@@ -7,6 +7,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountDeleteRequest {
-	private Long exhibitionAccountId;
+public class ExhibitionAccountDetailRequest {
+    private Long exhibitionAccountId;
 }

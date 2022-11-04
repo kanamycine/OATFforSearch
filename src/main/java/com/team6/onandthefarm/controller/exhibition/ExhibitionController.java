@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
@@ -23,12 +24,6 @@ import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import com.team6.onandthefarm.service.exhibition.ExhibitionItemService;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDeleteRequest;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountFormRequest;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountUpdateFormRequest;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionItemFormRequest;
 
 
 import io.swagger.annotations.ApiOperation;
@@ -165,4 +160,19 @@ public class ExhibitionController {
 	// 	return new ResponseEntity(baseResponse, HttpStatus.CREATED);
 	// }
 
+	@GetMapping(value = "/account/detail/{exhibition-account-id}")
+	@ApiOperation(value = "전시구좌 상세보기")
+	public ResponseEntity<BaseResponse<ExhibitionAccountDetailResponse>> getExhibitionAccountDetail(@ApiIgnore Principal principal,
+																										  @PathVariable("exhibition-account-id") Long exhibitionAccountId){
+
+		ExhibitionAccountDetailResponse exhibitionAccounts  = exhibitionService.getExhibitionAccountDetail(exhibitionAccountId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionAccount BY exhibitionAccountId")
+				.data(exhibitionAccounts)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
 }

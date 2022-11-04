@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
@@ -26,9 +27,6 @@ import com.team6.onandthefarm.repository.exhibition.ExhibitionAccountRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionItemRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionItemsRepository;
 import com.team6.onandthefarm.util.DateUtils;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionItemFormRequest;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,7 +81,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		String exhibitionItemsName = exhibitionAccountFormDto.getExhibitionItemsName();
 
-		ExhibitionItems exhibitionItems = new ExhibitionItems(exhibitionAccountId, exhibitionItemsName);
+		ExhibitionItems exhibitionItems = new ExhibitionItems(exhibitionAccount, exhibitionItemsName);
 		Long exhibitionItemsId = exhibitionItemsRepository.save(exhibitionItems).getExhibitionItemsId();
 
 		List<ExhibitionItemFormRequestDto> ItemRequests = exhibitionAccountFormDto.getExhibitionItemFormRequestDtos();
@@ -93,7 +91,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 			exhibitionItem.setExhibitionItemCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 			exhibitionItem.setExhibitionItemStatus(true);
-			exhibitionItem.setExhibitionItemsId(exhibitionItemsRepository.findById(exhibitionItemsId).get());
+			exhibitionItem.setExhibitionItems(exhibitionItemsRepository.findById(exhibitionItemsId).get());
 
 			exhibitionItemRepository.save(exhibitionItem);
 		}
@@ -107,7 +105,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		exhibitionAccount.get().setExhibitionAccountName(exhibitionAccountUpdateFormDto.getExhibitionAccountName());
 		exhibitionAccount.get().setExhibitionCategory(exhibitionCategory.get());
-		exhibitionAccount.get().setExhibitionAccountTime(exhibitionAccountUpdateFormDto.getExhibitionAccountTime());
+		exhibitionAccount.get().setExhibitionAccountStartTime(exhibitionAccountUpdateFormDto.getExhibitionAccountStartTime());
+		exhibitionAccount.get().setExhibitionAccountEndTime(exhibitionAccountUpdateFormDto.getExhibitionAccountEndTime());
 		exhibitionAccount.get().setExhibitionAccountStatus(exhibitionAccountUpdateFormDto.isExhibitionAccountStatus());
 
 		return exhibitionAccount.get().getExhibitionAccountId();
@@ -168,5 +167,43 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		dataPicker.setDataPickerStatus(true);
 
 		return dataPickerRepository.save(dataPicker).getDataPickerId();
+	}
+
+	@Override
+	public ExhibitionAccountDetailResponse getExhibitionAccountDetail(Long exhibitionAccountId){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionAccountDetailResponse exhibitionAccountDetail = new ExhibitionAccountDetailResponse();	// 프론트에 보내 줄 responses 빈 class 생성
+		exhibitionAccountDetail.setExhibitionAccountItemsDetailResponseList(new ArrayList<>());
+
+		ExhibitionAccount exhibitionAccount = exhibitionAccountRepository.findByExhibitionAccountId(exhibitionAccountId);
+		exhibitionAccountDetail.setExhibitionAccountId(exhibitionAccount.getExhibitionAccountId());
+		exhibitionAccountDetail.setExhibitionAccountName(exhibitionAccount.getExhibitionAccountName());
+		exhibitionAccountDetail.setExhibitionAccountDetail(exhibitionAccount.getExhibitionAccountDetail());
+		exhibitionAccountDetail.setExhibitionAccountStartTime(exhibitionAccount.getExhibitionAccountStartTime());
+		exhibitionAccountDetail.setExhibitionAccountEndTime(exhibitionAccount.getExhibitionAccountEndTime());
+
+		List<ExhibitionItems> exhibitionsItemsDetailList =  exhibitionItemsRepository.findExhibitionItemsDetail(exhibitionAccountId);
+		for(ExhibitionItems items : exhibitionsItemsDetailList) {
+			ExhibitionAccountItemsDetailResponse exhibitionAccountItemsDetail = new ExhibitionAccountItemsDetailResponse();	// 소재 리스트 respose 선언
+			exhibitionAccountItemsDetail.setExhibitionAccountItemDetailResponseList(new ArrayList<>());
+
+			exhibitionAccountItemsDetail.setExhibitionItemsId(items.getExhibitionItemsId());
+			exhibitionAccountItemsDetail.setExhibitionItemsName(items.getExhibitionItemsName());
+			exhibitionAccountItemsDetail.setExhibitionItemsDetail(items.getExhibitionItemsDetail());
+
+			List<ExhibitionItem> exhibitionItemDetailList = exhibitionItemRepository.findExhibitionItemDetail(items.getExhibitionItemsId());
+			for(ExhibitionItem item  : exhibitionItemDetailList){
+				ExhibitionAccountItemDetailResponse exhibitionAccountItemDetail = new ExhibitionAccountItemDetailResponse();	// 소재 respose 선언
+				exhibitionAccountItemDetail.setExhibitionItemId(item.getExhibitionItemId());
+				exhibitionAccountItemDetail.setExhibitionItemProductId(item.getExhibitionItemProductId());
+				exhibitionAccountItemDetail.setExhibitionItemPriority(item.getExhibitionItemPriority());
+
+				exhibitionAccountItemsDetail.getExhibitionAccountItemDetailResponseList().add(exhibitionAccountItemDetail);	// 소재 리스트에 소재 추가
+			}
+			exhibitionAccountDetail.getExhibitionAccountItemsDetailResponseList().add(exhibitionAccountItemsDetail);	// 구좌에 소재 리스트 추가
+		}
+		return exhibitionAccountDetail;
 	}
 }
