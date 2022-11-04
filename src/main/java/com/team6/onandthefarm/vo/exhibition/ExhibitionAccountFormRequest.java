@@ -21,7 +21,9 @@ public class ExhibitionAccountFormRequest {
 
 	private String exhibitionAccountName;
 
-	private String exhibitionAccountTime;
+	private String exhibitionAccountStartTime;
+
+	private String exhibitionAccountEndTime;
 
 	private String exhibitionAccountDetail;
 

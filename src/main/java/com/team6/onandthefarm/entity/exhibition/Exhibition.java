@@ -44,5 +44,4 @@ public class Exhibition {
 
 	private Long exhibitionAccountId;
 
-	private Integer exhibitionOrder;
 }

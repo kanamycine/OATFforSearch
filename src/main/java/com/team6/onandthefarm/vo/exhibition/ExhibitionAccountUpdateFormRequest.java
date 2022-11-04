@@ -18,7 +18,9 @@ public class ExhibitionAccountUpdateFormRequest {
 
 	private String exhibitionAccountName;
 
-	private String exhibitionAccountTime;
+	private String exhibitionAccountStartTime;
+
+	private String exhibitionAccountEndTime;
 
 	// private boolean exhibitionAccountUsableStatus;
 
