@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -19,12 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
-import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
-import com.team6.onandthefarm.service.exhibition.ExhibitionItemService;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
-
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsFormRequest;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -44,17 +44,26 @@ public class ExhibitionController {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-		List<ExhibitionItemFormRequest> exhibitionItemFormRequests = exhibitionAccountFormRequest.getExhibitionItemFormRequests();
-		List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos = new ArrayList<>();
-
 		ExhibitionAccountFormDto exhibitionAccountFormDto = modelMapper.map(exhibitionAccountFormRequest, ExhibitionAccountFormDto.class);
 
-		for (ExhibitionItemFormRequest exhibitionItemFormRequest : exhibitionItemFormRequests) {
-			ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionItemFormRequestDto.class);
-			exhibitionItemFormRequestDtos.add(exhibitionItemFormRequestDto);
-		}
+		List<ExhibitionItemsFormRequest> exhibitionItemsFormRequests = exhibitionAccountFormRequest.getExhibitionItemsFormRequests();
+		List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos = new ArrayList<>();
 
-		exhibitionAccountFormDto.setExhibitionItemFormRequestDtos(exhibitionItemFormRequestDtos);
+		for(ExhibitionItemsFormRequest exhibitionItemsFormRequest : exhibitionItemsFormRequests){
+			List<ExhibitionItemFormRequest> exhibitionItemFormRequests = exhibitionItemsFormRequest.getExhibitionItemFormRequests();
+
+			List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos = new ArrayList<>();
+			for(ExhibitionItemFormRequest exhibitionItemFormRequest : exhibitionItemFormRequests){
+				ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionItemFormRequestDto.class);
+				exhibitionItemFormRequestDtos.add(exhibitionItemFormRequestDto);
+			}
+
+			ExhibitionItemsFormRequestDto exhibitionItemsFormRequestDto = modelMapper.map(exhibitionItemsFormRequest, ExhibitionItemsFormRequestDto.class);
+			exhibitionItemsFormRequestDto.setExhibitionItemFormRequestDtos(exhibitionItemFormRequestDtos);
+
+			exhibitionItemsFormRequestDtos.add(exhibitionItemsFormRequestDto);
+		}
+		exhibitionAccountFormDto.setExhibitionItemsFormRequestDtos(exhibitionItemsFormRequestDtos);
 
 		Long exhibitionAccountId = exhibitionService.createExhibitionAccount(exhibitionAccountFormDto);
 
