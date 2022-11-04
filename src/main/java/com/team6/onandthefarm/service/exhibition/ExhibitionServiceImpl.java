@@ -91,9 +91,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 			ExhibitionItem exhibitionItem = modelMapper.map(itemRequest, ExhibitionItem.class);
 
-			exhibitionItem.setExhibitionAccount(exhibitionAccountRepository.findById(exhibitionAccountId).get());
-			exhibitionItem.setExhibitionCategory(exhibitionCategoryRepository.findById(exhibitionAccountFormDto.getExhibitionAccountCategoryId()).get());
-
 			exhibitionItem.setExhibitionItemCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 			exhibitionItem.setExhibitionItemStatus(true);
 			exhibitionItem.setExhibitionItemsId(exhibitionItemsRepository.findById(exhibitionItemsId).get());
