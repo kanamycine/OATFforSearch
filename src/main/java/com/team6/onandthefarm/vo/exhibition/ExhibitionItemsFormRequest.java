@@ -2,6 +2,8 @@ package com.team6.onandthefarm.vo.exhibition;
 
 import java.util.List;
 
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemFormRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,23 +15,14 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountFormRequest {
+public class ExhibitionItemsFormRequest {
 
-	private Long exhibitionAccountCategoryId;
-
-	private String exhibitionAccountName;
-
-	private String exhibitionAccountStartTime;
-
-	private String exhibitionAccountEndTime;
-
-	private String exhibitionAccountDetail;
+	private Long exhibitionAccountId;
 
 	private String exhibitionItemsName;
 
 	private String exhibitionItemsDetail;
 
-	private List<ExhibitionItemsFormRequest> exhibitionItemsFormRequests;
-
+	private List<ExhibitionItemFormRequest> exhibitionItemFormRequests;
 
 }

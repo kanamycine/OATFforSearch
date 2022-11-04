@@ -30,5 +30,5 @@ public class ExhibitionAccountFormDto {
 
 	private String exhibitionItemsName;
 
-	private List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos;
+	private List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos;
 }
