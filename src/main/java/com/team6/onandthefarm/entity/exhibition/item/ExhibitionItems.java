@@ -1,11 +1,8 @@
 package com.team6.onandthefarm.entity.exhibition.item;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 
+import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,14 +28,16 @@ public class ExhibitionItems {
 			generator = "EXHIBITION_SEQ_GENERATOR")
 	private Long exhibitionItemsId;
 
-	private Long exhibitionAccountId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "exhibitionAccountId")
+	private ExhibitionAccount exhibitionAccount;
 
 	private String exhibitionItemsName;
 
 	private String exhibitionItemsDetail;
 
-	public ExhibitionItems(Long exhibitionAccountId, String exhibitionItemsName){
-		this.exhibitionAccountId = exhibitionAccountId;
+	public ExhibitionItems(ExhibitionAccount exhibitionAccount, String exhibitionItemsName){
+		this.exhibitionAccount = exhibitionAccount;
 		this.exhibitionItemsName =exhibitionItemsName;
 	}
 
