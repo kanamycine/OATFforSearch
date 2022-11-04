@@ -1,7 +1,9 @@
 package com.team6.onandthefarm.security.jwt;
 
+import com.team6.onandthefarm.entity.admin.Admin;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.admin.AdminRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.service.user.UserService;
@@ -28,18 +30,18 @@ import java.util.Optional;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    //private final UserService userService;
     private final UserRepository userRepository;
     private final SellerRepository sellerRepository;
+    private final AdminRepository adminRepository;
     private final JwtTokenUtil jwtTokenUtil;
 
     private String adminKey = "4e2945af65919af52b418b54f26f26c2";
 
     @Autowired
-    public JwtAuthenticationFilter(UserService userService, UserRepository userRepository, SellerRepository sellerRepository, JwtTokenUtil jwtTokenUtil) {
-        //this.userService = userService;
+    public JwtAuthenticationFilter(UserRepository userRepository, SellerRepository sellerRepository, AdminRepository adminRepository, JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.sellerRepository = sellerRepository;
+        this.adminRepository = adminRepository;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -60,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 String role = jwtTokenUtil.getRole(accessToken);
-                if(role.equals("ROLE_ADMIN")){
+                if(role.equals("ROLE_SELLER")){
                     Long sellerId = jwtTokenUtil.getId(accessToken);
                     System.out.println("jwt 인증 필터에서 토큰 속 셀러 정보 : "+ sellerId);
 
@@ -90,7 +92,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         throw new NullPointerException("존재하지 않는 유저입니다.");
                     }
                 }
-                else{
+                else if(role.equals("ROLE_USER")){
                     Long userId = jwtTokenUtil.getId(accessToken);
                     System.out.println("jwt 인증 필터에서 토큰 속 사용자 정보 : "+userId);
 
@@ -110,6 +112,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             // 4-1. 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성
                             UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(userId+" user",
                                     userId + adminKey, AuthorityUtils.createAuthorityList(user.getRole()));
+                            System.out.println("인증 정보 생성 후");
+
+                            // 4-2. jwt 토큰으로 부터 획득한 인증 정보(authentication) 설정
+                            SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
+                            System.out.println("인증 정보 설정 후");
+                        }
+                    }
+                    else {    // DB에 해당 유저 없는 경우
+                        throw new NullPointerException("존재하지 않는 유저입니다.");
+                    }
+                }
+                else{
+                    Long adminId = jwtTokenUtil.getId(accessToken);
+                    System.out.println("jwt 인증 필터에서 토큰 속 관리자 정보 : "+adminId);
+
+                    if (adminId == null) {
+                        throw new IllegalArgumentException("정보가 담겨있지 않은 빈 토큰입니다.");
+                    }
+
+                    // 3. Access Token 토큰에 포함된 유저 정보를 통해 실제 DB에 해당 정보의 계정이 있는지 조회
+                    Optional<Admin> isAdminPresent = adminRepository.findById(adminId);
+                    if (isAdminPresent.isPresent()) {
+                        Admin admin = isAdminPresent.get();
+
+                        // 4. 토큰 유효성 검증
+                        if (jwtTokenUtil.validateToken(accessToken)) {
+                            System.out.println("토큰 유효성 검사 통과");
+                            // 4-1. 식별된 정상 유저인 경우, 요청 context 내에서 참조 가능한 인증 정보(jwtAuthentication) 생성
+                            UsernamePasswordAuthenticationToken jwtAuthentication = new UsernamePasswordAuthenticationToken(admin+" admin",
+                                    admin + adminKey, AuthorityUtils.createAuthorityList(admin.getRole()));
                             System.out.println("인증 정보 생성 후");
 
                             // 4-2. jwt 토큰으로 부터 획득한 인증 정보(authentication) 설정
