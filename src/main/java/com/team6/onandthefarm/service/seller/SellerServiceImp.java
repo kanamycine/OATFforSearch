@@ -3,6 +3,7 @@ package com.team6.onandthefarm.service.seller;
 import com.team6.onandthefarm.dto.seller.SellerDto;
 import com.team6.onandthefarm.dto.seller.SellerMypageDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
+import com.team6.onandthefarm.entity.admin.Admin;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductImg;
@@ -11,6 +12,7 @@ import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.admin.AdminRepository;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.product.ProductImgRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
@@ -29,6 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,8 @@ public class SellerServiceImp implements SellerService{
     private final int pageContentNumber = 8;
     
     private SellerRepository sellerRepository;
+
+    private final AdminRepository adminRepository;
 
     private final ProductQnaRepository productQnaRepository;
 
@@ -63,11 +68,14 @@ public class SellerServiceImp implements SellerService{
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     private Environment env;
 
 
     @Autowired
     public SellerServiceImp(SellerRepository sellerRepository,
+                            AdminRepository adminRepository,
                             DateUtils dateUtils,
                             Environment env,
                             ProductQnaRepository productQnaRepository,
@@ -77,9 +85,11 @@ public class SellerServiceImp implements SellerService{
                             JwtTokenUtil jwtTokenUtil,
                             OrderProductRepository orderProductRepository,
                             ProductImgRepository productImgRepository,
+                            BCryptPasswordEncoder bCryptPasswordEncoder,
                             S3Upload s3Upload) {
 
         this.sellerRepository = sellerRepository;
+        this.adminRepository = adminRepository;
         this.dateUtils=dateUtils;
         this.env=env;
         this.productQnaRepository=productQnaRepository;
@@ -89,6 +99,7 @@ public class SellerServiceImp implements SellerService{
         this.jwtTokenUtil = jwtTokenUtil;
         this.orderProductRepository=orderProductRepository;
         this.productImgRepository=productImgRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.s3Upload=s3Upload;
     }
 
@@ -157,6 +168,9 @@ public class SellerServiceImp implements SellerService{
      * @return true: 회원가입 됨  false: 회원가입 실패
      */
     public boolean sellerSignup(SellerDto sellerDto){
+
+        String encodePassword = bCryptPasswordEncoder.encode(sellerDto.getPassword());
+
         String date = dateUtils.transDate(env.getProperty("dateutils.format"));
         Seller seller = Seller.builder()
                 .sellerEmail(sellerDto.getEmail())
@@ -164,13 +178,13 @@ public class SellerServiceImp implements SellerService{
                 .sellerAddressDetail(sellerDto.getAddressDetail())
                 .sellerBusinessNumber(sellerDto.getBusinessNumber())
                 .sellerName(sellerDto.getName())
-                .sellerPassword(sellerDto.getPassword())
+                .sellerPassword(encodePassword)
                 .sellerPhone(sellerDto.getPhone())
                 .sellerZipcode(sellerDto.getZipcode())
                 .sellerRegisterDate(date)
                 .sellerShopName(sellerDto.getShopName())
                 .sellerIsActivated(Boolean.TRUE)
-                .role("ROLE_ADMIN")
+                .role("ROLE_SELLER")
                 .sellerFollowerCount(0)
                 .sellerFollowingCount(0)
                 .sellerProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/seller/basic_profile.png")
@@ -436,15 +450,31 @@ public class SellerServiceImp implements SellerService{
      */
 
     @Override
-    public Token login(SellerDto sellerDto) {
+    public SellerLoginResponse login(SellerDto sellerDto) {
 
-        Token token = null;
+        SellerLoginResponse sellerLoginResponse = new SellerLoginResponse();
 
-        Seller seller = sellerRepository.findBySellerEmailAndSellerPassword(sellerDto.getEmail(), sellerDto.getPassword());
-        if(seller != null){
-            token = jwtTokenUtil.generateToken(seller.getSellerId(), seller.getRole());
+        if(sellerDto.getEmail().equals("admin")){
+            Optional<Admin> admin = adminRepository.findAdminByAdminEmailAndAdminPassword(sellerDto.getEmail(), sellerDto.getPassword());
+
+            if(admin.isPresent()) {
+                Token token = jwtTokenUtil.generateToken(admin.get().getAdminId(), admin.get().getRole());
+                sellerLoginResponse.setToken(token);
+                sellerLoginResponse.setRole("admin");
+
+                return sellerLoginResponse;
+            }
         }
 
-        return token;
+        String encodePassword = bCryptPasswordEncoder.encode(sellerDto.getPassword());
+
+        Seller seller = sellerRepository.findBySellerEmailAndSellerPassword(sellerDto.getEmail(), encodePassword);
+        if(seller != null){
+            Token token = jwtTokenUtil.generateToken(seller.getSellerId(), seller.getRole());
+            sellerLoginResponse.setToken(token);
+            sellerLoginResponse.setRole("seller");
+        }
+
+        return sellerLoginResponse;
     }
 }
