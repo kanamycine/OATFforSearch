@@ -67,12 +67,23 @@ public class ModuleController {
 
     @GetMapping(value="/list/all/newest/{page-no}")
     @ApiOperation(value="모든 모듈 최신순 조회")
-    public ResponseEntity<BaseResponse<ModuleSelectionResponseResult>> getAllModuleList(
+    public ResponseEntity<BaseResponse<ModuleSelectionResponseResult>> getAllModuleListPagination(
             @PathVariable("page-no") String pageNumber){
-        System.out.println("dksajtiodasj;lktajsd;fkl");
-        System.out.println(Integer.valueOf(pageNumber));
         ModuleSelectionResponseResult modules = moduleService.getAllModuleListOrderByNewest(Integer.valueOf(pageNumber));
 
+        BaseResponse baseResponse = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("getting All module by newest")
+                .data(modules)
+                .build();
+
+        return new ResponseEntity(baseResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(value="/list/all")
+    @ApiOperation(value="모든 모듈 조회")
+    public ResponseEntity<BaseResponse<ModuleSelectionResponseResult>> getAllModuleList(){
+        List<ModuleSelectionResponse> modules = moduleService.getAllModuleList();
         BaseResponse baseResponse = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("getting All module by newest")

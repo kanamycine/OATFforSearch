@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -111,6 +112,37 @@ public class ModuleServiceImpl implements ModuleService{
                 .pageVo(pageVo)
                 .build();
         return moduleListResponse;
+    }
+
+
+    @Override
+    public List<ModuleSelectionResponse> getAllModuleList (){
+
+        Iterator<Module> moduleIterable = moduleRepository.findAll().iterator();
+        List<ModuleSelectionResponse> moduleResponseList = new ArrayList<>();
+        while (true){
+            if(moduleIterable.hasNext()){
+                Module m = moduleIterable.next();
+                ModuleSelectionResponse mResponse = ModuleSelectionResponse.builder()
+                        .moduleId(m.getModuleId())
+                        .moduleName(m.getModuleName())
+                        .moduleContent(m.getModuleContent())
+                        .moduleImgSrc(m.getModuleImgSrc())
+                        .moduleDataSize(m.getModuleDataSize())
+                        .moduleUsableStatus(m.isModuleUsableStatus())
+                        .moduleStatus(m.isModuleStatus())
+                        .moduleCreatedAt(m.getModuleCreatedAt())
+                        .moduleModifiedAt(m.getModuleModifiedAt())
+                        .moduleDevelopCompletedAt(m.getModuleDevelopCompletedAt())
+                        .moduleDevelopModifiedAt(m.getModuleDevelopModifiedAt())
+                        .build();
+                moduleResponseList.add(mResponse);
+            }
+            else{
+                break;
+            }
+        }
+        return moduleResponseList;
     }
 
 }

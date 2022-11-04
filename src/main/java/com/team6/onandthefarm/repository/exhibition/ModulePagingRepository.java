@@ -13,4 +13,5 @@ public interface ModulePagingRepository extends PagingAndSortingRepository<Modul
     @Query(value = "select m from Module m",
         countQuery = "select count(m) from Module m")
     Page<Module> findModuleOrderBy(PageRequest pageRequest);
+
 }
