@@ -1,9 +1,6 @@
 package com.team6.onandthefarm.vo.exhibition;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

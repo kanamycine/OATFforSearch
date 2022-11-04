@@ -38,16 +38,8 @@ public class ExhibitionItem {
 	private Long exhibitionItemId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "exhibitionItmesId")
+	@JoinColumn(name = "exhibitionItemsId")
 	private ExhibitionItems exhibitionItemsId;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "exhibitionAccountId")
-	private ExhibitionAccount exhibitionAccount;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "exhibitionCategoryId")
-	private ExhibitionCategory exhibitionCategory;
 
 	private Long exhibitionItemProductId;
 
