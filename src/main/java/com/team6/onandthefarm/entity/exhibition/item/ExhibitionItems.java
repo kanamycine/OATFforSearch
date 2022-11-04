@@ -35,10 +35,4 @@ public class ExhibitionItems {
 	private String exhibitionItemsName;
 
 	private String exhibitionItemsDetail;
-
-	public ExhibitionItems(ExhibitionAccount exhibitionAccount, String exhibitionItemsName){
-		this.exhibitionAccount = exhibitionAccount;
-		this.exhibitionItemsName =exhibitionItemsName;
-	}
-
 }

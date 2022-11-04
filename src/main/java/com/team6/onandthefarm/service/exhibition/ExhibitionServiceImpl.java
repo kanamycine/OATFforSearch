@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -78,22 +80,26 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		Long exhibitionAccountId = exhibitionAccountRepository.save(exhibitionAccount).getExhibitionAccountId();
 
 
+		List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos = exhibitionAccountFormDto.getExhibitionItemsFormRequestDtos();
+		for (ExhibitionItemsFormRequestDto exhibitionItemsFormRequestDto : exhibitionItemsFormRequestDtos){
+			ExhibitionItems exhibitionItems = ExhibitionItems.builder()
+					.exhibitionAccount(exhibitionAccountRepository.findById(exhibitionAccountId).get())
+					.exhibitionItemsName(exhibitionItemsFormRequestDto.getExhibitionItemsName())
+					.exhibitionItemsDetail(exhibitionItemsFormRequestDto.getExhibitionItemsDetail())
+					.build();
+			Long exhibitionItemsId = exhibitionItemsRepository.save(exhibitionItems).getExhibitionItemsId();
+			List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos = exhibitionItemsFormRequestDto.getExhibitionItemFormRequestDtos();
 
-		String exhibitionItemsName = exhibitionAccountFormDto.getExhibitionItemsName();
+			for(ExhibitionItemFormRequestDto itemFormRequestDto : exhibitionItemFormRequestDtos) {
+				ExhibitionItem exhibitionItem = modelMapper.map(itemFormRequestDto, ExhibitionItem.class);
 
-		ExhibitionItems exhibitionItems = new ExhibitionItems(exhibitionAccount, exhibitionItemsName);
-		Long exhibitionItemsId = exhibitionItemsRepository.save(exhibitionItems).getExhibitionItemsId();
+				exhibitionItem.setExhibitionItemCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+				exhibitionItem.setExhibitionItemStatus(true);
+				exhibitionItem.setExhibitionItems(exhibitionItemsRepository.findById(exhibitionItemsId).get());
 
-		List<ExhibitionItemFormRequestDto> ItemRequests = exhibitionAccountFormDto.getExhibitionItemFormRequestDtos();
-		for (ExhibitionItemFormRequestDto itemRequest : ItemRequests) {
+				exhibitionItemRepository.save(exhibitionItem);
+			}
 
-			ExhibitionItem exhibitionItem = modelMapper.map(itemRequest, ExhibitionItem.class);
-
-			exhibitionItem.setExhibitionItemCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
-			exhibitionItem.setExhibitionItemStatus(true);
-			exhibitionItem.setExhibitionItems(exhibitionItemsRepository.findById(exhibitionItemsId).get());
-
-			exhibitionItemRepository.save(exhibitionItem);
 		}
 		return exhibitionAccountId;
 	}
