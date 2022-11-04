@@ -40,7 +40,9 @@ public class ExhibitionAccount {
 
 	private String exhibitionAccountName;
 
-	private String exhibitionAccountTime;
+	private String exhibitionAccountStartTime;
+
+	private String exhibitionAccountEndTime;
 
 	private String exhibitionAccountDetail;
 

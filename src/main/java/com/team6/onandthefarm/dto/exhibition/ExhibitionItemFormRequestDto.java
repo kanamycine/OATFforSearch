@@ -16,7 +16,9 @@ public class ExhibitionItemFormRequestDto {
 
 	private Integer exhibitionItemPriority;
 
-	private String exhibitionItemTime;
+	private String exhibitionItemStartTime;
+
+	private String exhibitionItemEndTime;
 
 	private String exhibitionItemCreatedAt;
 

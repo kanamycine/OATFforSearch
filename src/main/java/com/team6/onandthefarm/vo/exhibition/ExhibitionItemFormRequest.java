@@ -20,5 +20,7 @@ public class ExhibitionItemFormRequest {
 
 	private Integer exhibitionItemPriority;
 
-	private String exhibitionItemTime;
+	private String exhibitionItemStartTime;
+
+	private String exhibitionItemEndTime;
 }

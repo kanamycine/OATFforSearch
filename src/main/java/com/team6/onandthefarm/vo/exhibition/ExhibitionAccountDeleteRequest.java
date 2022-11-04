@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class ExhibitionAccountDeleteRequest {
 	private Long exhibitionAccountId;
 }
