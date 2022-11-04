@@ -107,7 +107,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		exhibitionAccount.get().setExhibitionAccountName(exhibitionAccountUpdateFormDto.getExhibitionAccountName());
 		exhibitionAccount.get().setExhibitionCategory(exhibitionCategory.get());
-		exhibitionAccount.get().setExhibitionAccountTime(exhibitionAccountUpdateFormDto.getExhibitionAccountTime());
+		exhibitionAccount.get().setExhibitionAccountStartTime(exhibitionAccountUpdateFormDto.getExhibitionAccountStartTime());
+		exhibitionAccount.get().setExhibitionAccountEndTime(exhibitionAccountUpdateFormDto.getExhibitionAccountEndTime());
 		exhibitionAccount.get().setExhibitionAccountStatus(exhibitionAccountUpdateFormDto.isExhibitionAccountStatus());
 
 		return exhibitionAccount.get().getExhibitionAccountId();

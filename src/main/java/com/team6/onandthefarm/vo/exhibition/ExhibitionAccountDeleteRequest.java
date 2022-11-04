@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ExhibitionAccountDeleteRequest {
 	private Long exhibitionAccountId;
 }
