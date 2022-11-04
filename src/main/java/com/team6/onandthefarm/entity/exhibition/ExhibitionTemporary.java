@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 		sequenceName = "EXHIBITION_SEQ",
 		initialValue = 100000, allocationSize = 1
 )
-public class Exhibition {
+public class ExhibitionTemporary {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
@@ -47,7 +47,5 @@ public class Exhibition {
 	private Long exhibitionItemsId;
 
 	private Integer exhibitionPriority;
-
-	private Boolean exhibitionActivation;
 
 }
