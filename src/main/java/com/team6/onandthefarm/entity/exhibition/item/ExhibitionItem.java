@@ -41,7 +41,7 @@ public class ExhibitionItem {
 	@JoinColumn(name = "exhibitionItemsId")
 	private ExhibitionItems exhibitionItems;
 
-	private Long exhibitionItemProductId;
+	private Long exhibitionItemCategoryId;
 
 	private Integer exhibitionItemPriority;
 

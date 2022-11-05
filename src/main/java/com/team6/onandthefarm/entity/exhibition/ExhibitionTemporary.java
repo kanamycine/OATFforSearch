@@ -32,20 +32,21 @@ public class ExhibitionTemporary {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long exhibitionId;
+	private Long exhibitionTemporaryId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exhibitionCategoryId")
-	private ExhibitionCategory exhibitionCategory;
+	private ExhibitionCategory exhibitionTemporaryCategory;
 
-	private String exhibitionModuleName;
+	private String exhibitionTemporaryModuleName;
 
-	private Long exhibitionDataPicker;
+	private Long exhibitionTemporaryDataPicker;
 
-	private Long exhibitionAccountId;
+	private Long exhibitionTemporaryAccountId;
 
-	private Long exhibitionItemsId;
+	private Long exhibitionTemporaryItemsId;
 
-	private Integer exhibitionPriority;
+	private Integer exhibitionTemporaryPriority;
 
+	private Boolean exhibitionActivation;
 }
