@@ -7,7 +7,9 @@ import java.util.List;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
+import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -187,9 +189,9 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@PostMapping(value ="/new")
-	@ApiOperation(value = "전시 생성 (main view)")
-	public ResponseEntity<BaseResponse<Exhibition>> createExhibitionTemporary(@ApiIgnore Principal principal,
+	@PostMapping(value ="/temporary/new")
+	@ApiOperation(value = "전시 temp 생성 (main view)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> createExhibitionTemporary(@ApiIgnore Principal principal,
 			ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
@@ -206,5 +208,27 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+	}
+
+	@PutMapping(value = "/temporary/update")
+	@ApiOperation(value = "전시 temp 수정 (mainview)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto = modelMapper.map(
+				exhibitionTemporaryUpdateFormRequest, ExhibitionTemporaryUpdateFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.updateExhibitionTemporary(exhibitionTemporaryUpdateFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary UPDATED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 }

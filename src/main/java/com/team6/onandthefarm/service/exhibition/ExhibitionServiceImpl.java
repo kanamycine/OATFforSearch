@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionTemporaryRepository;
@@ -231,5 +232,22 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		Long exhibitionTemporaryId = exhibitionTemporaryRepository.save(exhibitionTemporary).getExhibitionTemporaryId();
 
 		return exhibitionTemporaryId;
+	}
+
+	@Override
+	public Long updateExhibitionTemporary(ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto){
+
+		ExhibitionTemporary savedExhibitionTemporary = exhibitionTemporaryRepository.findById(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryId()).get();
+
+		savedExhibitionTemporary.setExhibitionTemporaryAccountId(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryAccountId());
+		savedExhibitionTemporary.setExhibitionTemporaryCategory(exhibitionCategoryRepository.findById(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryCategoryId()).get());
+		savedExhibitionTemporary.setExhibitionTemporaryItemsId(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryItemsId());
+		savedExhibitionTemporary.setExhibitionTemporaryModuleName(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryModuleName());
+		savedExhibitionTemporary.setExhibitionTemporaryDataPicker(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryDataPicker());
+		savedExhibitionTemporary.setExhibitionActivation(exhibitionTemporaryUpdateFormRequestDto.getExhibitionActivation());
+		savedExhibitionTemporary.setExhibitionTemporaryPriority(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryPriority());
+
+		ExhibitionTemporary exhibitionTemporaryId = exhibitionTemporaryRepository.save(savedExhibitionTemporary);
+		return exhibitionTemporaryId.getExhibitionTemporaryId();
 	}
 }
