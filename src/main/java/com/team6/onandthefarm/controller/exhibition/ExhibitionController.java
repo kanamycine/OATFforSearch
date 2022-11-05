@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
@@ -29,6 +30,7 @@ import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsFormRequest;
+import com.team6.onandthefarm.vo.exhibition.item.ExhibitionTemporaryDeleteFormRequest;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -211,7 +213,7 @@ public class ExhibitionController {
 	}
 
 	@PutMapping(value = "/temporary/update")
-	@ApiOperation(value = "전시 temp 수정 (mainview)")
+	@ApiOperation(value = "전시 temp 수정 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporary(@ApiIgnore Principal principal,
 			ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
 
@@ -230,5 +232,26 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@PutMapping(value = "/temporary/delete")
+	@ApiOperation(value = "전시 temp 삭제 (main view)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> deleteExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryDeleteFormRequestDto exhibitionTemporaryDeleteFormRequestDto = modelMapper.map(exhibitionTemporaryDeleteFormRequest, ExhibitionTemporaryDeleteFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.deleteExhibitionTemporary(exhibitionTemporaryDeleteFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary DELETED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 }
