@@ -11,7 +11,7 @@ import lombok.*;
 public class ExhibitionAccountItemDetailResponse {
     private Long exhibitionItemId;
 
-    private Long exhibitionItemProductId;
+    private Long exhibitionItemCategoryId;
 
     private Integer exhibitionItemPriority;
 }

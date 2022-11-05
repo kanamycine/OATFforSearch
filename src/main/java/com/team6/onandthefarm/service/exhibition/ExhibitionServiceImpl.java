@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
+import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
+import com.team6.onandthefarm.repository.exhibition.ExhibitionTemporaryRepository;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -41,6 +44,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	private ExhibitionItemsRepository exhibitionItemsRepository;
 	private ExhibitionItemRepository exhibitionItemRepository;
 
+	private ExhibitionTemporaryRepository exhibitionTemporaryRepository;
 	private DataPickerRepository dataPickerRepository;
 	private DateUtils dateUtils;
 	private Environment env;
@@ -50,6 +54,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 								ExhibitionItemsRepository exhibitionItemsRepository,
 								ExhibitionItemRepository exhibitionItemRepository,
 								DataPickerRepository dataPickerRepository,
+								ExhibitionTemporaryRepository exhibitionTemporaryRepository,
 								DateUtils dateUtils,
 								Environment env){
 		this.exhibitionAccountRepository = exhibitionAccountRepository;
@@ -57,6 +62,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		this.exhibitionItemsRepository = exhibitionItemsRepository;
 		this.exhibitionItemRepository = exhibitionItemRepository;
 		this.dataPickerRepository = dataPickerRepository;
+		this.exhibitionTemporaryRepository = exhibitionTemporaryRepository;
 		this.env = env;
 		this.dateUtils = dateUtils;
 	}
@@ -203,7 +209,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			for(ExhibitionItem item  : exhibitionItemDetailList){
 				ExhibitionAccountItemDetailResponse exhibitionAccountItemDetail = new ExhibitionAccountItemDetailResponse();	// 소재 respose 선언
 				exhibitionAccountItemDetail.setExhibitionItemId(item.getExhibitionItemId());
-				exhibitionAccountItemDetail.setExhibitionItemProductId(item.getExhibitionItemProductId());
+				exhibitionAccountItemDetail.setExhibitionItemCategoryId(item.getExhibitionItemCategoryId());
 				exhibitionAccountItemDetail.setExhibitionItemPriority(item.getExhibitionItemPriority());
 
 				exhibitionAccountItemsDetail.getExhibitionAccountItemDetailResponseList().add(exhibitionAccountItemDetail);	// 소재 리스트에 소재 추가
@@ -211,5 +217,19 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			exhibitionAccountDetail.getExhibitionAccountItemsDetailResponseList().add(exhibitionAccountItemsDetail);	// 구좌에 소재 리스트 추가
 		}
 		return exhibitionAccountDetail;
+	}
+
+	@Override
+	public Long createExhibitionTemporary(ExhibitionTemporaryFormRequestDto exhibitionTemporaryFormRequestDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporary exhibitionTemporary = modelMapper.map(exhibitionTemporaryFormRequestDto, ExhibitionTemporary.class);
+
+		exhibitionTemporary.setExhibitionTemporaryCategory(exhibitionCategoryRepository.findById(exhibitionTemporaryFormRequestDto.getExhibitionTemporaryCategoryId()).get());
+		exhibitionTemporary.setExhibitionActivation(true);
+		Long exhibitionTemporaryId = exhibitionTemporaryRepository.save(exhibitionTemporary).getExhibitionTemporaryId();
+
+		return exhibitionTemporaryId;
 	}
 }

@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -183,5 +185,26 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@PostMapping(value ="/new")
+	@ApiOperation(value = "전시 생성 (main view)")
+	public ResponseEntity<BaseResponse<Exhibition>> createExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryFormRequestDto exhibitionTemporaryFormRequestDto = modelMapper.map(exhibitionTemporaryFormRequest, ExhibitionTemporaryFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.createExhibitionTemporary(exhibitionTemporaryFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.CREATED)
+				.message("ExhibitionTemporary CREATED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.CREATED);
 	}
 }
