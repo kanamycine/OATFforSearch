@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
@@ -249,5 +250,14 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		ExhibitionTemporary exhibitionTemporaryId = exhibitionTemporaryRepository.save(savedExhibitionTemporary);
 		return exhibitionTemporaryId.getExhibitionTemporaryId();
+	}
+
+	@Override
+	public Long deleteExhibitionTemporary(ExhibitionTemporaryDeleteFormRequestDto exhibitionTemporaryDeleteFormRequestDto){
+		Long exhibitionTemporaryId = exhibitionTemporaryDeleteFormRequestDto.getExhibitionTemporaryId();
+		ExhibitionTemporary targetExhibitionTemporary = exhibitionTemporaryRepository.findById(exhibitionTemporaryId).get();
+		exhibitionTemporaryRepository.delete(targetExhibitionTemporary);
+
+		return exhibitionTemporaryId;
 	}
 }

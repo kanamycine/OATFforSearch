@@ -6,6 +6,7 @@ import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDetailResponse;
@@ -22,4 +23,5 @@ public interface ExhibitionService {
 	ExhibitionAccountDetailResponse getExhibitionAccountDetail(Long exhibitionAccountId);
 	Long createExhibitionTemporary(ExhibitionTemporaryFormRequestDto  exhibitionTemporaryFormRequestDto);
 	Long updateExhibitionTemporary(ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto);
+	Long deleteExhibitionTemporary(ExhibitionTemporaryDeleteFormRequestDto exhibitionTemporaryDeleteFormRequestDto);
 }
