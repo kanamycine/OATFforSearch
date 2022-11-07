@@ -50,4 +50,11 @@ public class Exhibition {
 
 	private Boolean exhibitionActivation;
 
+	private Boolean exhibitionStatus;
+
+	private String exhibitionTemporaryCreatedAt;
+
+	private String exhibitionTemporaryModifiedAt;
+
+
 }

@@ -47,6 +47,4 @@ public class ExhibitionTemporary {
 	private Long exhibitionTemporaryItemsId;
 
 	private Integer exhibitionTemporaryPriority;
-
-	private Boolean exhibitionActivation;
 }
