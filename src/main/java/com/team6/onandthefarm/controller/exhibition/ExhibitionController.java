@@ -1,8 +1,18 @@
 package com.team6.onandthefarm.controller.exhibition;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
+import com.team6.onandthefarm.entity.exhibition.Exhibition;
+import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
+import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
@@ -20,10 +30,8 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionAccount;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDeleteRequest;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountFormRequest;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
-import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountUpdateFormRequest;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsFormRequest;
+import com.team6.onandthefarm.vo.exhibition.item.ExhibitionTemporaryDeleteFormRequest;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +52,25 @@ public class ExhibitionController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		ExhibitionAccountFormDto exhibitionAccountFormDto = modelMapper.map(exhibitionAccountFormRequest, ExhibitionAccountFormDto.class);
+
+		List<ExhibitionItemsFormRequest> exhibitionItemsFormRequests = exhibitionAccountFormRequest.getExhibitionItemsFormRequests();
+		List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos = new ArrayList<>();
+
+		for(ExhibitionItemsFormRequest exhibitionItemsFormRequest : exhibitionItemsFormRequests){
+			List<ExhibitionItemFormRequest> exhibitionItemFormRequests = exhibitionItemsFormRequest.getExhibitionItemFormRequests();
+
+			List<ExhibitionItemFormRequestDto> exhibitionItemFormRequestDtos = new ArrayList<>();
+			for(ExhibitionItemFormRequest exhibitionItemFormRequest : exhibitionItemFormRequests){
+				ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionItemFormRequestDto.class);
+				exhibitionItemFormRequestDtos.add(exhibitionItemFormRequestDto);
+			}
+
+			ExhibitionItemsFormRequestDto exhibitionItemsFormRequestDto = modelMapper.map(exhibitionItemsFormRequest, ExhibitionItemsFormRequestDto.class);
+			exhibitionItemsFormRequestDto.setExhibitionItemFormRequestDtos(exhibitionItemFormRequestDtos);
+
+			exhibitionItemsFormRequestDtos.add(exhibitionItemsFormRequestDto);
+		}
+		exhibitionAccountFormDto.setExhibitionItemsFormRequestDtos(exhibitionItemsFormRequestDtos);
 
 		Long exhibitionAccountId = exhibitionService.createExhibitionAccount(exhibitionAccountFormDto);
 
@@ -69,7 +96,7 @@ public class ExhibitionController {
 		Long exhibitionAccountId = exhibitionService.updateExhibitionAccount(exhibitionAccountUpdateFormDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount UPDATED")
 				.data(exhibitionAccountId)
 				.build();
@@ -90,7 +117,7 @@ public class ExhibitionController {
 		Long exhibitionAccountId = exhibitionService.deleteExhibitionAccount(exhibitionAccountDeleteDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount DELETED")
 				.data(exhibitionAccountId)
 				.build();
@@ -98,18 +125,156 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/category")
+	@ApiOperation(value = "전시 카테고리 전체 조회 - 카테고리 선택시 사용")
+	public ResponseEntity<BaseResponse<List<ExhibitionCategoryResponse>>> getAllExhibitionCategory(@ApiIgnore Principal principal){
+
+		List<ExhibitionCategoryResponse> exhibitionCategories = exhibitionService.getAllExhibitionCategory();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionCategory ALL")
+				.data(exhibitionCategories)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+
+	}
+
 	@GetMapping(value = "/account/{exhibition-category-no}")
-	@ApiOperation(value = "전시카테고리 별 전시구좌 조회")
+	@ApiOperation(value = "전시카테고리 별 전시구좌 조회 - 전시구좌 선택시 사용")
 	public ResponseEntity<BaseResponse<List<ExhibitionAccountResponse>>> getExhibitionAccountByExhibitionCategory(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-category-no") Long exhibitionCategoryId){
 		List<ExhibitionAccountResponse> exhibitionAccounts  = exhibitionService.getExhibitionAccountByExhibitionCategory(exhibitionCategoryId);
 
 		BaseResponse baseResponse = BaseResponse.builder()
-				.httpStatus(HttpStatus.CREATED)
+				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionAccount BY ExhibitionCategoryId")
 				.data(exhibitionAccounts)
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
+	// @PostMapping(value = "/items/new")
+	// @ApiOperation(value = "전시 상품 소재들 등록")
+	// public ResponseEntity<BaseResponse<ExhibitionItems>> createExhibitionProductItem(@ApiIgnore Principal principal,
+	// 		ExhibitionItemFormRequest exhibitionItemFormRequest){
+	// 	ModelMapper modelMapper = new ModelMapper();
+	// 	modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+	//
+	// 	ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionProductItemFormRequestDto.class);
+	//
+	// 	Long exhibitionItemId = exhibitionItemService.createExhibitionItem(exhibitionItemFormRequestDto);
+	//
+	// 	BaseResponse baseResponse = BaseResponse.builder()
+	// 			.httpStatus(HttpStatus.CREATED)
+	// 			.message("ExhibitionProductItem CREATED")
+	// 			.data(exhibitionProductItemId)
+	// 			.build();
+	//
+	// 	return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+	// }
+
+	@GetMapping(value = "/account/detail/{exhibition-account-id}")
+	@ApiOperation(value = "전시구좌 상세보기")
+	public ResponseEntity<BaseResponse<ExhibitionAccountDetailResponse>> getExhibitionAccountDetail(@ApiIgnore Principal principal,
+																										  @PathVariable("exhibition-account-id") Long exhibitionAccountId){
+
+		ExhibitionAccountDetailResponse exhibitionAccounts  = exhibitionService.getExhibitionAccountDetail(exhibitionAccountId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionAccount BY exhibitionAccountId")
+				.data(exhibitionAccounts)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@PostMapping(value ="/temporary/new")
+	@ApiOperation(value = "전시 temp 생성 (main view)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> createExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryFormRequestDto exhibitionTemporaryFormRequestDto = modelMapper.map(exhibitionTemporaryFormRequest, ExhibitionTemporaryFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.createExhibitionTemporary(exhibitionTemporaryFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.CREATED)
+				.message("ExhibitionTemporary CREATED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.CREATED);
+	}
+
+	@PutMapping(value = "/temporary/update")
+	@ApiOperation(value = "전시 temp 수정 (main view)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto = modelMapper.map(
+				exhibitionTemporaryUpdateFormRequest, ExhibitionTemporaryUpdateFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.updateExhibitionTemporary(exhibitionTemporaryUpdateFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary UPDATED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@PutMapping(value = "/temporary/delete")
+	@ApiOperation(value = "전시 temp 삭제 (main view)")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> deleteExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryDeleteFormRequestDto exhibitionTemporaryDeleteFormRequestDto = modelMapper.map(exhibitionTemporaryDeleteFormRequest, ExhibitionTemporaryDeleteFormRequestDto.class);
+
+		Long exhibitionTemporaryId = exhibitionService.deleteExhibitionTemporary(exhibitionTemporaryDeleteFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary DELETED")
+				.data(exhibitionTemporaryId)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@PutMapping(value = "/temporary/apply")
+	@ApiOperation(value = "전시 temp 적용 (main view)")
+	public ResponseEntity<BaseResponse<Exhibition>> applyExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto = modelMapper.map(exhibitionTemporaryApplyFormRequest, ExhibitionTemporaryApplyFormRequestDto.class);
+
+		List<Long> exhibitionIds = exhibitionService.applyExhibitionTemporary(exhibitionTemporaryApplyFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary APPLIED")
+				.data(exhibitionIds)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
 }

@@ -35,8 +35,8 @@ public class Exhibition {
 	private Long exhibitionId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "exhibitionGroupId")
-	private ExhibitionGroup exhibitionGroup;
+	@JoinColumn(name = "exhibitionCategoryId")
+	private ExhibitionCategory exhibitionCategory;
 
 	private String exhibitionModuleName;
 
@@ -44,5 +44,10 @@ public class Exhibition {
 
 	private Long exhibitionAccountId;
 
-	private Integer exhibitionOrder;
+	private Long exhibitionItemsId;
+
+	private Integer exhibitionPriority;
+
+	private Boolean exhibitionActivation;
+
 }

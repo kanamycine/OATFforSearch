@@ -63,4 +63,38 @@ public class S3Upload {
 
         return amazonS3.getUrl(bucket, s3FileName).toString();
     }
+
+    public String bannerUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "banner/"+UUID.randomUUID();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
+    public String badgeUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "banner/"+UUID.randomUUID();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
+    public String moduleUpload(MultipartFile multipartFile) throws IOException {
+        String s3FileName = "product/"+UUID.randomUUID();
+
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3.putObject(bucket, s3FileName, multipartFile.getInputStream(), objMeta);
+
+        return amazonS3.getUrl(bucket, s3FileName).toString();
+    }
+
 }

@@ -37,6 +37,10 @@ public class Module {
 
 	private String moduleContent;
 
+	private String moduleImgSrc;
+
+	private Integer moduleDataSize;
+
 	private boolean moduleUsableStatus;
 
 	private boolean moduleStatus;

@@ -115,10 +115,7 @@ public class SellerController {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         SellerDto sellerDto = modelMapper.map(sellerRequest, SellerDto.class);
 
-        Token token = sellerService.login(sellerDto);
-
-        SellerLoginResponse sellerLoginResponse = new SellerLoginResponse();
-        sellerLoginResponse.setToken(token);
+        SellerLoginResponse sellerLoginResponse = sellerService.login(sellerDto);
 
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
@@ -126,7 +123,7 @@ public class SellerController {
                 .data(sellerLoginResponse)
                 .build();
 
-        if(token == null){
+        if(sellerLoginResponse.getToken() == null){
             response = BaseResponse.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .message("실패")

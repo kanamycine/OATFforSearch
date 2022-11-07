@@ -35,7 +35,7 @@ public class ExhibitionProductItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long ExhibitionProductItemId;
+	private Long exhibitionProductItemId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exhibitionAccountId")
@@ -45,21 +45,21 @@ public class ExhibitionProductItem {
 	@JoinColumn(name = "exhibitionCategoryId")
 	private ExhibitionCategory exhibitionCategory;
 
-	private Long ExhibitionProductItemProductId;
+	private Long exhibitionProductItemProductId;
 
-	private String ExhibitionProductItemName;
+	// private String exhibitionProductItemName;
 
-	private Integer ExhibitionProductItemPriority;
+	private Integer exhibitionProductItemPriority;
 
-	private String ExhibitionProductItemUrl;
+	// private String exhibitionProductItemUrl;
 
-	private String ExhibitionProductItemTime;
+	private String exhibitionProductItemTime;
 
-	private String ExhibitionProductItemCreatedAt;
+	private String exhibitionProductItemCreatedAt;
 
-	private String ExhibitionProductItemModifiedAt;
+	private String exhibitionProductItemModifiedAt;
 
-	private boolean ExhibitionProductItemUsableStatus;
+	// private boolean exhibitionProductItemUsableStatus;
 
-	private boolean ExhibitionProductItemStatus;
+	private boolean exhibitionProductItemStatus;
 }

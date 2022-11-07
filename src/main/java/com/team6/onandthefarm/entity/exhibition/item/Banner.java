@@ -33,9 +33,11 @@ public class Banner {
 
 	private String bannerName;
 
-	private String bannerMainImgSrc;
+	private String bannerImg;
 
 	private String bannerDetail;
+
+	private String bannerConnectUrl;
 
 	private String bannerCreatedAt;
 
@@ -43,5 +45,4 @@ public class Banner {
 
 	private boolean bannerStatus;
 
-	private String bannerConnectUrl;
 }

@@ -3,14 +3,15 @@ package com.team6.onandthefarm.service.seller;
 import com.team6.onandthefarm.dto.seller.SellerDto;
 import com.team6.onandthefarm.dto.seller.SellerMypageDto;
 import com.team6.onandthefarm.dto.seller.SellerQnaDto;
+import com.team6.onandthefarm.entity.admin.Admin;
 import com.team6.onandthefarm.entity.order.OrderProduct;
 import com.team6.onandthefarm.entity.product.Product;
-import com.team6.onandthefarm.entity.product.ProductImg;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.product.ProductQnaAnswer;
 import com.team6.onandthefarm.entity.review.Review;
 import com.team6.onandthefarm.entity.seller.Seller;
 import com.team6.onandthefarm.entity.user.User;
+import com.team6.onandthefarm.repository.admin.AdminRepository;
 import com.team6.onandthefarm.repository.order.OrderProductRepository;
 import com.team6.onandthefarm.repository.product.ProductImgRepository;
 import com.team6.onandthefarm.repository.product.ProductQnaAnswerRepository;
@@ -18,17 +19,17 @@ import com.team6.onandthefarm.repository.product.ProductQnaRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
-import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.util.S3Upload;
-import com.team6.onandthefarm.vo.order.OrderProductGroupByProduct;
 import com.team6.onandthefarm.vo.seller.*;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ import java.util.*;
 
 @Service
 @Transactional
+@Slf4j
 public class SellerServiceImp implements SellerService{
 
     private final int listNum = 5;
@@ -44,6 +46,8 @@ public class SellerServiceImp implements SellerService{
     private final int pageContentNumber = 8;
     
     private SellerRepository sellerRepository;
+
+    private final AdminRepository adminRepository;
 
     private final ProductQnaRepository productQnaRepository;
 
@@ -63,11 +67,14 @@ public class SellerServiceImp implements SellerService{
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     private Environment env;
 
 
     @Autowired
     public SellerServiceImp(SellerRepository sellerRepository,
+                            AdminRepository adminRepository,
                             DateUtils dateUtils,
                             Environment env,
                             ProductQnaRepository productQnaRepository,
@@ -77,9 +84,11 @@ public class SellerServiceImp implements SellerService{
                             JwtTokenUtil jwtTokenUtil,
                             OrderProductRepository orderProductRepository,
                             ProductImgRepository productImgRepository,
+                            BCryptPasswordEncoder bCryptPasswordEncoder,
                             S3Upload s3Upload) {
 
         this.sellerRepository = sellerRepository;
+        this.adminRepository = adminRepository;
         this.dateUtils=dateUtils;
         this.env=env;
         this.productQnaRepository=productQnaRepository;
@@ -89,6 +98,7 @@ public class SellerServiceImp implements SellerService{
         this.jwtTokenUtil = jwtTokenUtil;
         this.orderProductRepository=orderProductRepository;
         this.productImgRepository=productImgRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.s3Upload=s3Upload;
     }
 
@@ -135,9 +145,9 @@ public class SellerServiceImp implements SellerService{
      * @param sellerDto
      */
     public Boolean updatePassword(SellerDto sellerDto){
-        Seller seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
-        seller.setSellerPassword(sellerDto.getPassword());
-        if(seller.getSellerPassword().equals(sellerDto.getPassword())){
+        Optional<Seller> seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
+        seller.get().setSellerPassword(sellerDto.getPassword());
+        if(seller.get().getSellerPassword().equals(sellerDto.getPassword())){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -166,6 +176,14 @@ public class SellerServiceImp implements SellerService{
      * @return true: 회원가입 됨  false: 회원가입 실패
      */
     public boolean sellerSignup(SellerDto sellerDto){
+
+        String encodePassword = bCryptPasswordEncoder.encode(sellerDto.getPassword());
+
+        Optional<Seller> savedSeller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
+        if(savedSeller.isPresent()){
+            return false;
+        }
+
         String date = dateUtils.transDate(env.getProperty("dateutils.format"));
         Seller seller = Seller.builder()
                 .sellerEmail(sellerDto.getEmail())
@@ -173,13 +191,13 @@ public class SellerServiceImp implements SellerService{
                 .sellerAddressDetail(sellerDto.getAddressDetail())
                 .sellerBusinessNumber(sellerDto.getBusinessNumber())
                 .sellerName(sellerDto.getName())
-                .sellerPassword(sellerDto.getPassword())
+                .sellerPassword(encodePassword)
                 .sellerPhone(sellerDto.getPhone())
                 .sellerZipcode(sellerDto.getZipcode())
                 .sellerRegisterDate(date)
                 .sellerShopName(sellerDto.getShopName())
                 .sellerIsActivated(Boolean.TRUE)
-                .role("ROLE_ADMIN")
+                .role("ROLE_SELLER")
                 .sellerFollowerCount(0)
                 .sellerFollowingCount(0)
                 .sellerProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/seller/basic_profile.png")
@@ -196,8 +214,8 @@ public class SellerServiceImp implements SellerService{
      * @return true: 중복안됨 / false: 중복됨
      */
     public boolean sellerIdCheck(String sellerEmail){
-        Seller email = sellerRepository.findBySellerEmail(sellerEmail);
-        if(email == null){
+        Optional<Seller> email = sellerRepository.findBySellerEmail(sellerEmail);
+        if(!email.isPresent()){
             return true;
         }
         return false;
@@ -445,15 +463,31 @@ public class SellerServiceImp implements SellerService{
      */
 
     @Override
-    public Token login(SellerDto sellerDto) {
+    public SellerLoginResponse login(SellerDto sellerDto) {
 
-        Token token = null;
+        SellerLoginResponse sellerLoginResponse = new SellerLoginResponse();
 
-        Seller seller = sellerRepository.findBySellerEmailAndSellerPassword(sellerDto.getEmail(), sellerDto.getPassword());
-        if(seller != null){
-            token = jwtTokenUtil.generateToken(seller.getSellerId(), seller.getRole());
+        if(sellerDto.getEmail().equals("admin")){
+            Optional<Admin> admin = adminRepository.findAdminByAdminEmailAndAdminPassword(sellerDto.getEmail(), sellerDto.getPassword());
+
+            if(admin.isPresent()) {
+                Token token = jwtTokenUtil.generateToken(admin.get().getAdminId(), admin.get().getRole());
+                sellerLoginResponse.setToken(token);
+                sellerLoginResponse.setRole("admin");
+
+                return sellerLoginResponse;
+            }
         }
 
-        return token;
+        Optional<Seller> seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
+        if(seller.isPresent()){
+            if(bCryptPasswordEncoder.matches(sellerDto.getPassword(), seller.get().getSellerPassword())) {
+                Token token = jwtTokenUtil.generateToken(seller.get().getSellerId(), seller.get().getRole());
+                sellerLoginResponse.setToken(token);
+                sellerLoginResponse.setRole("seller");
+            }
+        }
+
+        return sellerLoginResponse;
     }
 }

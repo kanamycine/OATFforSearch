@@ -14,5 +14,5 @@ import lombok.Setter;
 public class ExhibitionAccountResponse {
 	private Long exhibitionAccountId;
 	private String exhibitionAccountName;
-	private boolean exhibitionAccountStatus;
+	private boolean exhibitionAccountStatus; // 삭제된건 보내지마라
 }

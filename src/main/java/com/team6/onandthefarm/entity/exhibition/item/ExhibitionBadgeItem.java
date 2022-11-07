@@ -36,7 +36,7 @@ public class ExhibitionBadgeItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 			generator = "EXHIBITION_SEQ_GENERATOR")
-	private Long ExhibitionBadgeItemId;
+	private Long exhibitionBadgeItemId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exhibitionAccountId")
@@ -48,21 +48,17 @@ public class ExhibitionBadgeItem {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ExhibitionBadgeId")
-	private Badge ExhibitionBadge;
+	private Badge exhibitionBadge;
 
-	private String ExhibitionBadgeItemName;
+	private Integer exhibitionBadgeItemPriority;
 
-	private Integer ExhibitionBadgeItemPriority;
+	private String exhibitionBadgeItemTime;
 
-	private String ExhibitionBadgeItemUrl;
+	private String exhibitionBadgeItemCreatedAt;
 
-	private String ExhibitionBadgeItemTime;
+	private String exhibitionBadgeItemModifiedAt;
 
-	private String ExhibitionBadgeItemCreatedAt;
+	private boolean exhibitionBadgeItemUsableStatus;
 
-	private String ExhibitionBadgeItemModifiedAt;
-
-	private boolean ExhibitionBadgeItemUsableStatus;
-
-	private boolean ExhibitionBadgeItemStatus;
+	private boolean exhibitionBadgeItemStatus;
 }
