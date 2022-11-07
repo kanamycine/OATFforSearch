@@ -11,5 +11,7 @@ public interface SellerRepository extends CrudRepository<Seller,Long> {
     Seller findBySellerEmail(String email);
     Seller findBySellerEmailAndSellerPassword(String sellerEmail, String sellerPassword);
 
-    Seller findBySellerEmailAndAndSellerPhone(String sellerEmail, String sellerPhone);
+    Seller findBySellerNameAndAndSellerPhone(String name, String sellerPhone);
+
+    Seller findBySellerEmailAndSellerName(String sellerEmail,String name);
 }

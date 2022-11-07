@@ -161,20 +161,22 @@ public class SellerController {
 
     @PostMapping("/search/id")
     @ApiOperation(value = "셀러 아이디 찾기")
-    public ResponseEntity<BaseResponse> searchSellerId(@RequestBody Map<String,String> map){
-        String sellerEmail = map.get("sellerEmail");
+    public ResponseEntity<BaseResponse<String>> searchSellerId(@RequestBody Map<String,String> map){
+        String name = map.get("name");
         String phone = map.get("phone");
-        Boolean result = sellerService.searchSellerId(sellerEmail,phone);
-        if(result){
+        String result = sellerService.searchSellerId(name,phone);
+        if(!result.equals("")){
             BaseResponse response = BaseResponse.builder()
                     .httpStatus(HttpStatus.OK)
                     .message("OK")
+                    .data(result)
                     .build();
             return new ResponseEntity(response,HttpStatus.OK);
         }
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
                 .message("정보 없음")
+                .data("")
                 .build();
         return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
     }
@@ -183,8 +185,8 @@ public class SellerController {
     @ApiOperation(value = "셀러 비밀번호 찾기")
     public ResponseEntity<BaseResponse> searchSellerPasswd(@RequestBody Map<String,String> map){
         String sellerEmail = map.get("sellerEmail");
-        String phone = map.get("phone");
-        Boolean result = sellerService.searchSellerId(sellerEmail,phone);
+        String name = map.get("name");
+        Boolean result = sellerService.searchSellerpasswd(sellerEmail,name);
         if(result){
             BaseResponse response = BaseResponse.builder()
                     .httpStatus(HttpStatus.OK)

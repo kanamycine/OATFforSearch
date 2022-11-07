@@ -20,7 +20,8 @@ public interface SellerService {
     boolean sellerSignup(SellerDto sellerDto);
     boolean sellerIdCheck(String sellerEmail);
 
-    Boolean searchSellerId(String sellerEmail, String phone);
+    String searchSellerId(String name, String phone);
+    Boolean searchSellerpasswd(String sellerEmail,String name);
     SellerProductQnaResponseResult findSellerQnA(Long sellerId, Integer pageNumber);
     Boolean createQnaAnswer(SellerQnaDto sellerQnaDto);
     Token login(SellerDto sellerDto);
