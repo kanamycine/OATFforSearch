@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,7 +48,7 @@ public class ExhibitionController {
 	@PostMapping(value = "/account/new")
 	@ApiOperation(value = "전시구좌 추가")
 	public ResponseEntity<BaseResponse<ExhibitionAccount>> createExhibitionAccount(@ApiIgnore Principal principal,
-			ExhibitionAccountFormRequest exhibitionAccountFormRequest) throws Exception{
+			@RequestBody ExhibitionAccountFormRequest exhibitionAccountFormRequest) throws Exception{
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 

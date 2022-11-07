@@ -40,7 +40,7 @@ public class Exhibition {
 
 	private String exhibitionModuleName;
 
-	private Long exhibitionDataPicker;
+	private Long exhibitionDataPickerId;
 
 	private Long exhibitionAccountId;
 
@@ -55,6 +55,5 @@ public class Exhibition {
 	private String exhibitionTemporaryCreatedAt;
 
 	private String exhibitionTemporaryModifiedAt;
-
 
 }

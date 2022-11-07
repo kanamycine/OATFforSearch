@@ -1,5 +1,7 @@
 package com.team6.onandthefarm.vo.exhibition;
 
+import com.team6.onandthefarm.entity.exhibition.item.ExhibitionItems;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +14,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExhibitionItemFormRequest {
+	private Long exhibitionItemsId;
+
 	private Long exhibitionAccountId;
 
 	private Long exhibitionCategoryId;
 
 	private Long exhibitionItemId;
+
+	private Long exhibitionItemNumber;
 
 	private Integer exhibitionItemPriority;
 
