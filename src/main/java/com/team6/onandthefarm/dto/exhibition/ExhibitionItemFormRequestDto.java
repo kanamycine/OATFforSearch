@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 public class ExhibitionItemFormRequestDto {
 	private Long exhibitionItemId;
 
+	private Long exhibitionItemsId;
+
 	private Long exhibitionAccountId;
 
 	private Long exhibitionCategoryId;
 
-	private Long exhibitionItemProductId;
+	private Long exhibitionItemNumber;
 
 	private Integer exhibitionItemPriority;
 

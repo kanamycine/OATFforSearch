@@ -20,15 +20,11 @@ public class ExhibitionAccountFormDto {
 
 	private String exhibitionAccountDetail;
 
-	private String exhibitionItemsDetail;
-
 	private String exhibitionAccountCreatedAt;
 
 	private String exhibitionAccountModifiedAt;
 
 	private boolean exhibitionAccountStatus;
-
-	private String exhibitionItemsName;
 
 	private List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos;
 }
