@@ -13,6 +13,8 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormReques
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDetailResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemInfoResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsInfoResponse;
 
 public interface ExhibitionService {
 	Long createExhibitionAccount(ExhibitionAccountFormDto exhibitionAccountFormDto);
@@ -26,4 +28,6 @@ public interface ExhibitionService {
 	Long updateExhibitionTemporary(ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto);
 	Long deleteExhibitionTemporary(ExhibitionTemporaryDeleteFormRequestDto exhibitionTemporaryDeleteFormRequestDto);
 	List<Long> applyExhibitionTemporary(ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto);
+	List<ExhibitionItemsInfoResponse> getExhibitionItemsInfos(Long exhibitionAccountId);
+	List<ExhibitionItemInfoResponse> getExhibitionItemInfos(Long exhibitionItemsId);
 }

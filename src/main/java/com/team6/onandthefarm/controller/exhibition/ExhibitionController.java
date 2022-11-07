@@ -156,25 +156,37 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	// @PostMapping(value = "/items/new")
-	// @ApiOperation(value = "전시 상품 소재들 등록")
-	// public ResponseEntity<BaseResponse<ExhibitionItems>> createExhibitionProductItem(@ApiIgnore Principal principal,
-	// 		ExhibitionItemFormRequest exhibitionItemFormRequest){
-	// 	ModelMapper modelMapper = new ModelMapper();
-	// 	modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-	//
-	// 	ExhibitionItemFormRequestDto exhibitionItemFormRequestDto = modelMapper.map(exhibitionItemFormRequest, ExhibitionProductItemFormRequestDto.class);
-	//
-	// 	Long exhibitionItemId = exhibitionItemService.createExhibitionItem(exhibitionItemFormRequestDto);
-	//
-	// 	BaseResponse baseResponse = BaseResponse.builder()
-	// 			.httpStatus(HttpStatus.CREATED)
-	// 			.message("ExhibitionProductItem CREATED")
-	// 			.data(exhibitionProductItemId)
-	// 			.build();
-	//
-	// 	return new ResponseEntity(baseResponse, HttpStatus.CREATED);
-	// }
+	@GetMapping(value = "/account/{exhibition-account-id}")
+	@ApiOperation(value = "전시 구좌 내 소재리스트 불러오기")
+	public ResponseEntity<BaseResponse<List<ExhibitionItemsInfoResponse>>> getExhibitionItemsInfos(@ApiIgnore Principal principal,
+			@PathVariable("exhibition-account-id") Long exhibitionAccountId){
+		List<ExhibitionItemsInfoResponse> exhibitionItemsInfos = exhibitionService.getExhibitionItemsInfos(exhibitionAccountId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionItemsInfo BY ExhibitionAccountId")
+				.data(exhibitionItemsInfos)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/account/items/{exhibition-items-id")
+	@ApiOperation(value = "전시 소재리스트 내 소재들 불러오기")
+	public ResponseEntity<BaseResponse<List<ExhibitionItemInfoResponse>>> getExhibitionItemInfo(@ApiIgnore Principal principal,
+			@PathVariable("exhibition-items-id") Long exhibitionItemsId){
+		List<ExhibitionItemInfoResponse> exhibitionItemInfos = exhibitionService.getExhibitionItemInfos(exhibitionItemsId);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionItemInfos BY ExhibitionItemsId")
+				.data(exhibitionItemInfos)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+
+
+	}
 
 	@GetMapping(value = "/account/detail/{exhibition-account-id}")
 	@ApiOperation(value = "전시구좌 상세보기")
@@ -276,5 +288,7 @@ public class ExhibitionController {
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
+
 
 }
