@@ -323,14 +323,23 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		List<Exhibition> trueExhibition = exhibitionRepository.getTrueExhibitions();
 		//true -> false로 변경 , 수정시간 갱신
 		for (Exhibition exhibition : trueExhibition) {
+			exhibition.setExhibitionActivation(false);
 			exhibition.setExhibitionStatus(false);
 			exhibition.setExhibitionTemporaryModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 		}
 
 		for (Long exhibitionTemporaryId : exhibitionTemporaryIds) {
 			ExhibitionTemporary exhibitionTemporary = exhibitionTemporaryRepository.findById(exhibitionTemporaryId).get();
-			Exhibition exhibition = modelMapper.map(exhibitionTemporary, Exhibition.class);
-			exhibition.setExhibitionStatus(true);
+			Exhibition exhibition = Exhibition.builder()
+					.exhibitionAccountId(exhibitionTemporary.getExhibitionTemporaryAccountId())
+					.exhibitionActivation(true)
+					.exhibitionStatus(true)
+					.exhibitionDataPickerId(exhibitionTemporary.getExhibitionTemporaryDataPicker())
+					.exhibitionItemsId(exhibitionTemporary.getExhibitionTemporaryItemsId())
+					.exhibitionModuleName(exhibitionTemporary.getExhibitionTemporaryModuleName())
+					.exhibitionPriority(exhibitionTemporary.getExhibitionTemporaryPriority())
+					.exhibitionCategory(exhibitionCategoryRepository.findById(exhibitionTemporary.getExhibitionTemporaryCategory().getExhibitionCategoryId()).get())
+					.build();
 			exhibition.setExhibitionTemporaryCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 			exhibitionIds.add(exhibitionRepository.save(exhibition).getExhibitionId());
 		}

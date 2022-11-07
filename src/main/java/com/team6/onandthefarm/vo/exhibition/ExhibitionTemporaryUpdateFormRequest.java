@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExhibitionTemporaryUpdateFormRequest {
+	private Long exhibitionTemporaryId;
+
 	private Long exhibitionTemporaryCategoryId;
 
 	private String exhibitionTemporaryModuleName;

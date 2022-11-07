@@ -9,6 +9,6 @@ import com.team6.onandthefarm.entity.exhibition.Exhibition;
 
 public interface ExhibitionRepository extends CrudRepository<Exhibition, Long> {
 
-	@Query("select e from Exhibition e where e.exhibitionStatus =:true")
+	@Query("select e from Exhibition e where e.exhibitionStatus = true")
 	List<Exhibition> getTrueExhibitions();
 }

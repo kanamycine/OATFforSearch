@@ -7,6 +7,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class DataPickerController {
 	@PostMapping(value="/new")
 	@ApiOperation(value="데이터 피커 등록")
 	public ResponseEntity<BaseResponse<DataPicker>> createDataPicker(@ApiIgnore Principal principal,
-			DataPickerFormRequest dataPickerFormRequest){
+			@RequestBody DataPickerFormRequest dataPickerFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);

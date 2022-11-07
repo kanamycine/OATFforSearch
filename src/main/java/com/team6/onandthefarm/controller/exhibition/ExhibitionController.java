@@ -207,7 +207,7 @@ public class ExhibitionController {
 	@PostMapping(value ="/temporary/new")
 	@ApiOperation(value = "전시 temp 생성 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> createExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
+			@RequestBody ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -228,7 +228,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/update")
 	@ApiOperation(value = "전시 temp 수정 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
+			@RequestBody ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -250,7 +250,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/delete")
 	@ApiOperation(value = "전시 temp 삭제 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> deleteExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
+			@RequestBody ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -285,7 +285,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/apply")
 	@ApiOperation(value = "전시 temp 적용 (main view)")
 	public ResponseEntity<BaseResponse<Exhibition>> applyExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
+			@RequestBody ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
