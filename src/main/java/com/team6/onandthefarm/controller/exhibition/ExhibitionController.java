@@ -85,9 +85,9 @@ public class ExhibitionController {
 	}
 
 	@PutMapping(value = "/account/update")
-	@ApiOperation(value = "전시구좌 수정")
+	@ApiOperation(value = "전시구좌 수정 / test 없이 진행 추후 필요")
 	public ResponseEntity<BaseResponse<ExhibitionAccount>> updateExhibitionAccount(@ApiIgnore Principal principal,
-			ExhibitionAccountUpdateFormRequest exhibitionAccountUpdateFormRequest) throws Exception{
+			@RequestBody ExhibitionAccountUpdateFormRequest exhibitionAccountUpdateFormRequest) throws Exception{
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -108,7 +108,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/account/delete")
 	@ApiOperation(value = "전시구좌 삭제")
 	public ResponseEntity<BaseResponse<ExhibitionAccount>> deleteExhibitionAccount(@ApiIgnore Principal principal,
-			ExhibitionAccountDeleteRequest exhibitionAccountDeleteRequest) throws Exception{
+			@RequestBody ExhibitionAccountDeleteRequest exhibitionAccountDeleteRequest) throws Exception{
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -142,7 +142,7 @@ public class ExhibitionController {
 
 	}
 
-	@GetMapping(value = "/account/{exhibition-category-no}")
+	@GetMapping(value = "/account/by-category/{exhibition-category-no}")
 	@ApiOperation(value = "전시카테고리 별 전시구좌 조회 - 전시구좌 선택시 사용")
 	public ResponseEntity<BaseResponse<List<ExhibitionAccountResponse>>> getExhibitionAccountByExhibitionCategory(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-category-no") Long exhibitionCategoryId){
@@ -157,7 +157,7 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/account/{exhibition-account-id}")
+	@GetMapping(value = "/account/items/{exhibition-account-id}")
 	@ApiOperation(value = "전시 구좌 내 소재리스트 불러오기")
 	public ResponseEntity<BaseResponse<List<ExhibitionItemsInfoResponse>>> getExhibitionItemsInfos(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-account-id") Long exhibitionAccountId){
@@ -172,7 +172,7 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/account/items/{exhibition-items-id")
+	@GetMapping(value = "/account/all-item/{exhibition-items-id}")
 	@ApiOperation(value = "전시 소재리스트 내 소재들 불러오기")
 	public ResponseEntity<BaseResponse<List<ExhibitionItemInfoResponse>>> getExhibitionItemInfo(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-items-id") Long exhibitionItemsId){
@@ -185,7 +185,6 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-
 
 	}
 
