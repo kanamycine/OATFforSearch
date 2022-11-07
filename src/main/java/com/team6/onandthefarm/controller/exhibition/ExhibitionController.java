@@ -85,9 +85,9 @@ public class ExhibitionController {
 	}
 
 	@PutMapping(value = "/account/update")
-	@ApiOperation(value = "전시구좌 수정")
+	@ApiOperation(value = "전시구좌 수정 / test 없이 진행 추후 필요")
 	public ResponseEntity<BaseResponse<ExhibitionAccount>> updateExhibitionAccount(@ApiIgnore Principal principal,
-			ExhibitionAccountUpdateFormRequest exhibitionAccountUpdateFormRequest) throws Exception{
+			@RequestBody ExhibitionAccountUpdateFormRequest exhibitionAccountUpdateFormRequest) throws Exception{
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -108,7 +108,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/account/delete")
 	@ApiOperation(value = "전시구좌 삭제")
 	public ResponseEntity<BaseResponse<ExhibitionAccount>> deleteExhibitionAccount(@ApiIgnore Principal principal,
-			ExhibitionAccountDeleteRequest exhibitionAccountDeleteRequest) throws Exception{
+			@RequestBody ExhibitionAccountDeleteRequest exhibitionAccountDeleteRequest) throws Exception{
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -142,7 +142,7 @@ public class ExhibitionController {
 
 	}
 
-	@GetMapping(value = "/account/{exhibition-category-no}")
+	@GetMapping(value = "/account/by-category/{exhibition-category-no}")
 	@ApiOperation(value = "전시카테고리 별 전시구좌 조회 - 전시구좌 선택시 사용")
 	public ResponseEntity<BaseResponse<List<ExhibitionAccountResponse>>> getExhibitionAccountByExhibitionCategory(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-category-no") Long exhibitionCategoryId){
@@ -157,7 +157,7 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/account/{exhibition-account-id}")
+	@GetMapping(value = "/account/items/{exhibition-account-id}")
 	@ApiOperation(value = "전시 구좌 내 소재리스트 불러오기")
 	public ResponseEntity<BaseResponse<List<ExhibitionItemsInfoResponse>>> getExhibitionItemsInfos(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-account-id") Long exhibitionAccountId){
@@ -172,7 +172,7 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/account/items/{exhibition-items-id")
+	@GetMapping(value = "/account/all-item/{exhibition-items-id}")
 	@ApiOperation(value = "전시 소재리스트 내 소재들 불러오기")
 	public ResponseEntity<BaseResponse<List<ExhibitionItemInfoResponse>>> getExhibitionItemInfo(@ApiIgnore Principal principal,
 			@PathVariable("exhibition-items-id") Long exhibitionItemsId){
@@ -185,7 +185,6 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-
 
 	}
 
@@ -208,7 +207,7 @@ public class ExhibitionController {
 	@PostMapping(value ="/temporary/new")
 	@ApiOperation(value = "전시 temp 생성 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> createExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
+			@RequestBody ExhibitionTemporaryFormRequest exhibitionTemporaryFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -229,7 +228,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/update")
 	@ApiOperation(value = "전시 temp 수정 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
+			@RequestBody ExhibitionTemporaryUpdateFormRequest exhibitionTemporaryUpdateFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -251,7 +250,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/delete")
 	@ApiOperation(value = "전시 temp 삭제 (main view)")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> deleteExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
+			@RequestBody ExhibitionTemporaryDeleteFormRequest exhibitionTemporaryDeleteFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -286,7 +285,7 @@ public class ExhibitionController {
 	@PutMapping(value = "/temporary/apply")
 	@ApiOperation(value = "전시 temp 적용 (main view)")
 	public ResponseEntity<BaseResponse<Exhibition>> applyExhibitionTemporary(@ApiIgnore Principal principal,
-			ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
+			@RequestBody ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
