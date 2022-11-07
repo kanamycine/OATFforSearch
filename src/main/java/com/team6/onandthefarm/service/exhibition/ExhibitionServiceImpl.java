@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionTemporaryRepository;
+import com.team6.onandthefarm.repository.exhibition.ExhibitionRepository;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -45,8 +47,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	private ExhibitionCategoryRepository exhibitionCategoryRepository;
 	private ExhibitionItemsRepository exhibitionItemsRepository;
 	private ExhibitionItemRepository exhibitionItemRepository;
-
 	private ExhibitionTemporaryRepository exhibitionTemporaryRepository;
+	private ExhibitionRepository exhibitionRepository;
 	private DataPickerRepository dataPickerRepository;
 	private DateUtils dateUtils;
 	private Environment env;
@@ -57,6 +59,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 								ExhibitionItemRepository exhibitionItemRepository,
 								DataPickerRepository dataPickerRepository,
 								ExhibitionTemporaryRepository exhibitionTemporaryRepository,
+								ExhibitionRepository exhibitionRepository,
 								DateUtils dateUtils,
 								Environment env){
 		this.exhibitionAccountRepository = exhibitionAccountRepository;
@@ -65,6 +68,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		this.exhibitionItemRepository = exhibitionItemRepository;
 		this.dataPickerRepository = dataPickerRepository;
 		this.exhibitionTemporaryRepository = exhibitionTemporaryRepository;
+		this.exhibitionRepository = exhibitionRepository;
 		this.env = env;
 		this.dateUtils = dateUtils;
 	}
@@ -259,5 +263,26 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionTemporaryRepository.delete(targetExhibitionTemporary);
 
 		return exhibitionTemporaryId;
+	}
+
+	@Override
+	public List<Long> applyExhibitionTemporary(ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		List<Long> exhibitionIds = new ArrayList<>();
+
+		List<Long> exhibitionTemporaryIds = exhibitionTemporaryApplyFormRequestDto.getExhibitionTemporaryIds();
+
+		exhibitionRepository.deleteAll();
+
+		for (Long exhibitionTemporaryId : exhibitionTemporaryIds) {
+			ExhibitionTemporary exhibitionTemporary = exhibitionTemporaryRepository.findById(exhibitionTemporaryId).get();
+			Exhibition exhibition = modelMapper.map(exhibitionTemporary, Exhibition.class);
+			exhibitionIds.add(exhibitionRepository.save(exhibition).getExhibitionId());
+		}
+
+		return exhibitionIds;
+
 	}
 }
