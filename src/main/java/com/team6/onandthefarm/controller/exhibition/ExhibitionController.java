@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
@@ -254,4 +255,26 @@ public class ExhibitionController {
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
+	@PutMapping(value = "/temporary/apply")
+	@ApiOperation(value = "전시 temp 적용 (main view)")
+	public ResponseEntity<BaseResponse<Exhibition>> applyExhibitionTemporary(@ApiIgnore Principal principal,
+			ExhibitionTemporaryApplyFormRequest exhibitionTemporaryApplyFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto = modelMapper.map(exhibitionTemporaryApplyFormRequest, ExhibitionTemporaryApplyFormRequestDto.class);
+
+		List<Long> exhibitionIds = exhibitionService.applyExhibitionTemporary(exhibitionTemporaryApplyFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary APPLIED")
+				.data(exhibitionIds)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
 }
