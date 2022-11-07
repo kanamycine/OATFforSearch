@@ -153,9 +153,18 @@ public class SellerServiceImp implements SellerService{
         return Boolean.FALSE;
     }
 
-    public Boolean searchSellerId(String sellerEmail, String phone){
-        Optional<Seller> seller = sellerRepository.findBySellerEmailAndAndSellerPhone(sellerEmail,phone);
-        if(!seller.isPresent()){
+    public String searchSellerId(String name, String phone){
+        Seller seller = sellerRepository.findBySellerNameAndAndSellerPhone(name,phone);
+        if(seller==null){
+            return "";
+        }
+        return seller.getSellerEmail();
+    }
+
+    public Boolean searchSellerpasswd(String sellerEmail, String name){
+        Seller seller = sellerRepository.findBySellerEmailAndSellerName(sellerEmail,name);
+
+        if(seller==null){
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
