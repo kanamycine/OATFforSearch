@@ -146,8 +146,9 @@ public class SellerServiceImp implements SellerService{
      */
     public Boolean updatePassword(SellerDto sellerDto){
         Optional<Seller> seller = sellerRepository.findBySellerEmail(sellerDto.getEmail());
-        seller.get().setSellerPassword(sellerDto.getPassword());
-        if(seller.get().getSellerPassword().equals(sellerDto.getPassword())){
+        String encodePassword = bCryptPasswordEncoder.encode(sellerDto.getPassword());
+        seller.get().setSellerPassword(encodePassword);
+        if(seller.get().getSellerPassword().equals(encodePassword)){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;

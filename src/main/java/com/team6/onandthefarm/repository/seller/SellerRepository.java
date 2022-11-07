@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface SellerRepository extends CrudRepository<Seller,Long> {
 
-    Seller findBySellerEmail(String email);
+    Optional<Seller> findBySellerEmail(String email);
     Seller findBySellerEmailAndSellerPassword(String sellerEmail, String sellerPassword);
 
     Seller findBySellerNameAndAndSellerPhone(String name, String sellerPhone);
