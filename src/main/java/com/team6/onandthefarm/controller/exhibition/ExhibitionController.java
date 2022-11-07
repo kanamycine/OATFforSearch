@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
@@ -12,6 +13,8 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
+import com.team6.onandthefarm.entity.exhibition.item.ExhibitionItem;
+import com.team6.onandthefarm.vo.ExhibitionItemPriorityUpdateFormRequest;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -185,8 +188,29 @@ public class ExhibitionController {
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-
 	}
+
+	@PutMapping(value = "/account/item/update/priority")
+	@ApiOperation(value = "소재 아이템 우선순위 수정")
+	public ResponseEntity<BaseResponse<ExhibitionItem>> updatExhibitionItemPriority(@ApiIgnore Principal principal,
+			@RequestBody ExhibitionItemPriorityUpdateFormRequest exhibitionItemPriorityUpdateFormRequest){
+
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionItemPriorityUpdateFormRequestDto exhibitionItemPriorityUpdateFormRequestDto = modelMapper.map(exhibitionItemPriorityUpdateFormRequest, ExhibitionItemPriorityUpdateFormRequestDto.class);
+
+		Long exhibitionItemId = exhibitionService.updateExhibitionItemPriority(exhibitionItemPriorityUpdateFormRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionItem Priority UPDATED")
+				.data(exhibitionItemId)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
 
 	@GetMapping(value = "/account/detail/{exhibition-account-id}")
 	@ApiOperation(value = "전시구좌 상세보기")

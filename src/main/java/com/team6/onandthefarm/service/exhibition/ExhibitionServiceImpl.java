@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
@@ -309,6 +310,16 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			exhibitionTemporaryAllResponses.add(exhibitionTemporaryAllResponse);
 		}
 		return exhibitionTemporaryAllResponses;
+	}
+
+	@Override
+	public Long updateExhibitionItemPriority(ExhibitionItemPriorityUpdateFormRequestDto exhibitionItemPriorityUpdateFormRequestDto){
+		Long targetId = exhibitionItemPriorityUpdateFormRequestDto.getExhibitionItemId();
+		ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(targetId).get();
+
+		exhibitionItem.setExhibitionItemPriority(exhibitionItemPriorityUpdateFormRequestDto.getExhibitionItemPriority());
+
+		return exhibitionItem.getExhibitionItemId();
 	}
 
 	@Override
