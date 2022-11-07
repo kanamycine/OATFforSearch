@@ -58,6 +58,8 @@ public class ItemController {
 		return new ResponseEntity(baseResponse, HttpStatus.CREATED);
 	}
 
+	@PostMapping(value = "/new/badge")
+	@ApiOperation(value = "뱃지 등록")
 	public ResponseEntity<BaseResponse<Badge>> createBadge(
 			@ApiIgnore Principal principal,
 			@RequestPart(value = "images", required = false) List<MultipartFile> photo,

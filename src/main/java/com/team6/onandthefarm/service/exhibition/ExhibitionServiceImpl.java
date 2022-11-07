@@ -262,7 +262,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		ExhibitionTemporary exhibitionTemporary = modelMapper.map(exhibitionTemporaryFormRequestDto, ExhibitionTemporary.class);
 
 		exhibitionTemporary.setExhibitionTemporaryCategory(exhibitionCategoryRepository.findById(exhibitionTemporaryFormRequestDto.getExhibitionTemporaryCategoryId()).get());
-		exhibitionTemporary.setExhibitionActivation(true);
 		Long exhibitionTemporaryId = exhibitionTemporaryRepository.save(exhibitionTemporary).getExhibitionTemporaryId();
 
 		return exhibitionTemporaryId;
@@ -278,7 +277,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		savedExhibitionTemporary.setExhibitionTemporaryItemsId(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryItemsId());
 		savedExhibitionTemporary.setExhibitionTemporaryModuleName(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryModuleName());
 		savedExhibitionTemporary.setExhibitionTemporaryDataPicker(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryDataPicker());
-		savedExhibitionTemporary.setExhibitionActivation(exhibitionTemporaryUpdateFormRequestDto.getExhibitionActivation());
 		savedExhibitionTemporary.setExhibitionTemporaryPriority(exhibitionTemporaryUpdateFormRequestDto.getExhibitionTemporaryPriority());
 
 		ExhibitionTemporary exhibitionTemporaryId = exhibitionTemporaryRepository.save(savedExhibitionTemporary);
@@ -295,6 +293,25 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	}
 
 	@Override
+	public List<ExhibitionTemporaryAllResponse> getAllExhibitionTemporary(){
+		List<ExhibitionTemporary> exhibitionTemporaries = (List<ExhibitionTemporary>)exhibitionTemporaryRepository.findAll();
+		List<ExhibitionTemporaryAllResponse> exhibitionTemporaryAllResponses = new ArrayList<>();
+		for (ExhibitionTemporary exhibitionTemporary : exhibitionTemporaries) {
+			ExhibitionTemporaryAllResponse exhibitionTemporaryAllResponse = ExhibitionTemporaryAllResponse.builder()
+					.exhibitionTemporaryItemsId(exhibitionTemporary.getExhibitionTemporaryId())
+					.exhibitionTemporaryCategoryId(exhibitionTemporary.getExhibitionTemporaryCategory().getExhibitionCategoryId())
+					.exhibitionTemporaryModuleName(exhibitionTemporary.getExhibitionTemporaryModuleName())
+					.exhibitionTemporaryDataPicker(exhibitionTemporary.getExhibitionTemporaryDataPicker())
+					.exhibitionTemporaryAccountId(exhibitionTemporary.getExhibitionTemporaryAccountId())
+					.exhibitionTemporaryItemsId(exhibitionTemporary.getExhibitionTemporaryItemsId())
+					.exhibitionTemporaryPriority(exhibitionTemporary.getExhibitionTemporaryPriority())
+					.build();
+			exhibitionTemporaryAllResponses.add(exhibitionTemporaryAllResponse);
+		}
+		return exhibitionTemporaryAllResponses;
+	}
+
+	@Override
 	public List<Long> applyExhibitionTemporary(ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -303,11 +320,18 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 		List<Long> exhibitionTemporaryIds = exhibitionTemporaryApplyFormRequestDto.getExhibitionTemporaryIds();
 
-		exhibitionRepository.deleteAll();
+		List<Exhibition> trueExhibition = exhibitionRepository.getTrueExhibitions();
+		//true -> false로 변경 , 수정시간 갱신
+		for (Exhibition exhibition : trueExhibition) {
+			exhibition.setExhibitionStatus(false);
+			exhibition.setExhibitionTemporaryModifiedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
+		}
 
 		for (Long exhibitionTemporaryId : exhibitionTemporaryIds) {
 			ExhibitionTemporary exhibitionTemporary = exhibitionTemporaryRepository.findById(exhibitionTemporaryId).get();
 			Exhibition exhibition = modelMapper.map(exhibitionTemporary, Exhibition.class);
+			exhibition.setExhibitionStatus(true);
+			exhibition.setExhibitionTemporaryCreatedAt(dateUtils.transDate(env.getProperty("dateutils.format")));
 			exhibitionIds.add(exhibitionRepository.save(exhibition).getExhibitionId());
 		}
 
