@@ -149,7 +149,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			ExhibitionAccountResponse exhibitionAccountResponse = new ExhibitionAccountResponse();
 			exhibitionAccountResponse.setExhibitionAccountId(e.getExhibitionAccountId());
 			exhibitionAccountResponse.setExhibitionAccountName(e.getExhibitionAccountName());
-			exhibitionAccountResponse.setExhibitionAccountStatus(e.isExhibitionAccountStatus());
 			responses.add(exhibitionAccountResponse);
 		}
 		return responses;
@@ -171,6 +170,36 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			responses.add(exhibitionCategoryResponse);
 		}
 		return responses;
+	}
+
+	@Override
+	public List<ExhibitionItemsInfoResponse> getExhibitionItemsInfos(Long exhibitionAccountId){
+		List<ExhibitionItems> exhibitionItemss = exhibitionItemsRepository.findExhibitionItemsByExhibitionAccountId(exhibitionAccountId);
+		List<ExhibitionItemsInfoResponse> result = new ArrayList<>();
+		for (ExhibitionItems exhibitionItems : exhibitionItemss) {
+			ExhibitionItemsInfoResponse exhibitionItemsInfoResponse = ExhibitionItemsInfoResponse.builder()
+					.exhibitionItemsId(exhibitionItems.getExhibitionItemsId())
+					.exhibitionItemsName(exhibitionItems.getExhibitionItemsName())
+					.exhibitionItemsDetail(exhibitionItems.getExhibitionItemsDetail())
+					.build();
+			result.add(exhibitionItemsInfoResponse);
+		}
+		return result;
+	}
+
+	@Override
+	public List<ExhibitionItemInfoResponse> getExhibitionItemInfos(Long exhibitionItemsId){
+		List<ExhibitionItem> exhibitionItems = exhibitionItemRepository.findExhibitionItemByExhibitionItemsId(exhibitionItemsId);
+		List<ExhibitionItemInfoResponse> result = new ArrayList<>();
+		for (ExhibitionItem exhibitionItem : exhibitionItems) {
+			ExhibitionItemInfoResponse exhibitionItemInfoResponse = ExhibitionItemInfoResponse.builder()
+					.exhibitionItemId(exhibitionItem.getExhibitionItemId())
+					.exhibitionItemNumber(exhibitionItem.getExhibitionItemNumber())
+					.exhibitionItemPriority(exhibitionItem.getExhibitionItemPriority())
+					.build();
+			result.add(exhibitionItemInfoResponse);
+		}
+		return result;
 	}
 
 	@Override

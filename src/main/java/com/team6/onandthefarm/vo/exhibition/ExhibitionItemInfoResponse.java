@@ -11,7 +11,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountResponse {
-	private Long exhibitionAccountId;
-	private String exhibitionAccountName;
+public class ExhibitionItemInfoResponse {
+	private Long exhibitionItemId;
+
+	private Long exhibitionItemNumber;
+
+	private Integer exhibitionItemPriority;
 }

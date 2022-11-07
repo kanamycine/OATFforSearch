@@ -15,4 +15,7 @@ public interface ExhibitionItemsRepository extends CrudRepository<ExhibitionItem
     @Query("select p from ExhibitionItems p where p.exhibitionAccount.exhibitionAccountId =:exhibitionAccountId")
     List<ExhibitionItems> findExhibitionItemsDetail(@Param("exhibitionAccountId") Long exhibitionAccountId);
 
+    @Query("select p from ExhibitionItems p where p.exhibitionAccount.exhibitionAccountId =:exhibitionAccountId")
+    List<ExhibitionItems> findExhibitionItemsByExhibitionAccountId(@Param("exhibitionAccountId") Long exhibitionAccountId);
+
 }
