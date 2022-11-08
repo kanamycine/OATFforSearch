@@ -299,7 +299,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		List<ExhibitionTemporaryAllResponse> exhibitionTemporaryAllResponses = new ArrayList<>();
 		for (ExhibitionTemporary exhibitionTemporary : exhibitionTemporaries) {
 			ExhibitionTemporaryAllResponse exhibitionTemporaryAllResponse = ExhibitionTemporaryAllResponse.builder()
-					.exhibitionTemporaryItemsId(exhibitionTemporary.getExhibitionTemporaryId())
+					.exhibitionTemporaryId(exhibitionTemporary.getExhibitionTemporaryId())
 					.exhibitionTemporaryCategoryId(exhibitionTemporary.getExhibitionTemporaryCategory().getExhibitionCategoryId())
 					.exhibitionTemporaryModuleName(exhibitionTemporary.getExhibitionTemporaryModuleName())
 					.exhibitionTemporaryDataPicker(exhibitionTemporary.getExhibitionTemporaryDataPicker())
