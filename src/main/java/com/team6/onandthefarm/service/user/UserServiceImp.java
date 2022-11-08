@@ -20,6 +20,7 @@ import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.security.jwt.JwtTokenUtil;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.security.oauth.dto.OAuth2UserDto;
+import com.team6.onandthefarm.security.oauth.provider.GoogleOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
@@ -34,6 +35,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +68,7 @@ public class UserServiceImp implements UserService {
 
 	private final KakaoOAuth2 kakaoOAuth2;
 	private final NaverOAuth2 naverOAuth2;
+	private final GoogleOAuth2 googleOAuth2;
 
 	private final JwtTokenUtil jwtTokenUtil;
 
@@ -86,6 +89,7 @@ public class UserServiceImp implements UserService {
 			ProductRepository productRepository,
 			KakaoOAuth2 kakaoOAuth2,
 			NaverOAuth2 naverOAuth2,
+		    GoogleOAuth2 googleOAuth2,
 			JwtTokenUtil jwtTokenUtil,
 			S3Upload s3Upload) {
 		this.userRepository = userRepository;
@@ -98,6 +102,7 @@ public class UserServiceImp implements UserService {
 		this.productRepository = productRepository;
 		this.kakaoOAuth2 = kakaoOAuth2;
 		this.naverOAuth2 = naverOAuth2;
+		this.googleOAuth2 = googleOAuth2;
 		this.jwtTokenUtil = jwtTokenUtil;
 		this.s3Upload=s3Upload;
 	}
@@ -124,93 +129,62 @@ public class UserServiceImp implements UserService {
 	@Override
 	public UserTokenResponse login(UserLoginDto userLoginDto) {
 
-		Token token = null;
-		Boolean needRegister = false;
-		String email = new String();
-		Long userId = null;
-
+		OAuth2UserDto userInfo = null;
 		String provider = userLoginDto.getProvider();
 		if (provider.equals("google")) {
+			String googleAccessToken = googleOAuth2.getAccessToken(userLoginDto);
 
+			if (googleAccessToken != null) {
+				userInfo = googleOAuth2.getUserInfo(googleAccessToken);
+			}
 		} else if (provider.equals("naver")) {
-			// 카카오 액세스 토큰 받아오기
 			String naverAccessToken = naverOAuth2.getAccessToken(userLoginDto);
 
 			if (naverAccessToken != null) {
-				// 카카오 액세스 토큰으로 유저 정보 받아오기
-				OAuth2UserDto userInfo = naverOAuth2.getUserInfo(naverAccessToken);
-
-				Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
-				User user = null;
-
-				if (savedUser.isPresent()) {
-					user = savedUser.get();
-
-					if (user.getUserName() == null) {
-						needRegister = true;
-						email = user.getUserEmail();
-					}
-				} else { // DB에 유저 정보가 없다면 저장
-					needRegister = true; // 유저 정보 추가 등록이 필요함
-					email = userInfo.getEmail();
-
-					User newUser = User.builder()
-							.userEmail(userInfo.getEmail())
-							.role("ROLE_USER")
-							.provider(provider)
-							.userNaverNumber(userInfo.getNaverId())
-							.userFollowerCount(0)
-							.userFollowingCount(0)
-							.userProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png")
-							.userRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")))
-							.build();
-					user = userRepository.save(newUser);
-				}
-
-				// jwt 토큰 발행
-				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
-				userId = user.getUserId();
+				userInfo = naverOAuth2.getUserInfo(naverAccessToken);
 			}
 		} else if (provider.equals("kakao")) {
-			// 카카오 액세스 토큰 받아오기
 			String kakaoAccessToken = kakaoOAuth2.getAccessToken(userLoginDto);
 
 			if (kakaoAccessToken != null) {
-				// 카카오 액세스 토큰으로 유저 정보 받아오기
-				OAuth2UserDto userInfo = kakaoOAuth2.getUserInfo(kakaoAccessToken);
-
-				Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
-
-				User user = null;
-				if (savedUser.isPresent()) {
-					user = savedUser.get();
-
-					if (user.getUserName() == null) {
-						needRegister = true;
-						email = user.getUserEmail();
-					}
-				} else { // DB에 유저 정보가 없다면 저장
-					needRegister = true; // 유저 정보 추가 등록이 필요함
-					email = userInfo.getEmail();
-
-					User newUser = User.builder()
-							.userEmail(userInfo.getEmail())
-							.role("ROLE_USER")
-							.provider(provider)
-							.userKakaoNumber(userInfo.getKakaoId())
-							.userFollowerCount(0)
-							.userFollowingCount(0)
-							.userProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png")
-							.userRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")))
-							.build();
-					user = userRepository.save(newUser);
-				}
-
-				// jwt 토큰 발행
-				token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
-				userId = user.getUserId();
+				userInfo = kakaoOAuth2.getUserInfo(kakaoAccessToken);
 			}
 		}
+
+		Optional<User> savedUser = userRepository.findByUserEmailAndProvider(userInfo.getEmail(), provider);
+		User user = null;
+		Boolean needRegister = false;
+		String email = new String();
+
+		if (savedUser.isPresent()) {
+			user = savedUser.get();
+
+			if (user.getUserName() == null) {
+				needRegister = true;
+				email = user.getUserEmail();
+			}
+		} else { // DB에 유저 정보가 없다면 저장
+			needRegister = true; // 유저 정보 추가 등록이 필요함
+			email = userInfo.getEmail();
+
+			User newUser = User.builder()
+					.userEmail(userInfo.getEmail())
+					.role("ROLE_USER")
+					.provider(provider)
+					.userOauthNumber(userInfo.getOauthId())
+					.userFollowerCount(0)
+					.userFollowingCount(0)
+					.userProfileImg("https://lotte-06-s3-test.s3.ap-northeast-2.amazonaws.com/profile/user/basic_profile.png")
+					.userRegisterDate(dateUtils.transDate(env.getProperty("dateutils.format")))
+					.userIsActivated(true)
+					.build();
+			user = userRepository.save(newUser);
+		}
+
+		// jwt 토큰 발행
+		Token token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
+		Long userId = user.getUserId();
+
 		UserTokenResponse userTokenResponse = UserTokenResponse.builder()
 				.token(token)
 				.needRegister(needRegister)
@@ -224,11 +198,14 @@ public class UserServiceImp implements UserService {
 	@Override
 	public Boolean logout(Long userId) {
 		Optional<User> user = userRepository.findById(userId);
+		String provider = user.get().getProvider();
 
-		Long kakaoNumber = user.get().getUserKakaoNumber();
-		Long returnKakaoNumber = kakaoOAuth2.logout(kakaoNumber);
-		if (returnKakaoNumber == null) {
-			return false;
+		if(provider.equals("kakao")) {
+			Long kakaoNumber = Long.parseLong(user.get().getUserOauthNumber());
+			Long returnKakaoNumber = kakaoOAuth2.logout(kakaoNumber);
+			if (returnKakaoNumber == null) {
+				return false;
+			}
 		}
 
 		return true;

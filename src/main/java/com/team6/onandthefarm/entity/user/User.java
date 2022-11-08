@@ -26,8 +26,6 @@ public class User {
 
     private String userEmail;
 
-    //private String userPassword;
-
     private String userZipcode;
 
     private String userAddress;
@@ -50,13 +48,7 @@ public class User {
 
     private String provider;
 
-    private Long userKakaoNumber;
-
-    private String userNaverNumber;
-
-    private String userAppleNumber;
-
-    private String userGoogleNumber;
+    private String userOauthNumber;
 
     private Integer userFollowingCount;
 
