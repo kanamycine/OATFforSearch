@@ -14,5 +14,4 @@ import lombok.Setter;
 public class ExhibitionAccountResponse {
 	private Long exhibitionAccountId;
 	private String exhibitionAccountName;
-	private Integer exhibitionAccountPriority;
 }

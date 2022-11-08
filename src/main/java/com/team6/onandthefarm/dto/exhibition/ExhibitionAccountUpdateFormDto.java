@@ -23,6 +23,4 @@ public class ExhibitionAccountUpdateFormDto {
 	private String exhibitionAccountModifiedAt;
 
 	private boolean exhibitionAccountStatus;
-
-	private Integer exhibitionAccountPriority;
 }

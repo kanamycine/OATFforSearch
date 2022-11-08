@@ -20,8 +20,6 @@ public class ExhibitionAccountDetailResponse {
 
     private String exhibitionAccountEndTime;
 
-    private Integer exhibitionAccountPriority;
-
     private List<ExhibitionAccountItemsDetailResponse> exhibitionAccountItemsDetailResponseList;
 
 }
