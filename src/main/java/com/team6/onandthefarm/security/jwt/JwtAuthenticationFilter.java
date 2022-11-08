@@ -13,6 +13,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,15 +35,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SellerRepository sellerRepository;
     private final AdminRepository adminRepository;
     private final JwtTokenUtil jwtTokenUtil;
-
-    private String adminKey = "4e2945af65919af52b418b54f26f26c2";
+    Environment env;
+    private String adminKey;
 
     @Autowired
-    public JwtAuthenticationFilter(UserRepository userRepository, SellerRepository sellerRepository, AdminRepository adminRepository, JwtTokenUtil jwtTokenUtil) {
+    public JwtAuthenticationFilter(UserRepository userRepository,
+                                   SellerRepository sellerRepository,
+                                   AdminRepository adminRepository,
+                                   JwtTokenUtil jwtTokenUtil,
+                                   Environment env) {
         this.userRepository = userRepository;
         this.sellerRepository = sellerRepository;
         this.adminRepository = adminRepository;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.env = env;
+        this.adminKey = env.getProperty("custom-api-key.jwt.admin-key");
     }
 
     @Override
