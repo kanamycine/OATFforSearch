@@ -13,6 +13,8 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
@@ -131,6 +133,8 @@ public class ExhibitionController {
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
+
 
 	@PutMapping(value = "/account/update/priority")
 	@ApiOperation(value = "전시 구좌 우선순위 수정")
@@ -368,6 +372,10 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	// @GetMapping(value = "/all")
+	// @ApiOperation(value = "전시 전부 조회(main view not temp)")
+	// public ResponseEntity<BaseResponse<ExhibitionAllResponse>> getAllExhibition()
+
 	@PutMapping(value = "/temporary/apply")
 	@ApiOperation(value = "전시 temp 적용 (main view)")
 	public ResponseEntity<BaseResponse<Exhibition>> applyExhibitionTemporary(@ApiIgnore Principal principal,
@@ -384,6 +392,35 @@ public class ExhibitionController {
 				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionTemporary APPLIED")
 				.data(exhibitionIds)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/temporary/update/priority")
+	@ApiOperation(value = "임시 전시 우선순위 수정")
+	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporaryPriority(
+			@RequestBody ExhibitionTemporaryPriorityUpdateFormsRequest exhibitionTemporaryUpdatePriorityFormRequest){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionTemporaryPriorityUpdateFormsRequestDto exhibitionTemporaryPriorityUpdateFormsRequestDto = modelMapper.map(exhibitionTemporaryUpdatePriorityFormRequest, ExhibitionTemporaryPriorityUpdateFormsRequestDto.class);
+
+		List<ExhibitionTemporaryPriorityUpdateFormRequest> exhibitionTemporaryPriorityUpdateFormRequests =
+				exhibitionTemporaryUpdatePriorityFormRequest.getExhibitionTemporaryPriorityUpdateFormRequests();
+		List<ExhibitionTemporaryPriorityUpdateFormRequestDto> exhibitionTemporaryPriorityUpdateFormRequestDtos = new ArrayList<>();
+		for (ExhibitionTemporaryPriorityUpdateFormRequest e : exhibitionTemporaryPriorityUpdateFormRequests) {
+			ExhibitionTemporaryPriorityUpdateFormRequestDto eDto = modelMapper.map(e, ExhibitionTemporaryPriorityUpdateFormRequestDto.class);
+			exhibitionTemporaryPriorityUpdateFormRequestDtos.add(eDto);
+		}
+		exhibitionTemporaryPriorityUpdateFormsRequestDto.setExhibitionTemporaryPriorityUpdateFormRequests(exhibitionTemporaryPriorityUpdateFormRequestDtos);
+
+		List<Long> exhibitionTemporaryIds = exhibitionService.updateExhibitionTemporaryPriority(exhibitionTemporaryPriorityUpdateFormsRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionTemporary Priority UPDATED")
+				.data(exhibitionTemporaryIds)
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);

@@ -12,6 +12,8 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
@@ -141,7 +143,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionAccount.get().setExhibitionAccountStartTime(exhibitionAccountUpdateFormDto.getExhibitionAccountStartTime());
 		exhibitionAccount.get().setExhibitionAccountEndTime(exhibitionAccountUpdateFormDto.getExhibitionAccountEndTime());
 		exhibitionAccount.get().setExhibitionAccountStatus(exhibitionAccountUpdateFormDto.isExhibitionAccountStatus());
-		exhibitionAccount.get().setExhibitionAccountPriority(exhibitionAccountUpdateFormDto.getExhibitionAccountPriority());
 
 		return exhibitionAccount.get().getExhibitionAccountId();
 	}
@@ -165,7 +166,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			ExhibitionAccountResponse exhibitionAccountResponse = new ExhibitionAccountResponse();
 			exhibitionAccountResponse.setExhibitionAccountId(e.getExhibitionAccountId());
 			exhibitionAccountResponse.setExhibitionAccountName(e.getExhibitionAccountName());
-			exhibitionAccountResponse.setExhibitionAccountPriority(e.getExhibitionAccountPriority());
 			responses.add(exhibitionAccountResponse);
 		}
 		return responses;
@@ -273,7 +273,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionAccountDetail.setExhibitionAccountDetail(exhibitionAccount.getExhibitionAccountDetail());
 		exhibitionAccountDetail.setExhibitionAccountStartTime(exhibitionAccount.getExhibitionAccountStartTime());
 		exhibitionAccountDetail.setExhibitionAccountEndTime(exhibitionAccount.getExhibitionAccountEndTime());
-		exhibitionAccountDetail.setExhibitionAccountPriority(exhibitionAccount.getExhibitionAccountPriority());
 
 		List<ExhibitionItems> exhibitionsItemsDetailList =  exhibitionItemsRepository.findExhibitionItemsDetail(exhibitionAccountId);
 		for(ExhibitionItems items : exhibitionsItemsDetailList) {
@@ -338,7 +337,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 
 	@Override
 	public List<ExhibitionTemporaryAllResponse> getAllExhibitionTemporary(){
-		List<ExhibitionTemporary> exhibitionTemporaries = (List<ExhibitionTemporary>)exhibitionTemporaryRepository.findAll();
+		List<ExhibitionTemporary> exhibitionTemporaries = (List<ExhibitionTemporary>)exhibitionTemporaryRepository.findAll(Sort.by(Sort.Direction.ASC, "exhibitionTemporaryPriority"));
 		List<ExhibitionTemporaryAllResponse> exhibitionTemporaryAllResponses = new ArrayList<>();
 		for (ExhibitionTemporary exhibitionTemporary : exhibitionTemporaries) {
 			ExhibitionTemporaryAllResponse exhibitionTemporaryAllResponse = ExhibitionTemporaryAllResponse.builder()
@@ -382,6 +381,22 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			changedAccountIds.add(exhibitionAccount.getExhibitionAccountId());
 		}
 		return changedAccountIds;
+	}
+
+	@Override
+	public List<Long> updateExhibitionTemporaryPriority(
+			ExhibitionTemporaryPriorityUpdateFormsRequestDto exhibitionTemporaryPriorityUpdateFormsRequestDto){
+		List<Long> changedExhibitionTemporaryIds = new ArrayList<>();
+		List<ExhibitionTemporaryPriorityUpdateFormRequestDto> exhibitionTemporaryPriorityUpdateFormRequestDtos =
+				exhibitionTemporaryPriorityUpdateFormsRequestDto.getExhibitionTemporaryPriorityUpdateFormRequests();
+
+		for (ExhibitionTemporaryPriorityUpdateFormRequestDto eDto : exhibitionTemporaryPriorityUpdateFormRequestDtos) {
+			Long targetId = eDto.getExhibitionTemporaryId();
+			ExhibitionTemporary exhibitionTemporary = exhibitionTemporaryRepository.findById(targetId).get();
+			exhibitionTemporary.setExhibitionTemporaryPriority(eDto.getExhibitionTemporaryPriority());
+			changedExhibitionTemporaryIds.add(exhibitionTemporary.getExhibitionTemporaryId());
+		}
+		return changedExhibitionTemporaryIds;
 	}
 
 	@Override
