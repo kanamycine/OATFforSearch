@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.vo;
+package com.team6.onandthefarm.vo.exhibition;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

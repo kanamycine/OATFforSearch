@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryApplyFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryDeleteFormRequestDto;
@@ -350,13 +351,18 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	}
 
 	@Override
-	public Long updateExhibitionItemPriority(ExhibitionItemPriorityUpdateFormRequestDto exhibitionItemPriorityUpdateFormRequestDto){
-		Long targetId = exhibitionItemPriorityUpdateFormRequestDto.getExhibitionItemId();
-		ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(targetId).get();
-
-		exhibitionItem.setExhibitionItemPriority(exhibitionItemPriorityUpdateFormRequestDto.getExhibitionItemPriority());
-
-		return exhibitionItem.getExhibitionItemId();
+	public List<Long> updateExhibitionItemPriority(
+			ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto){
+		List<Long> changedItemIds = new ArrayList<>();
+		List<ExhibitionItemPriorityUpdateFormRequestDto> exhibitionItemPriorityUpdateFormRequestDtos =
+				exhibitionItemPriorityUpdateFormsRequestDto.getExhibitionItemPriorityUpdateFormRequestDtos();
+		for (ExhibitionItemPriorityUpdateFormRequestDto eDto : exhibitionItemPriorityUpdateFormRequestDtos) {
+			Long targetId = eDto.getExhibitionItemId();
+			ExhibitionItem exhibitionItem = exhibitionItemRepository.findById(targetId).get();
+			exhibitionItem.setExhibitionItemPriority(eDto.getExhibitionItemPriority());
+			changedItemIds.add(exhibitionItem.getExhibitionItemId());
+		}
+		return changedItemIds;
 	}
 
 	@Override
