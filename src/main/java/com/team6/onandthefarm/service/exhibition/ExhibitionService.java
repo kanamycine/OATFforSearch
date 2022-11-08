@@ -17,6 +17,7 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryPriorityUpdateFo
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountDetailResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionAllResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionItemInfoResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsInfoResponse;
@@ -42,4 +43,5 @@ public interface ExhibitionService {
 	List<Long> updateExhibitionAccountPriority(ExhibitionAccountPriorityUpdateFormsRequestDto exhibitionAccountPriorityUpdateFormsRequestDto);
 	List<Long> updateExhibitionTemporaryPriority(ExhibitionTemporaryPriorityUpdateFormsRequestDto exhibitionTemporaryPriorityUpdateFormsRequestDto);
 	List<ExhibitionTemporaryAllResponse> getAllExhibitionTemporary();
+	List<ExhibitionAllResponse> getAllExhibition();
 }

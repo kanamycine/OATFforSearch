@@ -372,9 +372,19 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	// @GetMapping(value = "/all")
-	// @ApiOperation(value = "전시 전부 조회(main view not temp)")
-	// public ResponseEntity<BaseResponse<ExhibitionAllResponse>> getAllExhibition()
+	@GetMapping(value = "/all")
+	@ApiOperation(value = "전시 전부 조회(main view not temp)")
+	public ResponseEntity<BaseResponse<ExhibitionAllResponse>> getAllExhibition(){
+		List<ExhibitionAllResponse> exhibitions = exhibitionService.getAllExhibition();
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("Exhibition All")
+				.data(exhibitions)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
 
 	@PutMapping(value = "/temporary/apply")
 	@ApiOperation(value = "전시 temp 적용 (main view)")

@@ -355,6 +355,25 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	}
 
 	@Override
+	public List<ExhibitionAllResponse> getAllExhibition(){
+		List<Exhibition> exhibitions = exhibitionRepository.getTrueExhibitionOrderByPriority();
+		List<ExhibitionAllResponse> exhibitionAllResponses = new ArrayList<>();
+		for(Exhibition e : exhibitions){
+			ExhibitionAllResponse exhibitionAllResponse = ExhibitionAllResponse.builder()
+					.exhibitionId(e.getExhibitionId())
+					.exhibitionCategoryId(e.getExhibitionCategory().getExhibitionCategoryId())
+					.exhibitionModuleName(e.getExhibitionModuleName())
+					.exhibitionDataPickerId(e.getExhibitionDataPickerId())
+					.exhibitionAccountId(e.getExhibitionAccountId())
+					.exhibitionItemsId(e.getExhibitionItemsId())
+					.exhibitionPriority(e.getExhibitionPriority())
+					.build();
+			exhibitionAllResponses.add(exhibitionAllResponse);
+		}
+		return exhibitionAllResponses;
+	}
+
+	@Override
 	public List<Long> updateExhibitionItemPriority(ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto){
 		List<Long> changedItemIds = new ArrayList<>();
 		List<ExhibitionItemPriorityUpdateFormRequestDto> exhibitionItemPriorityUpdateFormRequestDtos =

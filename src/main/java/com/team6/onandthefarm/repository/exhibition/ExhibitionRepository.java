@@ -11,4 +11,7 @@ public interface ExhibitionRepository extends CrudRepository<Exhibition, Long> {
 
 	@Query("select e from Exhibition e where e.exhibitionStatus = true")
 	List<Exhibition> getTrueExhibitions();
+
+	@Query("select e from Exhibition e where e.exhibitionStatus = true order by e.exhibitionPriority ASC")
+	List<Exhibition> getTrueExhibitionOrderByPriority();
 }
