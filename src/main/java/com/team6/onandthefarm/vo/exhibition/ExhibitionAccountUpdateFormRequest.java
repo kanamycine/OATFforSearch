@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExhibitionAccountUpdateFormRequest {
+
 	private Long exhibitionAccountId;
 
 	private Long exhibitionAccountCategoryId;
@@ -21,8 +22,6 @@ public class ExhibitionAccountUpdateFormRequest {
 	private String exhibitionAccountStartTime;
 
 	private String exhibitionAccountEndTime;
-
-	// private boolean exhibitionAccountUsableStatus;
 
 	private boolean exhibitionAccountStatus;
 }

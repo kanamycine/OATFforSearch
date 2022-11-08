@@ -87,7 +87,7 @@ public class S3Upload {
     }
 
     public String moduleUpload(MultipartFile multipartFile) throws IOException {
-        String s3FileName = "product/"+UUID.randomUUID();
+        String s3FileName = "module/"+UUID.randomUUID();
 
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentLength(multipartFile.getInputStream().available());
@@ -96,5 +96,4 @@ public class S3Upload {
 
         return amazonS3.getUrl(bucket, s3FileName).toString();
     }
-
 }

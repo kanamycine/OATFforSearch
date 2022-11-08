@@ -1,4 +1,4 @@
-package com.team6.onandthefarm.vo;
+package com.team6.onandthefarm.vo.exhibition;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionItemPriorityUpdateFormRequest {
-	private Long exhibitionItemId;
-	private Integer exhibitionItemPriority;
+public class ExhibitionAccountPriorityUpdateFormRequest {
+	private Long exhibitionAccountId;
+	private Integer exhibitionAccountPriority;
 }

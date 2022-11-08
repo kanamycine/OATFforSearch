@@ -51,4 +51,6 @@ public class ExhibitionAccount {
 	private String exhibitionAccountModifiedAt;
 
 	private boolean exhibitionAccountStatus;
+
+	private Integer exhibitionAccountPriority;
 }
