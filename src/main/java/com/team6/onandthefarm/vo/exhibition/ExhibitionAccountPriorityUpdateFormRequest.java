@@ -11,8 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountResponse {
+public class ExhibitionAccountPriorityUpdateFormRequest {
 	private Long exhibitionAccountId;
-	private String exhibitionAccountName;
 	private Integer exhibitionAccountPriority;
 }

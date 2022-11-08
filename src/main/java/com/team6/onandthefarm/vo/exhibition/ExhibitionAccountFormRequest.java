@@ -25,6 +25,8 @@ public class ExhibitionAccountFormRequest {
 
 	private String exhibitionAccountDetail;
 
+	private Integer exhibitionAccountPriority;
+
 	private List<ExhibitionItemsFormRequest> exhibitionItemsFormRequests;
 
 }

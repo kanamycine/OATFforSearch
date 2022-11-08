@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemsFormRequestDto;
@@ -139,6 +141,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionAccount.get().setExhibitionAccountStartTime(exhibitionAccountUpdateFormDto.getExhibitionAccountStartTime());
 		exhibitionAccount.get().setExhibitionAccountEndTime(exhibitionAccountUpdateFormDto.getExhibitionAccountEndTime());
 		exhibitionAccount.get().setExhibitionAccountStatus(exhibitionAccountUpdateFormDto.isExhibitionAccountStatus());
+		exhibitionAccount.get().setExhibitionAccountPriority(exhibitionAccountUpdateFormDto.getExhibitionAccountPriority());
 
 		return exhibitionAccount.get().getExhibitionAccountId();
 	}
@@ -162,6 +165,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			ExhibitionAccountResponse exhibitionAccountResponse = new ExhibitionAccountResponse();
 			exhibitionAccountResponse.setExhibitionAccountId(e.getExhibitionAccountId());
 			exhibitionAccountResponse.setExhibitionAccountName(e.getExhibitionAccountName());
+			exhibitionAccountResponse.setExhibitionAccountPriority(e.getExhibitionAccountPriority());
 			responses.add(exhibitionAccountResponse);
 		}
 		return responses;
@@ -269,6 +273,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		exhibitionAccountDetail.setExhibitionAccountDetail(exhibitionAccount.getExhibitionAccountDetail());
 		exhibitionAccountDetail.setExhibitionAccountStartTime(exhibitionAccount.getExhibitionAccountStartTime());
 		exhibitionAccountDetail.setExhibitionAccountEndTime(exhibitionAccount.getExhibitionAccountEndTime());
+		exhibitionAccountDetail.setExhibitionAccountPriority(exhibitionAccount.getExhibitionAccountPriority());
 
 		List<ExhibitionItems> exhibitionsItemsDetailList =  exhibitionItemsRepository.findExhibitionItemsDetail(exhibitionAccountId);
 		for(ExhibitionItems items : exhibitionsItemsDetailList) {
@@ -351,8 +356,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	}
 
 	@Override
-	public List<Long> updateExhibitionItemPriority(
-			ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto){
+	public List<Long> updateExhibitionItemPriority(ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto){
 		List<Long> changedItemIds = new ArrayList<>();
 		List<ExhibitionItemPriorityUpdateFormRequestDto> exhibitionItemPriorityUpdateFormRequestDtos =
 				exhibitionItemPriorityUpdateFormsRequestDto.getExhibitionItemPriorityUpdateFormRequestDtos();
@@ -363,6 +367,21 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 			changedItemIds.add(exhibitionItem.getExhibitionItemId());
 		}
 		return changedItemIds;
+	}
+
+	@Override
+	public List<Long> updateExhibitionAccountPriority(
+			ExhibitionAccountPriorityUpdateFormsRequestDto exhibitionAccountPriorityUpdateFormsRequestDto){
+		List<Long> changedAccountIds = new ArrayList<>();
+		List<ExhibitionAccountPriorityUpdateFormRequestDto> exhibitionAccountPriorityUpdateFormRequestDtos =
+				exhibitionAccountPriorityUpdateFormsRequestDto.getExhibitionAccountPriorityUpdateFormRequestDtos();
+		for (ExhibitionAccountPriorityUpdateFormRequestDto eDto : exhibitionAccountPriorityUpdateFormRequestDtos) {
+			Long targetId = eDto.getExhibitionAccountId();
+			ExhibitionAccount exhibitionAccount = exhibitionAccountRepository.findById(targetId).get();
+			exhibitionAccount.setExhibitionAccountPriority(eDto.getExhibitionAccountPriority());
+			changedAccountIds.add(exhibitionAccount.getExhibitionAccountId());
+		}
+		return changedAccountIds;
 	}
 
 	@Override

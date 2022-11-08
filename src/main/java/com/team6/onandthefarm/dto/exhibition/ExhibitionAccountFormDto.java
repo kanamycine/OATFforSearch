@@ -26,5 +26,7 @@ public class ExhibitionAccountFormDto {
 
 	private boolean exhibitionAccountStatus;
 
+	private Integer exhibitionAccountPriority;
+
 	private List<ExhibitionItemsFormRequestDto> exhibitionItemsFormRequestDtos;
 }

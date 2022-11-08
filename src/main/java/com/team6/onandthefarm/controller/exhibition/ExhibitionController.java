@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormsRequestDto;
@@ -130,6 +132,39 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	@PutMapping(value = "/account/update/priority")
+	@ApiOperation(value = "전시 구좌 우선순위 수정")
+	public ResponseEntity<BaseResponse<ExhibitionAccount>> updateExhibitionAccountPriority(
+			@RequestBody ExhibitionAccountPriorityUpdateFormsRequest exhibitionAccountPriorityUpdateFormsRequest){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		ExhibitionAccountPriorityUpdateFormsRequestDto exhibitionAccountPriorityUpdateFormsRequestDto =
+				modelMapper.map(exhibitionAccountPriorityUpdateFormsRequest, ExhibitionAccountPriorityUpdateFormsRequestDto.class);
+
+		List<ExhibitionAccountPriorityUpdateFormRequestDto> exhibitionAccountPriorityUpdateFormRequestDtos = new ArrayList<>();
+
+		List<ExhibitionAccountPriorityUpdateFormRequest> exhibitionAccountPriorityUpdateFormRequests =
+				exhibitionAccountPriorityUpdateFormsRequest.getExhibitionAccountPriorityUpdateFormRequests();
+
+		for (ExhibitionAccountPriorityUpdateFormRequest e : exhibitionAccountPriorityUpdateFormRequests) {
+			ExhibitionAccountPriorityUpdateFormRequestDto eDto = modelMapper.map(e, ExhibitionAccountPriorityUpdateFormRequestDto.class);
+
+			exhibitionAccountPriorityUpdateFormRequestDtos.add(eDto);
+		}
+		exhibitionAccountPriorityUpdateFormsRequestDto.setExhibitionAccountPriorityUpdateFormRequestDtos(exhibitionAccountPriorityUpdateFormRequestDtos);
+
+		List<Long> exhibitionAccountIds = exhibitionService.updateExhibitionAccountPriority(exhibitionAccountPriorityUpdateFormsRequestDto);
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionAccount Priority UPDATED")
+				.data(exhibitionAccountIds)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
+
 	@GetMapping(value = "/category")
 	@ApiOperation(value = "전시 카테고리 전체 조회 - 카테고리 선택시 사용")
 	public ResponseEntity<BaseResponse<List<ExhibitionCategoryResponse>>> getAllExhibitionCategory(@ApiIgnore Principal principal){
@@ -193,7 +228,7 @@ public class ExhibitionController {
 
 	@PutMapping(value = "/account/item/update/priority")
 	@ApiOperation(value = "소재 아이템 우선순위 수정")
-	public ResponseEntity<BaseResponse<ExhibitionItem>> updatExhibitionItemPriority(@ApiIgnore Principal principal,
+	public ResponseEntity<BaseResponse<ExhibitionItem>> updateExhibitionItemPriority(@ApiIgnore Principal principal,
 			@RequestBody ExhibitionItemPriorityUpdateFormsRequest exhibitionItemPriorityUpdateFormsRequest){
 
 		ModelMapper modelMapper = new ModelMapper();
@@ -212,16 +247,17 @@ public class ExhibitionController {
 		}
 		exhibitionItemPriorityUpdateFormsRequestDto.setExhibitionItemPriorityUpdateFormRequestDtos(exhibitionItemPriorityUpdateFormRequestDto);
 
-		List<Long> exhibitionItemId = exhibitionService.updateExhibitionItemPriority(exhibitionItemPriorityUpdateFormsRequestDto);
+		List<Long> exhibitionItemIds = exhibitionService.updateExhibitionItemPriority(exhibitionItemPriorityUpdateFormsRequestDto);
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
 				.message("ExhibitionItem Priority UPDATED")
-				.data(exhibitionItemId)
+				.data(exhibitionItemIds)
 				.build();
 
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
+
 
 	@GetMapping(value = "/account/list/{page-no}")
 	@ApiOperation(value = "전시구좌 리스트 조회")

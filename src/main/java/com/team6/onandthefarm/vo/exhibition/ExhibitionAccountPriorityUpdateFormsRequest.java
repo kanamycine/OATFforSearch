@@ -1,5 +1,7 @@
 package com.team6.onandthefarm.vo.exhibition;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +13,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionAccountResponse {
-	private Long exhibitionAccountId;
-	private String exhibitionAccountName;
-	private Integer exhibitionAccountPriority;
+public class ExhibitionAccountPriorityUpdateFormsRequest {
+	private List<ExhibitionAccountPriorityUpdateFormRequest> exhibitionAccountPriorityUpdateFormRequests;
 }

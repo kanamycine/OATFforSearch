@@ -5,6 +5,8 @@ import java.util.List;
 import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountDeleteDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountFormDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountPriorityUpdateFormsRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionAccountUpdateFormDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionItemPriorityUpdateFormsRequestDto;
@@ -35,7 +37,7 @@ public interface ExhibitionService {
 	List<Long> applyExhibitionTemporary(ExhibitionTemporaryApplyFormRequestDto exhibitionTemporaryApplyFormRequestDto);
 	List<ExhibitionItemsInfoResponse> getExhibitionItemsInfos(Long exhibitionAccountId);
 	List<ExhibitionItemInfoResponse> getExhibitionItemInfos(Long exhibitionItemsId);
-	List<Long> updateExhibitionItemPriority(
-			ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto);
+	List<Long> updateExhibitionItemPriority(ExhibitionItemPriorityUpdateFormsRequestDto exhibitionItemPriorityUpdateFormsRequestDto);
+	List<Long> updateExhibitionAccountPriority(ExhibitionAccountPriorityUpdateFormsRequestDto exhibitionAccountPriorityUpdateFormsRequestDto);
 	List<ExhibitionTemporaryAllResponse> getAllExhibitionTemporary();
 }
