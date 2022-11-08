@@ -211,6 +211,20 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/account/list/{page-no}")
+	@ApiOperation(value = "전시구좌 리스트 조회")
+	public ResponseEntity<BaseResponse<ExhibitionSelectionResponseResult>> getAllExhibitionListOrderByNewest(@ApiIgnore Principal principal,
+			@PathVariable("page-no") String pageNumber){
+		ExhibitionSelectionResponseResult exhibitions = exhibitionService.getAllExhibitionListOrderByNewest(Integer.valueOf(pageNumber));
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("ExhibitionAccount Pagenation")
+				.data(exhibitions)
+				.build();
+
+		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+	}
 
 	@GetMapping(value = "/account/detail/{exhibition-account-id}")
 	@ApiOperation(value = "전시구좌 상세보기")

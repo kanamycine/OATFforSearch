@@ -16,6 +16,7 @@ import com.team6.onandthefarm.vo.exhibition.ExhibitionAccountResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionCategoryResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionItemInfoResponse;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionItemsInfoResponse;
+import com.team6.onandthefarm.vo.exhibition.ExhibitionSelectionResponseResult;
 import com.team6.onandthefarm.vo.exhibition.ExhibitionTemporaryAllResponse;
 
 public interface ExhibitionService {
@@ -25,6 +26,7 @@ public interface ExhibitionService {
 	List<ExhibitionCategoryResponse> getAllExhibitionCategory();
 	List<ExhibitionAccountResponse> getExhibitionAccountByExhibitionCategory(Long exhibitionCategoryId);
 	Long createDataPicker(DataPickerFormRequestDto dataPickerFormRequestDto);
+	ExhibitionSelectionResponseResult getAllExhibitionListOrderByNewest(Integer pageNumber);
 	ExhibitionAccountDetailResponse getExhibitionAccountDetail(Long exhibitionAccountId);
 	Long createExhibitionTemporary(ExhibitionTemporaryFormRequestDto  exhibitionTemporaryFormRequestDto);
 	Long updateExhibitionTemporary(ExhibitionTemporaryUpdateFormRequestDto exhibitionTemporaryUpdateFormRequestDto);

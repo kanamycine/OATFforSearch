@@ -12,12 +12,18 @@ import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.ExhibitionTemporaryUpdateFormRequestDto;
 import com.team6.onandthefarm.entity.exhibition.Exhibition;
 import com.team6.onandthefarm.entity.exhibition.ExhibitionTemporary;
+import com.team6.onandthefarm.entity.product.Product;
+import com.team6.onandthefarm.repository.exhibition.ExhibitionAccountPagingRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionTemporaryRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionRepository;
+import com.team6.onandthefarm.vo.PageVo;
 import com.team6.onandthefarm.vo.exhibition.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +43,7 @@ import com.team6.onandthefarm.repository.exhibition.ExhibitionAccountRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionItemRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionItemsRepository;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.vo.product.ProductSelectionResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +56,8 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	private ExhibitionItemsRepository exhibitionItemsRepository;
 	private ExhibitionItemRepository exhibitionItemRepository;
 	private ExhibitionTemporaryRepository exhibitionTemporaryRepository;
+
+	private ExhibitionAccountPagingRepository exhibitionAccountPagingRepository;
 	private ExhibitionRepository exhibitionRepository;
 	private DataPickerRepository dataPickerRepository;
 	private DateUtils dateUtils;
@@ -60,6 +69,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 								ExhibitionItemRepository exhibitionItemRepository,
 								DataPickerRepository dataPickerRepository,
 								ExhibitionTemporaryRepository exhibitionTemporaryRepository,
+								ExhibitionAccountPagingRepository exhibitionAccountPagingRepository,
 								ExhibitionRepository exhibitionRepository,
 								DateUtils dateUtils,
 								Environment env){
@@ -69,6 +79,7 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		this.exhibitionItemRepository = exhibitionItemRepository;
 		this.dataPickerRepository = dataPickerRepository;
 		this.exhibitionTemporaryRepository = exhibitionTemporaryRepository;
+		this.exhibitionAccountPagingRepository = exhibitionAccountPagingRepository;
 		this.exhibitionRepository = exhibitionRepository;
 		this.env = env;
 		this.dateUtils = dateUtils;
@@ -215,6 +226,32 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 		dataPicker.setDataPickerStatus(true);
 
 		return dataPickerRepository.save(dataPicker).getDataPickerId();
+	}
+
+	@Override
+	public ExhibitionSelectionResponseResult getAllExhibitionListOrderByNewest(Integer pageNumber){
+		PageRequest pageRequest = PageRequest.of(pageNumber, 16, Sort.by("exhibitionAccountCreatedAt").descending());
+
+		Page<ExhibitionAccount> exhibitionAccounts = exhibitionAccountPagingRepository.findExhibitionOrderBy(pageRequest);
+		int totalPage = exhibitionAccounts.getTotalPages();
+		Long totalElements = exhibitionAccounts.getTotalElements();
+
+		PageVo pageVo = PageVo.builder()
+				.totalPage(totalPage)
+				.nowPage(pageNumber)
+				.totalElement(totalElements)
+				.build();
+
+		List<ExhibitionSelectionResponse> exhibitionAccountList = new ArrayList<>();
+		for(ExhibitionAccount e : exhibitionAccounts) {
+			ExhibitionSelectionResponse eResponse = new ExhibitionSelectionResponse(e);
+			exhibitionAccountList.add(eResponse);
+		}
+		ExhibitionSelectionResponseResult exhibitionSelectionResponseResult = ExhibitionSelectionResponseResult.builder()
+					.exhibitionSelectionResponses(exhibitionAccountList)
+					.pageVo(pageVo)
+					.build();
+		return exhibitionSelectionResponseResult;
 	}
 
 	@Override
