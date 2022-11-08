@@ -22,11 +22,8 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoOAuth2 {
 
 	private Environment env;
-
 	private String clientId;
-
 	private String adminKey;
-
 	private String redirectUrl;
 
 	@Autowired
@@ -37,34 +34,6 @@ public class KakaoOAuth2 {
 		this.redirectUrl = env.getProperty("custom-api-key.kakao.redirect-uri");
 	}
 
-	//@Override
-//	public String getAuthCode() {
-//		// HttpHeader 오브젝트 생성
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-//
-//		// HttpBody 오브젝트 생성
-//		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-//		params.add("response_type", "code");
-//		params.add("client_id", clientId);
-//		params.add("redirect_uri", redirectUrl);
-//
-//		// HttpHeader와 HttpBody를 하나의 오브젝트에 담기
-//		RestTemplate rt = new RestTemplate();
-//		HttpEntity<MultiValueMap<String, String>> kakaoAccessCodeRequest = new HttpEntity<>(params, headers);
-//
-//		try {
-//			// Http 요청하기 - Post방식으로 - 그리고 response 변수의 응답 받음.
-//			rt.exchange( "https://kauth.kakao.com/oauth/authorize", HttpMethod.GET, kakaoAccessCodeRequest, String.class );
-//
-//			return null;
-//		} catch (HttpClientErrorException.BadRequest e){
-//			log.error("getAuthCode - 잘못된 인가 코드");
-//			return null;
-//		}
-//	}
-
-	//@Override
 	public String getAccessToken(UserLoginDto userLoginDto) {
 		// HttpHeader 오브젝트 생성
 		HttpHeaders headers = new HttpHeaders();
@@ -96,7 +65,6 @@ public class KakaoOAuth2 {
 		}
 	}
 
-	//@Override
 	public OAuth2UserDto getUserInfo(String accessToken) {
 		// HttpHeader 오브젝트 생성
 		HttpHeaders headers = new HttpHeaders();
@@ -118,7 +86,7 @@ public class KakaoOAuth2 {
 			String email = iJson.getJSONObject("kakao_account").getString("email");
 
 			OAuth2UserDto userDto = OAuth2UserDto.builder()
-					.kakaoId(kakaoId)
+					.oauthId(Long.toString(kakaoId))
 					.email(email)
 					.build();
 

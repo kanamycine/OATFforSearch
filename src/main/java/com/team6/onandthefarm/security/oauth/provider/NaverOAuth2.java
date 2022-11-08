@@ -18,24 +18,19 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-public class NaverOAuth2 implements OAuth2UserUtil {
+public class NaverOAuth2 {
 
     private Environment env;
-
     private String clientId;
-
     private String clientSecret;
 
-    private String redirectUrl;
 
     public NaverOAuth2(Environment env){
         this.env = env;
         this.clientId = env.getProperty("custom-api-key.naver.client-id");
         this.clientSecret = env.getProperty("custom-api-key.naver.client-secret");
-        this.redirectUrl = env.getProperty("custom-api-key.naver.redirect-uri");
     }
 
-    @Override
     public String getAccessToken(UserLoginDto userLoginDto) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -70,7 +65,6 @@ public class NaverOAuth2 implements OAuth2UserUtil {
         }
     }
 
-    @Override
     public OAuth2UserDto getUserInfo(String accessToken) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -92,13 +86,13 @@ public class NaverOAuth2 implements OAuth2UserUtil {
             String email = responseJson.getString("email");
 
             OAuth2UserDto userDto = OAuth2UserDto.builder()
-                    .naverId(naverId)
+                    .oauthId(naverId)
                     .email(email)
                     .build();
 
             return userDto;
         } catch (HttpClientErrorException.BadRequest e){
-            log.error("getAccessToken - 잘못된 인가 코드");
+            log.error("getUserInfo - 잘못된 인가 코드");
             return null;
         }
     }
