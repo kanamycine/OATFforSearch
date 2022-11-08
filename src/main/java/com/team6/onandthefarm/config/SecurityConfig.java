@@ -23,16 +23,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity // 시큐리티 활성화 -> 기본 스프링 필터체인에 등록
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
-    private final UserRepository userRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
-    public SecurityConfig(UserRepository userRepository, JwtAuthenticationFilter jwtAuthenticationFilter, JwtExceptionFilter jwtExceptionFilter, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint){
-        this.userRepository = userRepository;
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, JwtExceptionFilter jwtExceptionFilter, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint){
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtExceptionFilter = jwtExceptionFilter;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
@@ -52,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler) // 액세스 할 수 없는 요청 했을 시 동작
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/login", "/api/user/login/phone", "/api/seller/login", "/api/seller/signup", "/api/seller/email", "/api/seller/emailConfirm", "/api/seller/search/id", "/api/seller/search/passwd").permitAll()
+                .antMatchers("/api/user/login", "/api/user/login/phone", "/api/seller/login", "/api/seller/signup", "/api/seller/email", "/api/seller/emailConfirm", "/api/seller/search/id", "/api/seller/search/passwd", "/api/seller/passwd").permitAll()
                 .antMatchers("/api/user/product/list/**", "/api/user/product/{\\d+}", "/api/user/product/QnA/{\\d+}").permitAll()
                 .antMatchers("/api/user/review/info", "/api/user/review/list/**").permitAll()
                 .antMatchers("/api/seller/product/list/**").permitAll()
