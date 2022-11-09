@@ -11,8 +11,9 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BannerATypeResponse {
+public class BadgeATypeResponse {
 	private String ImgSrc;
 	private String connectUrl;
+	private String badgeName;
 	private Integer priority;
 }
