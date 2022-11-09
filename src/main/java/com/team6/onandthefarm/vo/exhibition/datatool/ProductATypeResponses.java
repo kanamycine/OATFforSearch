@@ -1,5 +1,7 @@
 package com.team6.onandthefarm.vo.exhibition.datatool;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +13,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BannerATypeRequest {
-	private Long dataToolId;
-	private Long ItemsId;
+public class ProductATypeResponses implements ProductResponses {
+	List<ProductATypeResponse> productATypeResponses;
 }

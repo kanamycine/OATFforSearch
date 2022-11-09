@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BadgeATypeRequestDto {
+public class BannerDataRequestDto {
 	private Long dataToolId;
 	private Long ItemsId;
 }

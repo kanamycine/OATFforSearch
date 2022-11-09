@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BadgeATypeRequest {
+public class ProductDataRequest {
 	private Long dataToolId;
 	private Long ItemsId;
 }

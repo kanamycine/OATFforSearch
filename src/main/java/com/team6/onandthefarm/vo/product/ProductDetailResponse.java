@@ -41,7 +41,6 @@ public class ProductDetailResponse {
 	private Integer productWishCount;
 	private Integer productSoldCount;
 	private boolean productWishStatus;
-
 	private boolean productCartStatus;
 	private Integer productViewCount;
 
