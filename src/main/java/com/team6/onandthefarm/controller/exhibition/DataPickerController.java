@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
+import com.team6.onandthefarm.dto.exhibition.datatool.BadgeATypeRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.BannerATypeRequestDto;
 import com.team6.onandthefarm.entity.exhibition.DataPicker;
 import com.team6.onandthefarm.service.exhibition.DataToolService;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
 import com.team6.onandthefarm.util.BaseResponse;
 import com.team6.onandthefarm.vo.exhibition.DataPickerFormRequest;
+import com.team6.onandthefarm.vo.exhibition.datatool.BadgeATypeRequest;
+import com.team6.onandthefarm.vo.exhibition.datatool.BadgeResponses;
 import com.team6.onandthefarm.vo.exhibition.datatool.BannerATypeRequest;
 import com.team6.onandthefarm.vo.exhibition.datatool.BannerResponses;
 
@@ -75,6 +78,30 @@ public class DataPickerController {
 				.httpStatus(HttpStatus.OK)
 				.message("BannerResponse gotten")
 				.data(bannerResponses)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/badge")
+	@ApiOperation(value = "뱃지 데이터 호출")
+	public ResponseEntity<BaseResponse<BadgeResponses>> getBadgeItems(
+			@RequestBody BadgeATypeRequest badgeATypeRequest){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		BadgeATypeRequestDto badgeATypeRequestDto = modelMapper.map(badgeATypeRequest, BadgeATypeRequestDto.class);
+
+		BadgeResponses badgeResponses = null;
+
+		if(badgeATypeRequestDto.getDataToolId().equals(888L)){
+			badgeResponses = dataToolService.getBadgeATypeItems(badgeATypeRequestDto);
+		}
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("BadgeResponse gotten")
+				.data(badgeResponses)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
