@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class BannerATypeRequestDto {
+public class ProductDataRequestDto {
 	private Long dataToolId;
 	private Long ItemsId;
 }

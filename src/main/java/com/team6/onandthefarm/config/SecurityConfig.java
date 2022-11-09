@@ -36,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -53,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/user/product/list/**", "/api/user/product/{\\d+}", "/api/user/product/QnA/{\\d+}").permitAll()
                 .antMatchers("/api/user/review/info", "/api/user/review/list/**").permitAll()
                 .antMatchers("/api/seller/product/list/**").permitAll()
+                .antMatchers("/api/user/data-call/**").permitAll()
                 .antMatchers("/api/user/**").hasAnyRole("USER", "SELLER")
                 .antMatchers("/api/seller/**").hasRole("SELLER")
                 .antMatchers("/api/admin/**").hasRole("ADMIN")

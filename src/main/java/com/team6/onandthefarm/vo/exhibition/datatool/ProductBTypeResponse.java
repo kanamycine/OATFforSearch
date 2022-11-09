@@ -11,7 +11,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BadgeATypeRequest {
-	private Long dataToolId;
-	private Long ItemsId;
+public class ProductBTypeResponse {
+	private Long productId;
+	private String ImgSrc;
+	private String productName;
+	private Integer productPrice;
+	private Integer soldCount;
 }
