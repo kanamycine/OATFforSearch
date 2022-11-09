@@ -407,7 +407,7 @@ public class ExhibitionController {
 		return new ResponseEntity<>(baseResponse, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/temporary/update/priority")
+	@PutMapping(value = "/temporary/update/priority")
 	@ApiOperation(value = "임시 전시 우선순위 수정")
 	public ResponseEntity<BaseResponse<ExhibitionTemporary>> updateExhibitionTemporaryPriority(
 			@RequestBody ExhibitionTemporaryPriorityUpdateFormsRequest exhibitionTemporaryUpdatePriorityFormRequest){
