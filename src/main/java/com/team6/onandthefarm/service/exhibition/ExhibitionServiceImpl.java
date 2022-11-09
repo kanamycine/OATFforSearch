@@ -61,7 +61,6 @@ public class ExhibitionServiceImpl implements ExhibitionService{
 	private ExhibitionItemsRepository exhibitionItemsRepository;
 	private ExhibitionItemRepository exhibitionItemRepository;
 	private ExhibitionTemporaryRepository exhibitionTemporaryRepository;
-
 	private ExhibitionAccountPagingRepository exhibitionAccountPagingRepository;
 	private ExhibitionRepository exhibitionRepository;
 	private DataPickerRepository dataPickerRepository;
