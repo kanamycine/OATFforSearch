@@ -16,6 +16,7 @@ import com.team6.onandthefarm.dto.exhibition.DataPickerFormRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.BadgeDataRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.BannerDataRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.ProductDataRequestDto;
+import com.team6.onandthefarm.dto.exhibition.datatool.SnsDataRequestDto;
 import com.team6.onandthefarm.entity.exhibition.DataPicker;
 import com.team6.onandthefarm.service.exhibition.DataToolService;
 import com.team6.onandthefarm.service.exhibition.ExhibitionService;
@@ -27,6 +28,8 @@ import com.team6.onandthefarm.vo.exhibition.datatool.BannerDataRequest;
 import com.team6.onandthefarm.vo.exhibition.datatool.BannerResponses;
 import com.team6.onandthefarm.vo.exhibition.datatool.ProductDataRequest;
 import com.team6.onandthefarm.vo.exhibition.datatool.ProductResponses;
+import com.team6.onandthefarm.vo.exhibition.datatool.SnsDataRequest;
+import com.team6.onandthefarm.vo.exhibition.datatool.SnsResponses;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping("/api/user/data-picker")
+@RequestMapping("/api/user/data-call")
 @RequiredArgsConstructor
 public class DataCallController {
 	private final DataToolService dataToolService;
@@ -64,6 +67,30 @@ public class DataCallController {
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/badge")
+	@ApiOperation(value = "뱃지 데이터 호출")
+	public ResponseEntity<BaseResponse<BadgeResponses>> getBadgeItems(
+			@RequestBody BadgeDataRequest badgeDataRequest){
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		BadgeDataRequestDto badgeDataRequestDto = modelMapper.map(badgeDataRequest, BadgeDataRequestDto.class);
+
+		BadgeResponses badgeResponses = null;
+
+		if(badgeDataRequestDto.getDataToolId().equals(888L)){
+			badgeResponses = dataToolService.getBadgeATypeItems(badgeDataRequestDto);
+		}
+
+		BaseResponse baseResponse = BaseResponse.builder()
+				.httpStatus(HttpStatus.OK)
+				.message("BadgeResponse gotten")
+				.data(badgeResponses)
+				.build();
+
+		return new ResponseEntity(baseResponse, HttpStatus.OK);
+	}
+
 	@GetMapping(value = "/product")
 	@ApiOperation(value = "상품 데이터 호출")
 	public ResponseEntity<BaseResponse<ProductResponses>> getProductItems(@ApiIgnore Principal principal,
@@ -86,6 +113,12 @@ public class DataCallController {
 		if(productDataRequestDto.getDataToolId().equals(555L)){
 			productResponses = dataToolService.getProductATypeItems(productDataRequestDto, userId);
 		}
+		else if (productDataRequestDto.getDataToolId().equals(556L)){
+			productResponses = dataToolService.getProductCTypeItems(productDataRequestDto, userId);
+		}
+		else if (productDataRequestDto.getDataToolId().equals(557L)){
+			productResponses = dataToolService.getProductBTypeItems(productDataRequestDto, userId);
+		}
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
@@ -95,26 +128,33 @@ public class DataCallController {
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);
 	}
-
-	@GetMapping(value = "/badge")
-	@ApiOperation(value = "뱃지 데이터 호출")
-	public ResponseEntity<BaseResponse<BadgeResponses>> getBadgeItems(
-			@RequestBody BadgeDataRequest badgeDataRequest){
+	@GetMapping(value = "/sns")
+	@ApiOperation(value = "sns 데이터 호출")
+	public ResponseEntity<BaseResponse<SnsResponses>> getSnsItems(@ApiIgnore Principal principal,
+			@RequestBody SnsDataRequest snsDataRequest){
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-		BadgeDataRequestDto badgeDataRequestDto = modelMapper.map(badgeDataRequest, BadgeDataRequestDto.class);
+		Long userId = null;
+		if (principal != null){
+			String[] principalInfo = principal.getName().split(" ");
+			if(principalInfo[1].equals("user")){
+				userId = Long.parseLong(principalInfo[0]);
+			}
+		}
 
-		BadgeResponses badgeResponses = null;
+		SnsDataRequestDto snsDataRequestDto = modelMapper.map(snsDataRequest, SnsDataRequestDto.class);
 
-		if(badgeDataRequestDto.getDataToolId().equals(888L)){
-			badgeResponses = dataToolService.getBadgeATypeItems(badgeDataRequestDto);
+		SnsResponses snsResponses = null;
+
+		if(snsDataRequestDto.getDataToolId().equals(666L)){
+			snsResponses = dataToolService.getSnsATypeItems(snsDataRequestDto);
 		}
 
 		BaseResponse baseResponse = BaseResponse.builder()
 				.httpStatus(HttpStatus.OK)
-				.message("BadgeResponse gotten")
-				.data(badgeResponses)
+				.message("SnsReponses gotten")
+				.data(snsResponses)
 				.build();
 
 		return new ResponseEntity(baseResponse, HttpStatus.OK);

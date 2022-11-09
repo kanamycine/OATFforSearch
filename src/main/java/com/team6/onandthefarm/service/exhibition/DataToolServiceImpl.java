@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.team6.onandthefarm.dto.exhibition.datatool.BadgeDataRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.BannerDataRequestDto;
 import com.team6.onandthefarm.dto.exhibition.datatool.ProductDataRequestDto;
+import com.team6.onandthefarm.dto.exhibition.datatool.SnsDataRequestDto;
 import com.team6.onandthefarm.entity.cart.Cart;
 import com.team6.onandthefarm.entity.exhibition.item.Badge;
 import com.team6.onandthefarm.entity.exhibition.item.Banner;
@@ -21,6 +22,10 @@ import com.team6.onandthefarm.entity.exhibition.item.ExhibitionItems;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.Wish;
 import com.team6.onandthefarm.entity.review.Review;
+import com.team6.onandthefarm.entity.seller.Seller;
+import com.team6.onandthefarm.entity.sns.Feed;
+import com.team6.onandthefarm.entity.sns.FeedImage;
+import com.team6.onandthefarm.entity.user.User;
 import com.team6.onandthefarm.repository.cart.CartRepository;
 import com.team6.onandthefarm.repository.exhibition.DataPickerRepository;
 import com.team6.onandthefarm.repository.exhibition.ExhibitionAccountRepository;
@@ -33,6 +38,10 @@ import com.team6.onandthefarm.repository.exhibition.item.BannerRepository;
 import com.team6.onandthefarm.repository.product.ProductRepository;
 import com.team6.onandthefarm.repository.product.ProductWishRepository;
 import com.team6.onandthefarm.repository.review.ReviewRepository;
+import com.team6.onandthefarm.repository.seller.SellerRepository;
+import com.team6.onandthefarm.repository.sns.FeedImageRepository;
+import com.team6.onandthefarm.repository.sns.FeedRepository;
+import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.util.DateUtils;
 import com.team6.onandthefarm.vo.exhibition.datatool.BadgeATypeResponse;
 import com.team6.onandthefarm.vo.exhibition.datatool.BadgeATypeResponses;
@@ -40,6 +49,12 @@ import com.team6.onandthefarm.vo.exhibition.datatool.BannerATypeResponse;
 import com.team6.onandthefarm.vo.exhibition.datatool.BannerATypeResponses;
 import com.team6.onandthefarm.vo.exhibition.datatool.ProductATypeResponse;
 import com.team6.onandthefarm.vo.exhibition.datatool.ProductATypeResponses;
+import com.team6.onandthefarm.vo.exhibition.datatool.ProductBTypeResponse;
+import com.team6.onandthefarm.vo.exhibition.datatool.ProductBTypeResponses;
+import com.team6.onandthefarm.vo.exhibition.datatool.ProductCTypeResponse;
+import com.team6.onandthefarm.vo.exhibition.datatool.ProductCTypeResponses;
+import com.team6.onandthefarm.vo.exhibition.datatool.SnsATypeResponse;
+import com.team6.onandthefarm.vo.exhibition.datatool.SnsATypeResponses;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,6 +74,10 @@ public class DataToolServiceImpl implements DataToolService{
 	private ReviewRepository reviewRepository;
 	private BannerRepository bannerRepository;
 	private BadgeRepository badgeRepository;
+	private FeedRepository feedRepository;
+	private UserRepository userRepository;
+	private SellerRepository sellerRepository;
+	private FeedImageRepository feedImageRepository;
 	private DateUtils dateUtils;
 	private Environment env;
 
@@ -77,6 +96,10 @@ public class DataToolServiceImpl implements DataToolService{
 			ProductWishRepository productWishRepository,
 			CartRepository cartRepository,
 			ReviewRepository reviewRepository,
+			FeedRepository feedRepository,
+			UserRepository userRepository,
+			SellerRepository sellerRepository,
+			FeedImageRepository feedImageRepository,
 			DateUtils dateUtils, Environment env) {
 		this.exhibitionAccountRepository = exhibitionAccountRepository;
 		this.exhibitionCategoryRepository = exhibitionCategoryRepository;
@@ -90,6 +113,10 @@ public class DataToolServiceImpl implements DataToolService{
 		this.productWishRepository = productWishRepository;
 		this.cartRepository = cartRepository;
 		this.reviewRepository = reviewRepository;
+		this.feedRepository = feedRepository;
+		this.userRepository = userRepository;
+		this.sellerRepository = sellerRepository;
+		this.feedImageRepository = feedImageRepository;
 		this.dateUtils = dateUtils;
 		this.env = env;
 	}
@@ -107,7 +134,7 @@ public class DataToolServiceImpl implements DataToolService{
 			List<Review> reviews = reviewRepository.findReviewByProduct(product);
 
 			ProductATypeResponse productATypeResponse = ProductATypeResponse.builder()
-					.productId(item.getExhibitionItemId())
+					.productId(product.getProductId())
 					.ImgSrc(product.getProductMainImgSrc())
 					.productName(product.getProductName())
 					.productPrice(product.getProductPrice())
@@ -189,6 +216,90 @@ public class DataToolServiceImpl implements DataToolService{
 		badgeATypeResponsesResult.setBadgeATypeResponseList(BadgeATypeResponses);
 
 		return badgeATypeResponsesResult;
+	}
+
+	@Override
+	public ProductBTypeResponses getProductBTypeItems(ProductDataRequestDto productDataRequestDto, Long userId){
+		ExhibitionItems exhibitionItems = exhibitionItemsRepository.findById(productDataRequestDto.getItemsId()).get();
+		ProductBTypeResponses productBTypeResponsesResult = new ProductBTypeResponses();
+		List<ProductBTypeResponse> productBTypeResponses = new ArrayList<>();
+
+		List<ExhibitionItem> items = exhibitionItemRepository.findExhibitionItemByExhibitionItemsId(exhibitionItems.getExhibitionItemsId());
+		Collections.sort(items, exhibitionItemComparator);
+		for (ExhibitionItem item : items) {
+			Product product = productRepository.findById(item.getExhibitionItemNumber()).get();
+
+			ProductBTypeResponse productBTypeResponse = ProductBTypeResponse.builder()
+					.productId(product.getProductId())
+					.ImgSrc(product.getProductMainImgSrc())
+					.productName(product.getProductName())
+					.productPrice(product.getProductPrice())
+					.soldCount(product.getProductSoldCount())
+					.build();
+			productBTypeResponses.add(productBTypeResponse);
+		}
+
+		productBTypeResponsesResult.setBTypeResponses(productBTypeResponses);
+
+		return productBTypeResponsesResult;
+	}
+
+	@Override
+	public ProductCTypeResponses getProductCTypeItems(ProductDataRequestDto productDataRequestDto, Long serId){
+		ExhibitionItems exhibitionItems = exhibitionItemsRepository.findById(productDataRequestDto.getItemsId()).get();
+		ProductCTypeResponses productCTypeResponseResult = new ProductCTypeResponses();
+		List<ProductCTypeResponse> productCTypeResponses = new ArrayList<>();
+
+		List<ExhibitionItem> items = exhibitionItemRepository.findExhibitionItemByExhibitionItemsId(exhibitionItems.getExhibitionItemsId());
+		Collections.sort(items, exhibitionItemComparator);
+		for (ExhibitionItem item : items) {
+			Product product = productRepository.findById(item.getExhibitionItemNumber()).get();
+
+			ProductCTypeResponse productCTypeResponse = ProductCTypeResponse.builder()
+					.productId(product.getProductId())
+					.ImgSrc(product.getProductMainImgSrc())
+					.sellerName(product.getSeller().getSellerName())
+					.productName(product.getProductName())
+					.productPrice(product.getProductPrice())
+					.soldCount(product.getProductSoldCount())
+					.build();
+			productCTypeResponses.add(productCTypeResponse);
+		}
+		productCTypeResponseResult.setProductCTypeResponses(productCTypeResponses);
+
+		return productCTypeResponseResult;
+	}
+
+	@Override
+	public SnsATypeResponses getSnsATypeItems(SnsDataRequestDto snsDataRequestDto){
+		ExhibitionItems exhibitionItems = exhibitionItemsRepository.findById(snsDataRequestDto.getItemsId()).get();
+		SnsATypeResponses snsATypeResponsesResult = new SnsATypeResponses();
+		List<SnsATypeResponse> snsATypeResponses = new ArrayList<>();
+
+		List<ExhibitionItem> items = exhibitionItemRepository.findExhibitionItemByExhibitionItemsId(exhibitionItems.getExhibitionItemsId());
+		Collections.sort(items, exhibitionItemComparator);
+		for (ExhibitionItem item : items) {
+			Feed feed = feedRepository.findById(item.getExhibitionItemNumber()).get();
+			String memberName = "";
+			Optional<User> user = userRepository.findById(feed.getMemberId());
+			if(user.isPresent()){
+				memberName = user.get().getUserName();
+			} else{
+				Seller seller = sellerRepository.findById(feed.getMemberId()).get();
+				memberName = seller.getSellerName();
+			}
+			String feedImageSrc = feedImageRepository.findByFeed(feed).get(0).getFeedImageSrc();
+
+			SnsATypeResponse snsATypeResponse = SnsATypeResponse.builder()
+					.feedId(feed.getFeedId())
+					.memberName(memberName)
+					.feedImageSrc(feedImageSrc)
+					.build();
+			snsATypeResponses.add(snsATypeResponse);
+		}
+		snsATypeResponsesResult.setSnsATypeResponses(snsATypeResponses);
+
+		return snsATypeResponsesResult;
 	}
 
 	class ExhibitionItemComparator implements Comparator<ExhibitionItem> {
