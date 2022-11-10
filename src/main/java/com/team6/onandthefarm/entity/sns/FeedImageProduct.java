@@ -28,4 +28,8 @@ public class FeedImageProduct {
     private FeedImage feedImage;
 
     private Long productId;
+
+    private Integer positionX;
+
+    private Integer positionY;
 }

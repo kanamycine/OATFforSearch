@@ -180,6 +180,8 @@ public class FeedServiceImpl implements FeedService {
 						FeedImageProduct feedImageProduct = new FeedImageProduct();
 						feedImageProduct.setFeedImage(saveFeedImage);
 						feedImageProduct.setProductId(imageProduct.getProductId());
+						feedImageProduct.setPositionX(imageProduct.getPosX());
+						feedImageProduct.setPositionY(imageProduct.getPosY());
 
 						//피드 이미지 별 상품 추가
 						FeedImageProduct savedFeedImageProduct = feedImageProductRepository.save(feedImageProduct);
@@ -287,6 +289,8 @@ public class FeedServiceImpl implements FeedService {
 					ImageProductResponse imageProductResponse = ImageProductResponse.builder()
 							.feedImageId(feedImage.getFeedImageId())
 							.productId(feedImageProduct.getProductId())
+							.posX(feedImageProduct.getPositionX())
+							.posY(feedImageProduct.getPositionY())
 							.productPrice(product.get().getProductPrice())
 							.productName(product.get().getProductName())
 							.productMainImgSrc(product.get().getProductMainImgSrc())
