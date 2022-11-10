@@ -1,11 +1,6 @@
 package com.team6.onandthefarm.service.user;
 
-import com.team6.onandthefarm.dto.user.MemberFollowingDto;
-import com.team6.onandthefarm.dto.user.MemberProfileDto;
-import com.team6.onandthefarm.dto.user.UserLoginDto;
-import com.team6.onandthefarm.dto.user.UserQnaDto;
-import com.team6.onandthefarm.dto.user.UserInfoDto;
-import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
+import com.team6.onandthefarm.dto.user.*;
 import com.team6.onandthefarm.entity.product.Product;
 import com.team6.onandthefarm.entity.product.ProductQna;
 import com.team6.onandthefarm.entity.seller.Seller;
@@ -24,6 +19,7 @@ import com.team6.onandthefarm.security.oauth.provider.GoogleOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.KakaoOAuth2;
 import com.team6.onandthefarm.security.oauth.provider.NaverOAuth2;
 import com.team6.onandthefarm.util.DateUtils;
+import com.team6.onandthefarm.util.RedisUtil;
 import com.team6.onandthefarm.util.S3Upload;
 import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
 import com.team6.onandthefarm.vo.user.*;
@@ -43,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +50,8 @@ import java.util.Optional;
 public class UserServiceImp implements UserService {
 
 	private final int pageContentNumber = 8;
+
+	private Long refreshPeriod;
 
 	private final UserRepository userRepository;
 
@@ -71,6 +70,7 @@ public class UserServiceImp implements UserService {
 	private final GoogleOAuth2 googleOAuth2;
 
 	private final JwtTokenUtil jwtTokenUtil;
+	private final RedisUtil redisUtil;
 
 	private final DateUtils dateUtils;
 
@@ -91,6 +91,7 @@ public class UserServiceImp implements UserService {
 			NaverOAuth2 naverOAuth2,
 		    GoogleOAuth2 googleOAuth2,
 			JwtTokenUtil jwtTokenUtil,
+		    RedisUtil redisUtil,
 			S3Upload s3Upload) {
 		this.userRepository = userRepository;
 		this.sellerRepository = sellerRepository;
@@ -104,7 +105,10 @@ public class UserServiceImp implements UserService {
 		this.naverOAuth2 = naverOAuth2;
 		this.googleOAuth2 = googleOAuth2;
 		this.jwtTokenUtil = jwtTokenUtil;
+		this.redisUtil = redisUtil;
 		this.s3Upload=s3Upload;
+
+		refreshPeriod = Long.parseLong(env.getProperty("custom-api-key.jwt.refresh-token-period"));
 	}
 
 	public Boolean createProductQnA(UserQnaDto userQnaDto) {
@@ -185,6 +189,10 @@ public class UserServiceImp implements UserService {
 		Token token = jwtTokenUtil.generateToken(user.getUserId(), user.getRole());
 		Long userId = user.getUserId();
 
+		// redis에 refresh token 저장
+		Duration expireDuration = Duration.ofMillis(refreshPeriod);
+		redisUtil.setValueDuration(token.getRefreshToken(), Long.toString(userId), expireDuration);
+
 		UserTokenResponse userTokenResponse = UserTokenResponse.builder()
 				.token(token)
 				.needRegister(needRegister)
@@ -196,7 +204,7 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public Boolean logout(Long userId) {
+	public Boolean logout(HttpServletRequest request, Long userId) {
 		Optional<User> user = userRepository.findById(userId);
 		String provider = user.get().getProvider();
 
@@ -206,8 +214,36 @@ public class UserServiceImp implements UserService {
 			if (returnKakaoNumber == null) {
 				return false;
 			}
+
+			// Access, Refresh token 처리
+			Boolean completeDel = deleteToken(request);
+			if (completeDel == false) {
+				return false;
+			}
+			return true;
 		}
 
+		return true;
+	}
+
+	// 로그아웃 시 토큰 처리
+	private Boolean deleteToken(HttpServletRequest request) {
+		try {
+			String accessToken = request.getHeader("Authorization");
+			Long userId = jwtTokenUtil.getId(accessToken);
+
+			// redis에 있는 refresh Token 삭제
+			//redisUtil.deleteValues(Long.toString(userId));
+
+			// access Token 블랙리스트 추가
+			Integer tokenExpiration = jwtTokenUtil.getTokenExpirationAsLong(accessToken).intValue();
+			Duration expireDuration = Duration.ofMillis(tokenExpiration);
+			redisUtil.setValueDuration(accessToken, "BlackList", expireDuration);
+
+		} catch (Exception e) {
+			log.error(String.valueOf(e));
+			return false;
+		}
 		return true;
 	}
 
@@ -223,7 +259,40 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+	public UserTokenResponse reIssueToken(UserReIssueDto userReIssueDto) {
+		// access & refresh token 가져오기
+		String refreshToken = userReIssueDto.getRefreshToken();
+
+		Long userId = Long.parseLong(redisUtil.getValues(refreshToken));
+		Optional<User> savedUser = userRepository.findById(userId);
+		if(savedUser.isPresent()){
+			if(!jwtTokenUtil.checkExpiredToken(refreshToken)) {
+				// Token 재생성
+				Token newToken = jwtTokenUtil.generateToken(userId, savedUser.get().getRole());
+
+				// 기존 refresh Token 삭제
+				redisUtil.deleteValues(refreshToken);
+
+				// 새 refresh token redis 저장
+				Long newRefreshTokenExpiration = jwtTokenUtil.getTokenExpirationAsLong(newToken.getRefreshToken());
+				Duration expireDuration = Duration.ofMillis(newRefreshTokenExpiration);
+				redisUtil.setValueDuration(newToken.getRefreshToken(), Long.toString(userId), expireDuration);
+
+				UserTokenResponse userTokenResponse = UserTokenResponse.builder()
+						.token(newToken)
+						.userId(savedUser.get().getUserId())
+						.email(savedUser.get().getUserEmail())
+						.needRegister(false)
+						.build();
+
+				if (savedUser.get().getUserName() == null) {
+					userTokenResponse.setNeedRegister(true);
+				}
+
+				return userTokenResponse;
+			}
+
+		}
 		return null;
 	}
 
