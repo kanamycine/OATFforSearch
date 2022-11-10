@@ -7,6 +7,7 @@ import com.team6.onandthefarm.repository.admin.AdminRepository;
 import com.team6.onandthefarm.repository.seller.SellerRepository;
 import com.team6.onandthefarm.repository.user.UserRepository;
 import com.team6.onandthefarm.service.user.UserService;
+import com.team6.onandthefarm.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -35,6 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SellerRepository sellerRepository;
     private final AdminRepository adminRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final RedisUtil redisUtil;
     Environment env;
     private String adminKey;
 
@@ -43,11 +45,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                    SellerRepository sellerRepository,
                                    AdminRepository adminRepository,
                                    JwtTokenUtil jwtTokenUtil,
+                                   RedisUtil redisUtil,
                                    Environment env) {
         this.userRepository = userRepository;
         this.sellerRepository = sellerRepository;
         this.adminRepository = adminRepository;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.redisUtil = redisUtil;
         this.env = env;
         this.adminKey = env.getProperty("custom-api-key.jwt.admin-key");
     }
@@ -58,10 +62,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (accessToken != null) {
             // 1. Access Token이 이미 재발급 되어서 redis에 블랙리스트로 들어가있는지 확인
-//            String inBlackList = redisUtil.getData(accessToken.replace(jwtTokenUtil.TOKEN_PREFIX, ""));
-//            if (inBlackList != null && inBlackList.equals("B")) {
-//                throw new SecurityException("사용할 수 없는 토큰입니다.");
-//            }
+            String inBlackList = redisUtil.getValues(accessToken);
+            if (inBlackList != null && inBlackList.equals("BlackList")) {
+                throw new SecurityException("사용할 수 없는 토큰입니다.");
+            }
             try {
                 // 2. Access Token에서 사용자 정보 추출
                 if (accessToken == null || accessToken.isEmpty()) {

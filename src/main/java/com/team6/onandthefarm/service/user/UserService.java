@@ -1,11 +1,6 @@
 package com.team6.onandthefarm.service.user;
 
-import com.team6.onandthefarm.dto.user.MemberFollowingDto;
-import com.team6.onandthefarm.dto.user.MemberProfileDto;
-import com.team6.onandthefarm.dto.user.UserLoginDto;
-import com.team6.onandthefarm.dto.user.UserQnaDto;
-import com.team6.onandthefarm.dto.user.UserInfoDto;
-import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
+import com.team6.onandthefarm.dto.user.*;
 import com.team6.onandthefarm.security.jwt.Token;
 import com.team6.onandthefarm.vo.product.ProductQnAResultResponse;
 import com.team6.onandthefarm.vo.user.*;
@@ -22,11 +17,11 @@ public interface UserService {
 
     UserTokenResponse login(UserLoginDto userLoginDto);
 
-    Boolean logout(Long userId);
+    Boolean logout(HttpServletRequest request, Long userId);
 
     Boolean loginPhoneConfirm(String phone);
 
-    Token reIssueToken(String refreshToken, HttpServletRequest request, HttpServletResponse response);
+    UserTokenResponse reIssueToken(UserReIssueDto userReIssueDto);
 
     Long updateUserInfo(UserInfoDto userInfoDto) throws IOException;
 

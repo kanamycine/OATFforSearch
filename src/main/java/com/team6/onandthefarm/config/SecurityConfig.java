@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler) // 액세스 할 수 없는 요청 했을 시 동작
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/user/login", "/api/user/login/phone", "/api/seller/login", "/api/seller/signup", "/api/seller/email", "/api/seller/emailConfirm", "/api/seller/search/id", "/api/seller/search/passwd", "/api/seller/passwd").permitAll()
+                .antMatchers("/api/user/login", "/api/user/refresh", "/api/user/login/phone", "/api/seller/login", "/api/seller/signup", "/api/seller/email", "/api/seller/emailConfirm", "/api/seller/search/id", "/api/seller/search/passwd", "/api/seller/passwd").permitAll()
                 .antMatchers("/api/user/product/list/**", "/api/user/product/{\\d+}", "/api/user/product/QnA/{\\d+}").permitAll()
                 .antMatchers("/api/user/review/info", "/api/user/review/list/**").permitAll()
                 .antMatchers("/api/seller/product/list/**").permitAll()

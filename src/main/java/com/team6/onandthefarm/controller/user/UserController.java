@@ -1,17 +1,14 @@
 package com.team6.onandthefarm.controller.user;
 
-import com.team6.onandthefarm.dto.user.MemberFollowingDto;
-import com.team6.onandthefarm.dto.user.MemberProfileDto;
-import com.team6.onandthefarm.dto.user.UserLoginDto;
-import com.team6.onandthefarm.dto.user.UserQnaDto;
-import com.team6.onandthefarm.dto.user.UserInfoDto;
-import com.team6.onandthefarm.dto.user.UserQnaUpdateDto;
+import com.team6.onandthefarm.dto.user.*;
 import com.team6.onandthefarm.entity.user.Following;
 import com.team6.onandthefarm.service.product.ProductService;
 import com.team6.onandthefarm.service.user.UserService;
 import com.team6.onandthefarm.util.BaseResponse;
+import com.team6.onandthefarm.util.RedisUtil;
 import com.team6.onandthefarm.vo.product.*;
 import com.team6.onandthefarm.vo.user.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +65,27 @@ public class UserController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+    @PostMapping("/refresh")
+    @ApiOperation(value = "refresh 토큰으로 access 토큰 재발급")
+    public ResponseEntity<BaseResponse<UserTokenResponse>> refresh(@RequestBody UserReIssueRequest userReIssueRequest){
+
+        UserReIssueDto userReIssueDto = new UserReIssueDto();
+        userReIssueDto.setAccessToken(userReIssueRequest.getAccessToken());
+        userReIssueDto.setRefreshToken(userReIssueRequest.getRefreshToken());
+
+        UserTokenResponse userTokenResponse = userService.reIssueToken(userReIssueDto);
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("성공")
+                .data(userTokenResponse)
+                .build();
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
     @GetMapping("/logout")
     @ApiOperation(value = "유저 로그아웃")
-    public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal) {
+    public ResponseEntity<BaseResponse> logout(@ApiIgnore Principal principal, HttpServletRequest request) {
 
         if(principal == null){
             BaseResponse baseResponse = BaseResponse.builder()
@@ -82,7 +98,7 @@ public class UserController {
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
-        userService.logout(userId);
+        userService.logout(request, userId);
 
         BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
