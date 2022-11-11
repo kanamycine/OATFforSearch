@@ -214,15 +214,13 @@ public class UserServiceImp implements UserService {
 			if (returnKakaoNumber == null) {
 				return false;
 			}
-
-			// Access, Refresh token 처리
-			Boolean completeDel = deleteToken(request);
-			if (completeDel == false) {
-				return false;
-			}
-			return true;
 		}
 
+		// Access, Refresh token 처리
+		Boolean completeDel = deleteToken(request);
+		if(!completeDel) {
+			return false;
+		}
 		return true;
 	}
 
@@ -230,10 +228,6 @@ public class UserServiceImp implements UserService {
 	private Boolean deleteToken(HttpServletRequest request) {
 		try {
 			String accessToken = request.getHeader("Authorization");
-			Long userId = jwtTokenUtil.getId(accessToken);
-
-			// redis에 있는 refresh Token 삭제
-			//redisUtil.deleteValues(Long.toString(userId));
 
 			// access Token 블랙리스트 추가
 			Integer tokenExpiration = jwtTokenUtil.getTokenExpirationAsLong(accessToken).intValue();

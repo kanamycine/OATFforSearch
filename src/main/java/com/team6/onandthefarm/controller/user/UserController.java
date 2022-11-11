@@ -75,6 +75,15 @@ public class UserController {
 
         UserTokenResponse userTokenResponse = userService.reIssueToken(userReIssueDto);
 
+        if(userTokenResponse == null){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("실패")
+                    .build();
+
+            return new ResponseEntity(response,HttpStatus.BAD_REQUEST);
+        }
+
         BaseResponse response = BaseResponse.builder()
                 .httpStatus(HttpStatus.OK)
                 .message("성공")
@@ -98,9 +107,20 @@ public class UserController {
         String[] principalInfo = principal.getName().split(" ");
         Long userId = Long.parseLong(principalInfo[0]);
 
-        userService.logout(request, userId);
+        Boolean logoutStatus = userService.logout(request, userId);
 
-        BaseResponse response = BaseResponse.builder().httpStatus(HttpStatus.OK).message("성공").build();
+        if(!logoutStatus){
+            BaseResponse response = BaseResponse.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("실패")
+                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        BaseResponse response = BaseResponse.builder()
+                .httpStatus(HttpStatus.OK)
+                .message("성공")
+                .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
